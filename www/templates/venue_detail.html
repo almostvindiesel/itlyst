@@ -1,0 +1,49 @@
+<ion-view >
+
+  <ion-content>
+    <div class="list card">
+      <ion-card>
+        <div class="item item-divider">
+          {{venue.name}} 
+        </div>
+        <a href="#" class="item item-icon-left">
+            <button class="button button {{venue.user_rating === 4 ? 'button-stable' : 'button-light'}} "
+                    ng-click="changeUserRating(venue.id, 4 )"><i class="fa-smile-o"></i></button> 
+            <button class="button button {{venue.user_rating === 3 ? 'button-stable' : 'button-light'}} "
+                    ng-click="changeUserRating(venue.id, 3 )"><i class="fa-meh-o"></i></button> 
+            <button class="button button {{venue.user_rating === 2 ? 'button-stable' : 'button-light'}} "
+                    ng-click="changeUserRating(venue.id, 2 )"><i class="fa-frown-o"></i></button> 
+            <button class="button button {{venue.user_rating === 1 ? 'button-stable' : 'button-light'}} "
+                    ng-click="changeUserRating(venue.id, 1 )"><i class="fa-thumb-tack" ></i></button>
+            <button class="button button {{venue.user_rating === 0 ? 'button-stable' : 'button-light'}} "
+                    ng-click="changeUserRating(venue.id, 0 )"><i class="fa-circle-thin"></i></button> 
+        </a>
+        <a href="#" class="item item-icon-left" ng-if="venue.foursquare_rating">
+          <div class="row">
+            <div class="col col-10"><i class="fa-foursquare"></i></div>
+            <div class="col col-20">{{venue.foursquare_rating}} out of 10</div>
+            <div class="col">{{venue.foursquare_reviews}} tips </div>
+          </div>
+        </a>
+        <a href="#" class="item item-icon-left" ng-if="venue.tripadvisor_rating">
+          <div class="row">
+            <div class="col col-10"><i class="fa-tripadvisor"></i></div>
+            <div class="col col-20">{{venue.tripadvisor_rating}} out of 5 stars</div>
+            <div class="col">{{venue.tripadvisor_reviews}} reviews </div>
+          </div>
+        </a>
+        <a href="#" class="item item-icon-left" ng-if="venue.yelp_rating">
+          <div class="row">
+            <div class="col col-10"><i class="fa-yelp"></i></div>
+            <div class="col col-20">{{venue.yelp_rating}} out of 5 stars</div>
+            <div class="col">{{venue.yelp_reviews}} reviews </div>
+          </div>
+        </a>
+      </ion-card>
+    </div>
+  </ion-content>
+
+
+</ion-view>
+</ion-nav-view>
+

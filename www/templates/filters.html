@@ -1,0 +1,69 @@
+<ion-view view-title="Filters">
+  <ion-content>
+    <div class="list">
+      <form>
+
+        <label class="item item-input">
+          <span class="input-label">City:</span>
+          <input ion-autocomplete type="text" readonly="readonly" class="ion-autocomplete" autocomplete="off"
+               ng-model="model"
+               item-value-key="id"
+               item-view-value-key="name"
+               items-method="getCities(query)"
+               items-method-value-key="items"
+               placeholder="eg, San Francisco"
+               items-clicked-method="citiesClicked(callback)"
+               items-removed-method="itemsRemoved(callback)"
+               cancel-label="Cancel"
+               max-selected-items="1"/>
+          </label>
+
+      <!--
+      <label class="item item-input">
+        <span class="input-label">Distance (mi)</span>
+        <div ng-repeat="distance in zoom_options">
+          <a class="button button-small" >{{distance}}</a>
+        </div>
+      </label>
+      -->
+
+        <label class="item item-input">
+          <span class="input-label">Zoom (mi)</span>
+          <ion-list>
+            <div class="button-bar" >
+              <ion-radio 
+                  ng-repeat="distance in zoom_options" 
+                  ng-model="defaultRadioChecked.radioChecked" 
+                  ng-value="{{distance}}" 
+                  ng-click="changeZoom(distance)"
+                  >
+                {{distance}}
+              </ion-radio>
+            </div>
+          </ion-list>
+        </label>
+
+        <label class="item item-input">
+          <span class="input-label">Venue Type</span>
+          <div ng-repeat="venue_type in venue_options">
+            <a class="button button-small">
+              <span ng-if="venue_type == 'coffee'">
+                <i class='fa-coffee'></i> 
+              </span>
+              <span ng-if="venue_type == 'food'">
+                <i class='fa-cutlery'></i> 
+              </span>
+             {{venue_type}}</a>
+          </div>
+        </label>
+
+      </form>
+
+      <br><a href="#/app/venues">
+        <button class="button button-stable button-small" style="width:100px;"><i class="fa-filter"></i> Save Filters </button>
+      </a>
+
+    </div>
+  </ion-content>
+</ion-view>
+

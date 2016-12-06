@@ -1,0 +1,10 @@
+{
+  "name": "itlyst-api",
+  "app_id": "",
+  "proxies": [
+    {
+      "path": "/cities",
+      "proxyUrl": "http://www.itlyst.com/cities"
+    }
+  ]
+}

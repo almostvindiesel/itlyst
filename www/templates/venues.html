@@ -1,0 +1,66 @@
+<ion-view >
+  <ion-nav-title>
+    <!--<a href="#/app/filters"><i class="button">
+        <i class="ion-android-options">
+        </i> filters</i></a> </i> 
+     &nbsp;&nbsp;&nbsp;&nbsp; -->
+     Venues  
+     <!--&nbsp;&nbsp;&nbsp;&nbsp; 
+     <i class="button"><i class="ion-map"></i>map</i></i>&nbsp;&nbsp;&nbsp;&nbsp;-->
+  </ion-nav-title>
+  <ion-content>
+
+
+    <!-- URL Content Detector -->
+    <div ng-show="hasClipboardData">
+      <button class="button button-full button-assertive" ng-click="addClipboardData()">
+          Add to itlyst: {{venueFromReviewSourceName}} 
+      </button>
+    </div>
+
+    <div ng-show="copiedClipboardData">
+       Added: {{venueFromReviewSourceName}}
+    </div>
+ 
+    
+    <!-- Spinner: Show when the content is loading-->
+    <ion-spinner icon="spiral" ng-hide=isDoneLoading></ion-spinner>
+
+
+    <!-- Venue Content -->
+    <ion-list>
+      <div class="list card" ng-repeat="item in venues">
+
+        <div class="item item-divider">
+          {{item.name}} 
+           <a target='_blank' style="color: inherit;" 
+              href='http://www.google.com/maps/search/{{ item.name }}/@{{ item.latitude }},{{ item.longitude }}/14z'>
+              <i class="ion-map" ></i></a>
+           <a href='#/app/venue/{{item.id}}/detail' style="color: inherit;" ><i class="ion-more" ></i></a> <!-- ion-chevron-right -->
+        </div>
+
+        <div class="item item-text-wrap">
+          <!--
+            <li ng-repeat="note in item.notes" class="wrap">
+              <font size=1px>&#9679;</font> {{note.note}}
+            </li>
+          -->
+          <p ng-repeat="note in item.notes" class="wrap">
+             <font size=1px>&#9679;</font> {{note.note}}
+          </p>
+          <ul>
+            <li>
+              <span ng-repeat="image in item.images">
+                  <a href ="#/app/image/{{image.id}}"><img src="{{image.image_url}}" class="venueimage"></a>
+              </span>
+            </li>
+          </ul>
+        </div>
+
+      </div>  
+    </ion-list>
+
+  </ion-content>
+</ion-view>
+</ion-nav-view>
+

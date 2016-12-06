@@ -1,0 +1,23 @@
+<!--
+https://codepen.io/-kaik-/pen/ONNzWe
+-->
+
+<ion-view >
+  <ion-content scroll="false" style="background-color: black;">
+      <ion-slides options="data.sliderOptions" slider="data.sliderDelegate">
+        <ion-slide-page ng-repeat="image in images">
+          <div class="imagebox image{{image.id}} ">
+            <img src="{{image.image_url}}" class="imageslide">
+            <br> <font color=white>Lysted from {{image.venue_name}}</font>
+          </div>
+        </ion-slide-page>
+      </ion-slides>
+  </ion-content>
+</ion-view>
+
+
+<!--
+ng-repeat="image in images"
+<img src="{{image.image_url}}" class="imageslide">
+{{image.id}}
+-->

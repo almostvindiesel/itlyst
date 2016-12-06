@@ -1,0 +1,24 @@
+<ion-view view-title="Paste">
+   <ion-pane ng-controller="MainCtrl">
+      <ion-header-bar class="bar-stable">
+        <h1 class="title">Ionic Blank Starter</h1>
+      </ion-header-bar>
+      <ion-content>
+                
+                <div class="list list-inset">
+                    <label class="item item-input">
+                        <textarea placeholder="Comments" ng-model="comments"></textarea>
+                    </label>
+                    <div ng-show="hasURL">
+                        <button class="button button-full button-assertive" ng-click="pasteURL()">
+                            You have copied a URL. Add it?
+                        </button>
+                    </div>
+                </div>
+                        
+               
+                
+      </ion-content>
+    </ion-pane>
+</ion-view>
+
