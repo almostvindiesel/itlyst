@@ -3,10 +3,23 @@ https://codepen.io/-kaik-/pen/ONNzWe
 -->
 
 <ion-view >
+  <ion-nav-bar class="bar-positive">
+    <ion-nav-back-button>
+    </ion-nav-back-button>
+  </ion-nav-bar>
+  <ion-nav-title>
+    <!--<a href="#/app/filters"><i class="button">
+        <i class="ion-android-options">
+        </i> filters</i></a> </i> 
+     &nbsp;&nbsp;&nbsp;&nbsp; -->
+     <img src="img/itlyst-fork-logo.png" style="width: 20px;">
+     <!--&nbsp;&nbsp;&nbsp;&nbsp; 
+     <i class="button"><i class="ion-map"></i>map</i></i>&nbsp;&nbsp;&nbsp;&nbsp;-->
+  </ion-nav-title>
   <ion-content scroll="false" style="background-color: black;">
       <ion-slides options="data.sliderOptions" slider="data.sliderDelegate">
         <ion-slide-page ng-repeat="image in images">
-          <div class="imagebox image{{image.id}} ">
+          <div class="imagebox image{{image.id}} imageslide">
             <img src="{{image.image_url}}" class="imageslide">
             <br> <font color=white>Lysted from {{image.venue_name}}</font>
           </div>

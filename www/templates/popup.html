@@ -1,0 +1,26 @@
+<script id="clipboardPopup" type="text/ng-template">
+  <ion-popover-view>
+    <ion-content>
+    <span>
+      <button class="button button-calm round" style="min-width: 70%" ng-click="addClipboardData()">
+        Add: 
+          <ion-spinner class="extractvenue" icon="spiral" ng-hide=venueFromReviewSourceName></ion-spinner>
+          <b>{{venueFromReviewSourceName}}</b>
+      </button>
+      <button class="button button-stable round" ng-click="closePopover()"> 
+        <i class="icon ion-close"></i> Cancel
+      </button><br>
+    </span>
+      <small>
+        {{ displayUrl | limitTo: 110 }}{{displayUrl.length > 110 ? '...' : ''}}
+      </small>
+
+      <label class="item item-input">
+        <textarea id="additionalVenueNotes" placeholder="Additional Notes"></textarea>
+      </label>
+    </ion-content>
+  </ion-popover-view>
+</script>
+
+
+<button id='popupbutton' ng-click="openPopover($event)" style="display: none;">Open Popover</button>

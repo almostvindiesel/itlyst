@@ -1,0 +1,152 @@
+<ion-view>
+  <ion-nav-bar class="bar-positive">
+    <ion-nav-buttons side="left">
+     <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+  <ion-nav-title>
+    <!--<a href="#/app/filters"><i class="button">
+        <i class="ion-android-options">
+        </i> filters</i></a> </i> 
+     &nbsp;&nbsp;&nbsp;&nbsp; -->
+     
+     <img src="img/itlyst-fork-logo.png" style="width: 20px;">
+     Venues  
+     <!--&nbsp;&nbsp;&nbsp;&nbsp; 
+     <i class="button"><i class="ion-map"></i>map</i></i>&nbsp;&nbsp;&nbsp;&nbsp;-->
+  </ion-nav-title>
+
+
+  <ion-content>
+
+    <div ui-view="popup@venues"></div>
+    
+
+    <!-- Spinner: Show when the content is loading-->
+    <ion-spinner icon="spiral" ng-hide=isDoneLoading></ion-spinner>
+    
+
+    <!-- Venue Content --> 
+    <div class="list" ng-repeat="item in venues">
+
+      <!-- Venue Title -->
+      <!--
+      <div class="item item-divider">
+            <font class=venuetitle>{{item.name}}</font>
+            <a href="#/app/venue/{{venue.id}}/detail"><button class="button icon venue-button" ng-click="go('')">
+              <i class="ion-more icon-lg" ></i>
+            </button></a>
+            <button class="button icon venue-button" ng-click="editVenue(item.id)">
+              <i class="ion-compose icon-lg" ></i>
+            </button>
+
+      </div>
+      -->
+
+      <!-- Show image blocked around text -->
+      <!--
+      <ion-list ng-controller="VenuesCtrl">
+        <ion-item ng-repeat="note in item.notes" id="note{{note.id}}" class="item-thumbnail-left">
+          <a href ="#/app/image/{{image.id}}"><img ng-if="item.images.length == 1 && item.notes.length == 1" ng-repeat="image in item.images" src="{{image.image_url}}" class="venueimage sml-margin" align=left></a>
+        </ion-item>
+        {{note.note}}
+        <ion-delete-button class="ion-minus-circled" ng-click="item.notes.splice($index, 1)"></ion-delete-button>
+      </ion-list>
+      -->
+      <body ng-controller="VenuesCtrl">
+
+        <ion-header-bar class="bar-subheader bar-dark">
+          <!-- Venue Title and Buttons -->
+          <div class="venuetitlecontainer">
+            <div style="float: left;">
+              <button class="button button-icon icon ion-ios-minus-outline venue-button" ng-click="data.showDelete = !data.showDelete"></button>
+            </div>
+            <div style="float: right; ">
+              <button class="button icon venue-button" ng-click="go('app/venue/{{item.id}}/detail')"><i class="ion-more icon-lg" ></i></button>
+            </div>
+            <div class=venuetitlediv>
+             <h4 class=venuetitle>{{item.name}}</h4>
+            </div>
+          </div>
+        </ion-header-bar>
+          <div>
+            <ion-list show-delete="data.showDelete">
+              <ion-item ng-repeat="note in item.notes" class="item-remove-animate" item="item" >
+                {{note.note}}
+                <ion-delete-button class="icon ion-minus-circled" ng-click="onNoteDelete(note.id)"></ion-delete-button>
+                <ion-option-button class="button-assertive" ng-click="edit(item)">Edit</ion-option-button>
+              </ion-item>
+            </ion-list>
+          </div>
+
+      </body>
+      <!--
+      <ion-list show-delete="showDelete" class="list list-editing">
+        <ion-item ng-repeat="note in item.notes" id="note{{note.id}}" class="item-thumbnail-left">
+          <a href ="#/app/image/{{image.id}}"><img ng-if="item.images.length == 1 && item.notes.length == 1" ng-repeat="image in item.images" src="{{image.image_url}}" class="venueimage sml-margin" align=left></a>
+        </ion-item>
+        {{note.note}}
+        <ion-delete-button class="ion-minus-circled" ng-click="item.notes.splice($index, 1)"></ion-delete-button>
+      </ion-list>
+      -->
+
+
+
+      <!--
+      <i class="item wrap" ng-repeat="note in item.notes">
+        <a href ="#/app/image/{{image.id}}"><img ng-if="item.images.length == 1 && item.notes.length == 1" ng-repeat="image in item.images" src="{{image.image_url}}" class="venueimage sml-margin" align=left></a>
+        <i id="note{{note.id}}" >{{note.note}}</i>
+      </label>
+        
+      </i>
+      -->
+            
+      <ul ng-if="!(item.images.length == 1 && item.notes.length == 1)">
+        <li>
+          <span class="imageblock"  ng-repeat="image in item.images">
+            <a href ="#/app/image/{{image.id}}"><img src="{{image.image_url}}" class="venueimage" ></a>
+          </span>
+        </li>
+      </ul>
+
+  </div>
+
+
+    <!-- Venue Content -->
+    <!--
+    <ion-list>
+      <div class="list card" ng-repeat="item in venues">
+
+        <div class="item item-divider">
+          {{item.name}} 
+           <a target='_blank' style="color: inherit;" 
+              href='http://www.google.com/maps/search/{{ item.name }}/@{{ item.latitude }},{{ item.longitude }}/14z'>
+              <i class="ion-map" ></i></a>
+           <a href='#/app/venue/{{item.id}}/detail' style="color: inherit;" ><i class="ion-more" ></i></a> 
+        </div>
+
+
+          <p ng-repeat="note in item.notes" class="wrap">
+             <font size=1px>&#9679;</font> {{note.note}}
+          </p>
+          <ul>
+            <li>
+              <span ng-repeat="image in item.images">
+                  <a href ="#/app/image/{{image.id}}"><img src="{{image.image_url}}" class="venueimage"></a>
+              </span>
+            </li>
+          </ul>
+        </div>
+
+      </div>  
+    </ion-list>
+    -->
+
+  </ion-content>
+
+
+</ion-view>
+
+
+</ion-nav-view>
+

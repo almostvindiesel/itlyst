@@ -1,5 +1,66 @@
 // ---------------------------------------------------------------------------------------------------------
 // http://phrogz.net/js/classes/OOPinJS2.html
+/*
+function auto_grow(element) {
+    element.style.height = "5px";
+    element.style.height = (element.scrollHeight)+"px";
+}
+*/
+
+
+TextMetaData.prototype = new TextMetaData();  
+TextMetaData.prototype.constructor=TextMetaData; 
+function TextMetaData (original_text) {
+	this.original_text = original_text;
+	this.original_url = "";
+	this.original_url_without_querystring = "";
+	this.display_url = "";
+	this.final_url = "";
+	this.source = "";
+
+	//Find the first url in the string)
+	this.findFirstUrl = function () {
+		console.log("Searching for url in copied text: ");
+		var urlRegex = /(https?:\/\/[^\s]+)/g;
+		if (parsedUrls = this.original_text.match(urlRegex)) {
+			this.original_url = parsedUrls[0];
+			console.log("Found url: ")
+			console.log(this.original_url);
+
+			if (this.original_url.indexOf("?") > -1 ) {
+				this.original_url_without_querystring = this.original_url.substring(0, this.original_url.indexOf("?"));
+			} else {
+				this.original_url_without_querystring = this.original_url;
+			}
+			console.log("URL w querystrings removed: ");
+			console.log(this.original_url_without_querystring);
+
+			//Create a url to display with extras chopped off
+			this.display_url = this.original_url_without_querystring;
+			var stringsToReplace = ["http://", "https://", "www."];
+			for (var i = 0; i < stringsToReplace.length; i++) {
+			    this.display_url = this.display_url.replace(stringsToReplace[i],"");
+			}
+			console.log("URL for display:");
+			console.log(this.display_url);
+
+		} else {
+			console.log("Did not find a url");
+		}
+	}
+
+	this.detectVenueSource = function () {
+		if (this.original_url) {
+			this.source = detectSource(this.original_url);
+		} else {
+			this.source = 'unknown';
+		}
+		console.log("Detected Source: " + this.source);
+	}
+
+}
+
+
 
 function Page () {
 	this.url = "";
@@ -65,11 +126,7 @@ Venue.prototype.setPostParameters = function ()  {
 	console.log(this.post_params);
 }
 Venue.prototype.setJQueryDocument = function (jquery_document) {
-	//this.jqdoc = jquery_document;
 	this.jqdoc = jquery_document;
-	//console.log(">>> Is XML Doc: " + jQuery.isXMLDoc(this.jqdoc.body) );
-	//console.log("@@@@@");
-	//console.log(this.jqdoc);
 }
 
 
@@ -118,6 +175,7 @@ function FoursquareVenue(page){
 	//<div class="numRatings" itemprop="ratingCount">314</div>
 	this.setReviews = function () {
 		this.reviews = $(this.jqdoc).find("div.numRatings").text();
+		this.reviews = this.reviews.replace(',','');
 	}
 
 	//<span property="servesCuisine" content="Street Food"/></span>
@@ -143,68 +201,77 @@ function FoursquareVenue(page){
 }
 
 
+
+
 TripadvisorVenue.prototype = new Venue();  
 TripadvisorVenue.prototype.constructor=TripadvisorVenue; 
 function TripadvisorVenue(page){
 	this.source = 'tripadvisor';
 	this.page = page;
 
+	this.pageJson = null;
+
+	//Overrides standard setJQueryDocument for tripadvisor
+	this.setJQueryDocument = function (jquery_document) {
+		this.jqdoc = jquery_document;
+
+		//Tripadvisor has embedded json which has a lot of the data needed, specifically on the mobile page
+		//When other methods fail, use this to populate parameters
+		this.pageJson = "";
+		try {
+			var jsonDataIndexStart = this.jqdoc.indexOf("script");
+			var jsonDataIndexEnd = this.jqdoc.substring(jsonDataIndexStart+34).indexOf("script");
+			var jsonStr = this.jqdoc.substring(jsonDataIndexStart+34, jsonDataIndexStart+34+jsonDataIndexEnd-2);
+			this.pageJson = jQuery.parseJSON(jsonStr);
+		} catch(err) {
+			console.log("Could not find embedded json on page: " + err.message);
+		}
+	}
+
 	//<div class="warLocName">River Buna Spring</div>
 	this.setName = function () {
 
-		this.name = jQuery(this.jqdoc).find("div.warLocName").first().text();
+		try {
+			this.name = $(this.jqdoc).find("div.warLocName").first().text();
+			var s = this.jqdoc.indexOf("<body");
+			var e = this.jqdoc.indexOf("FOOT_CONTAINER");
+			var len = this.jqdoc.length;
+
+			if (this.name.length < 1) {
+				throw "Could not find name in first attempt. Retrying";
+			}
+		} catch(err) {
+			console.log("Error: " + err.message);
+
+			try {
+				this.name = page.page_title;
+				console.log(" partial name: " + this.name);
+				
+				var dashIndex = this.name.indexOf("-");
+				this.name = this.name.substring(0, dashIndex);
+				console.log(" partial name 2: " + this.name);
+				var commaIndex = this.name.lastIndexOf(",");
+				this.name = this.name.substring(0,commaIndex);
+
+				if (this.name.length < 1) {
+					throw "Could not find name on second attempt. Retrying final time";
+				}
+			} catch(err) {
+				console.log("Error: " + err.message);
+
+				try {
+					this.name = this.pageJson.name;
+
+					if (this.name.length < 1) {
+						throw "Could not find name on third attempt. Failing";
+					}
+				} catch(err) {
+					console.log("Error: " + err.message);
+				}
+			}
+		}
 		console.log("--- name: " + this.name);
-
-		var s = this.jqdoc.indexOf("<body");
-		var e = this.jqdoc.indexOf("FOOT_CONTAINER");
-		var len = this.jqdoc.length;
-
-		this.jqdoc = '<html>' + this.jqdoc.substring(s,e-9) + "</html>"
-
-		this.name = jQuery(this.jqdoc).find("div.warLocName").first().text();
-		console.log("--- name: " + this.name);
-
-
-
-
-		//this.name = 
-		//this.name = $(this.jqdoc).find('.subNav .warLocDetail [class="warLocName"]').first().text();
-
-		console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-		console.log(this.jqdoc)
-		console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-
-
-        //console.log(this.jqdoc);
-        
-		//console.log( "a name: " + $(this.jqdoc).find("div.warLocName").first().text() );
-
-		
-		//console.log(this.jqdoc);
-
-		//this.name = Jquery(this.jqdoc).find("div.warLocName").first().text();
-		//console.log(textWhichContainsName);
-		//console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-		//console.log ( n );
-		//console.log($(this.jqdoc).find("body,html") );
-
-		//console.log( "b" + $(this.jqdoc).find("div.warLocName").first().text()  );
-		//console.log( "c" + $(this.jqdoc).find('.subNav .warLocDetail [class="warLocName"]').first().text() );
-		//console.log( "d" + $(this.jqdoc).filter("div.warLocDetail div.warLocName").first().outerHTML() );
-		//console.log( "e" + $(this.jqdoc).find("div.warLocName").html() );
-		/*
-		$(this.jqdoc).ready(function() {
-			console.log(">>> name: "+ $(this.jqdoc).find('.subNav .warLocDetail [class="warLocName"]').first().text() );
-		});
-		*/
-		//console.log( $(this.jqdoc).find("div.warLocName") );
-
-
-		//$response.filter('#main-images').outerHTML();
-		//console.log(  );
-
-		//console.log(this.name);
-
+		   
 	}
 
 	//https://www.tripadvisor.com/Attraction_Review-g1759888-d6601942-Reviews-River_Buna_Spring-Blagaj_Herzegovina_Neretva_Canton.html
@@ -222,6 +289,11 @@ function TripadvisorVenue(page){
 			//this.location.latitude = elements.getAttribute('data-lat');
 			var elements = $(this.jqdoc).find(".mapWrap").first();
 			this.location.latitude = $(elements).find("div.mapContainer").first().attr('data-lat');
+
+			if (!(isNumeric(this.location.latitude))) {
+				throw "Lat parsed is not a number";
+			}
+
 		}
 		catch(err) {
 			console.log("Could not get latitude. Error: " + err.message);
@@ -235,6 +307,11 @@ function TripadvisorVenue(page){
 			//var elements = document.querySelectorAll(".mapContainer")[0];
 			//this.location.longitude = elements.getAttribute('data-lng');
 			this.location.longitude = $(this.jqdoc).find(".mapWrap div.mapContainer").first().attr('data-lng');
+
+			if (!(isNumeric(this.location.longitude))) {
+				throw "Long parsed is not a number";
+			}
+
 		} catch(err) {
 			console.log("Could not get longitude. Error: " + err.message);
 		}
@@ -243,23 +320,44 @@ function TripadvisorVenue(page){
 
 	//<span class="geoName" data-title="Florence">Florence</span>
 	this.setCity = function () {
+		
+		/*
 		try {
 			this.location.city = $(this.jqdoc).find("span.geoName").text(); 		
 			console.log("--- city: " + this.location.city);
 		} catch(err) {
 			console.log("Could not get city. Error: " + err.message);
 		}
+		*/
+		
+		if ( this.location.city.length < 1) {
+			console.log("Could not get city. Retrying with different method by parsing json");
+
+			try {
+				this.location.city = this.pageJson.address.addressLocality;
+
+				console.log("Also setting rating, name, and reviews since we have them with this object");
+
+			} catch(err) {
+				console.log("Could not get city. Error: " + err.message);
+			}
+		}
 	}
 
 	//property="ratingValue" content="4.0"
 	this.setRating = function () {
 		try {
-			//var ratingStr = document.querySelectorAll("[property='ratingValue']")[0].alt;
-			//this.rating = String(ratingStr.substring(0, 3));
 			this.rating = $(this.jqdoc).find("[property='ratingValue']").first().attr('alt').substring(0, 3);
-			console.log("--- rating: " + this.rating);
+			if (!(isNumeric(this.rating)))  {
+				throw "Rating parsed is not a number. Retrying";
+			}
 		} catch(err) {
 			console.log("Could not get rating. Error: " + err.message);
+			try {
+				this.rating = this.pageJson.aggregateRating.ratingValue;
+			} catch(err) {
+				console.log("Could not get rating on second attempt. Giving up. Error: " + err.message);
+			}
 		}
 	} 
 
@@ -270,11 +368,20 @@ function TripadvisorVenue(page){
 			reviewsStr = reviewsStr.replace(',','');
 			var index = reviewsStr.indexOf(' ');
 			this.reviews = reviewsStr.substring(0, index);
-			console.log("--- reviews: " + this.reviews);
+			
+			if (!(isNumeric(this.reviews))) {
+				throw "Reviews parsed is not a number. Retrying...";
+			}
 		} catch(err) {
 			console.log("Could not get reviews. Error: " + err.message);
+			try {
+				this.reviews = this.pageJson.aggregateRating.reviewCount.replace(',','');
+			} catch(err) {
+				console.log("Could not get reviews on second attempt. Giving up. Error: " + err.message);
+			}
 		}
-	}
+	} 
+
 
 	this.setCategories = function () {
 		/*
@@ -291,6 +398,8 @@ function TripadvisorVenue(page){
 		}
 		*/
 	}
+
+	
 }
 
 YelpVenue.prototype = new Venue();  
@@ -302,7 +411,23 @@ function YelpVenue(page){
  	// <h1 class="biz-page-title embossed-text-white shortenough" itemprop="name">Proof Bakery</h1> 
 	this.setName = function () {
 		this.name = $(this.jqdoc).find(".biz-page-title").first().text().trim();
+
+		// iOS: <meta itemprop="name" content="Ohana Poke" />
+		if (!(this.name.length > 0)) {
+			console.log("First attempt to find name failed. Retrying...");
+			//this.name = $(this.jqdoc).filter("[itemprop='name']")[1].attr('content');
+			this.name = $(this.jqdoc).find("[itemprop='name']").last().attr('content');
+
+			console.log("Second attempt to find name: " + this.name);
+			console.log("Other name stuff: ");
+			//console.log($(this.jqdoc).filter("[itemprop='name']")[0]);
+		}
+
+		console.log("Yelp Name: " + this.name);
+
 	}
+
+
 
 	// Regular page:
 	// <meta name="yelp-biz-id" content="jQXj5x1V-mtVMFYoMQYOkg">
@@ -312,6 +437,7 @@ function YelpVenue(page){
 		try {
 			//this.source_id = document.querySelectorAll("[name='yelp-biz-id']")[0].content;
 			this.source_id = $(this.jqdoc).filter("[name='yelp-biz-id']").first().attr('content');
+
 		} catch(err) {
 			console.log("Could not get source_id. Retrying via other method: " + err.message);
 			try {
@@ -325,6 +451,8 @@ function YelpVenue(page){
 				console.log("ERROR. Could not get source_id second time. Retrying via other method: " + err.message);			
 			}
 		}
+		console.log("Yelp Source ID: " + this.source_id);
+
 	}
 
 	//<div class="lightbox-map hidden"...
@@ -416,7 +544,9 @@ function YelpVenue(page){
 		} catch(err) {
 			console.log("ERROR. Could not get city " + err.message);		
 		}
-	}
+
+	
+ 	}
 
 	//<meta itemprop="ratingValue" content="4.0">
 	this.setRating = function () {
@@ -426,6 +556,8 @@ function YelpVenue(page){
 		} catch(err) {
 			console.log("ERROR. Could not set rating " + err.message);		
 		}
+
+
 	} 
 
 	//<span itemprop="reviewCount">591</span> reviews
@@ -453,6 +585,8 @@ function YelpVenue(page){
 function detectSource (url) {
 	if (url.search("foursquare.com/v") >= 0) {
 		return 'foursquare'; 
+	} else if (url.search("4sq.com/") >= 0) {
+		return 'foursquare';
 	} else if (url.search("yelp.com/biz") >= 0) {
 		return 'yelp'; 
 	} else if (url.search("www.tripadvisor") >= 0 && url.search("Review-") >= 0) {
@@ -461,6 +595,10 @@ function detectSource (url) {
 		return 'unknown';
 	}
 }
+
+function isNumeric(n) {
+	  return !isNaN(parseFloat(n)) && isFinite(n);
+	}
 
 
 

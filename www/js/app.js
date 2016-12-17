@@ -8,11 +8,20 @@
 
 angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
+
+
+
 .constant("config", {
-    //"api_url": "http://mars-mac.local:5000"
-    "api_url": "http://localhost:5000"
-    //"api_url": "http://itlyst.com"
+  "api_servers": [
+    {"name": "local", "url": "http://mars.local:5000"},
+    {"name": "prod", "url": "http://www.itlyst.com"},
+  ]
 })
+
+
+//.value('api_url', 'http://www.itlyst.com')
+.value('api_url', 'http://mars.local:5000')
+
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -29,6 +38,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     }
   });
 })
+
+
 
 .config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
@@ -66,16 +77,31 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       'menuContent': {
         templateUrl: 'templates/venues.html',
         controller: 'VenuesCtrl'
+      },
+      'popup@venues': { 
+          templateUrl: 'templates/popup.html',
+          controller: 'PopupCtrl',
+          cache: false
       }
     }
   })
 
-  .state('app.single', {
+  .state('app.venue', {
     url: '/venue/:venueId/detail',
     views: {
       'menuContent': {
         templateUrl: 'templates/venue_detail.html',
         controller: 'VenueDetailCtrl'
+      }
+    }
+  })
+
+  .state('app.redirector', {
+    url: '/redirector',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/redirector.html',
+        controller: 'RedirectorCtrl'
       }
     }
   })
@@ -90,6 +116,21 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     }
   })
 
+  .state('app.admin', {
+    url: '/admin',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/admin.html',
+        controller: 'AdminCtrl'
+      },
+      'popup@admin': { 
+          templateUrl: 'templates/popup.html',
+          controller: 'PopupCtrl',
+          cache: false
+      }
+    }
+  })
+
   .state('app.pages', {
     url: '/pages',
     views: {
@@ -98,6 +139,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       }
     }
   })
+
 
   /*
   .state('app.search', {
@@ -147,13 +189,81 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 // Services
 
 (function(){
-  function VenueService($http, config) {
+  function ClipboardService($http, config, api_url) {
 
-    var venue_base_url = config.api_url + '/api/v1/venue?';
+    var data = {
+      addedClipboardData: "",
+      ignoredClipboardData: "",
+      extractedClipboardData: "",
+      isServiceActive: false,
+      isThreadActive: false
+    };
+
+
+    function setAddedClipboardData(dat){
+      data.addedClipboardData = dat;
+    }
+
+    function setIgnoredClipboardData(dat){
+      data.ignoredClipboardData = dat;
+    }
+
+    function setExtractedClipboardData(dat){
+      data.extractedClipboardData = dat;
+    }
+
+    function setExtractedClipboardData(dat){
+      data.extractedClipboardData = dat;
+    }
+
+    function setServiceStatus(bol){
+      data.isServiceActive = bol;
+    }
+    function setThreadStatus(bol){
+      data.isThreadActive = bol;
+    }
+
+    return {
+      setAddedClipboardData: setAddedClipboardData,
+      setIgnoredClipboardData: setIgnoredClipboardData,
+      setExtractedClipboardData: setExtractedClipboardData,
+      setServiceStatus: setServiceStatus,
+      setThreadStatus: setThreadStatus,
+      data: data
+    };
+  }
+
+  function ApiService($http, config, api_url) {
+
+    var server = {
+      name: 'local',
+      url: api_url,
+    };
+
+    function setApiServer(api_server_name){
+      console.log("Setting api server ....");
+      for (var i = 0, len = config.api_servers.length; i < len; i++) {
+        if(config.api_servers[i].name == api_server_name) {
+            server.name = config.api_servers[i].name;
+            server.url  = config.api_servers[i].url;
+            console.log("New API Server is: " + config.api_servers[i].name + " with url: " +  config.api_servers[i].url)
+        }
+      }
+    }
+
+    return {
+      setApiServer: setApiServer,
+      server: server
+    };
+  }
+
+  function VenueService($http, config, api_url) {
+
     var data = {
       venues: {},
       zoom: 10,
-      city: 'Los Angeles'
+      city: 'Los Angeles',
+      refreshVenues: false
     };
 
     // Generates the parameters used to query the api. 
@@ -168,6 +278,11 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       }
       return jQuery.param(params_obj);
 
+    }
+
+    function setForceRefreshVenues(bol){
+      console.log("Setting refreshVenues: " + bol);
+      data['refreshVenues'] = bol;
     }
 
     function setCity(val){
@@ -185,55 +300,87 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       data['venues'] = val;
     }
 
-    function extractVenues() {
+    function extractVenues(api_url) {
         return {
           async: function() {
-            var venue_url = venue_base_url + generateUrlParameters();
+            var venue_url = api_url + '/api/v1/venues?' + generateUrlParameters();
             console.log("Querying: " + venue_url);
             return $http.get(venue_url); 
-            //console.log(response);
-            //return response.data; 
           }
         };
     }
 
-
-/*
-      var myService = {
-        async: function() {
-          var promise = $http.get(venue_url).then(function(response) {
-              $timeout(function(){
-                setVenues(response.data.venues);
-                console.log("Extracted venues. Total Venues: " + data.venues.length);
-                return data.venues;
-              }, 1000);
-          });
-          return promise;
-        }
-      };
-      return myService;
-    }
-*/
-
-
-    /*
-    function setCity(val){
-      console.log("Setting city");
-      data['city'] = val;
-    }*/
-
     return {
       setVenues: setVenues,
+      setForceRefreshVenues: setForceRefreshVenues,
       extractVenues: extractVenues,
       setZoom: setZoom,
       setCity: setCity,
       data: data
-      //city: data.city*/
+    };
+  } 
+
+  function VenueApi($http, config, api_url) {
+
+    function remove(id) {
+      console.log("About to delete venue id: " + id);
+
+      $http({
+          method: 'DELETE',
+          url: api_url + '/api/v1/venue/' + id,
+          /*data: {
+              user: userId
+          },*/
+          headers: {
+              'Content-type': 'application/json;charset=utf-8'
+          }
+      })
+      .then(function(response) {
+          console.log(response.data);
+      }, function(rejection) {
+          console.log(rejection.data);
+      });
+
+    }
+  
+    return {
+      remove: remove,
+    };
+  }
+
+  function NoteApi($http, config, api_url) {
+
+    function remove(id) {
+      console.log("About to delete note id: " + id);
+
+      $http({
+          method: 'DELETE',
+          url: api_url + '/api/v1/note/' + id,
+          headers: {
+              'Content-type': 'application/json;charset=utf-8'
+          }
+      })
+      .then(function(response) {
+          console.log(response.data);
+      }, function(rejection) {
+          console.log(rejection.data);
+      });
+
+    }
+    return {
+      remove: remove,
     };
   }
 
   angular
     .module('starter')
-    .factory('VenueService', VenueService);
+    .factory('ApiService', ApiService)
+    .factory('VenueService', VenueService)
+    .factory('ClipboardService', ClipboardService)
+    .factory('VenueApi', VenueApi)
+    .factory('NoteApi', NoteApi)
+
+    ;
+    
 
 })();

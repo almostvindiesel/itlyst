@@ -1,12 +1,64 @@
 
 /* Testing */
 
+/*
+
+textarea {
+  height:auto !important;
+  white-space: initial !important;
+  max-width:600px;
+  color:#999;
+  font-weight:400;
+  font-size:30px;
+  font-family:'Ubuntu', Helvetica, Arial, sans-serif;
+  width:100%;
+  background:#fff;
+  border-radius:3px;
+  line-height:1.2em;
+  height: auto !important;
+  border:none;
+  box-shadow:0px 0px 5px 1px rgba(0,0,0,0.1);
+  padding:30px;
+  -webkit-transition: height 2s ease;
+  -moz-transition: height 2s ease;
+  -ms-transition: height 2s ease;
+  -o-transition: height 2s ease;
+  transition: height 2s ease;
+  word-break: break-all;
+  resize: none;
+  overflow: hidden;
+}
+
+*/
+
+
+
 .imageslide {
   max-width:100%;
   max-height:100%;
   border-radius: 4px; 
   vertical-align: middle;
   text-align: center;
+}
+
+.popover-wrapper {
+  text-align: center !important;
+}
+
+.popover {
+  height: 165px;
+  width: 95%;
+  text-align: center;
+}
+
+.spinner svg {
+  width: 15px !important;
+  height: 15px !important;
+} 
+
+ion-popover-view {
+  top: 30% !important;
+  margin-left: 5px !important;
 }
 
 .imagebox  {
@@ -18,8 +70,6 @@
   background-color: black;
   vertical-align: middle;
 }
-
-
 
 
 ion-view.title {
@@ -115,10 +165,11 @@ ion-view.title {
 }
 
 
-
+/*
 .bar.bar-stable {
-	background-color:rgb(42, 63, 84);
-}
+   background-color:rgb(42, 63, 84); 
+  background-color:#387ef5; 
+}*/
 
 h1.title {
 	color:white !important;
@@ -136,7 +187,7 @@ h1.title {
 /* Adjustments to the radio button when checkmark was removed */
 
 div.radio-content {
-  width: 35px !important;
+  min-width: 35px !important;
   height: 30px !important;
   text-align: center !important;   
   vertical-align: middle !important;
@@ -147,6 +198,18 @@ div.radio-content {
 
 /* Hide the ionic checkmark */
 
+.verticaldivider {
+    border-left: 1px solid #A0A0A0;
+    width: 1px;
+    height: 20px;
+    display: inline-block;    
+    margin-right: 15px;
+    margin-left: 15px; 
+}
+
+.icon-lg {
+    font-size: 25px;
+}
 
 .radio-icon.disable-pointer-events.icon.ion-checkmark {
   display: none !important;
@@ -157,7 +220,7 @@ div.radio-content {
 	color:white !important;
 }
 
-.button.button-icon, .button.back-button {
+/*.button.button-icon, */.button.back-button {
 	color:white !important;
 }
 
@@ -165,13 +228,27 @@ div.radio-content {
 	color:white !important;
 }
 
-.venuetitle {
-  font-weight: bold;
+
+
+.venuetitle, .venuedetailsitem {
+  vertical-align: middle !important;
 }
 
-span.venueimage {
-  position:relative;
-  vertical-align: text-top;
+.venuetitle {
+  display: inline-block; 
+  margin:0 auto;
+}
+
+.venuetitle {
+  color:white;
+
+}
+
+
+.imageblock {
+  padding-left: 10px;
+  position: relative;
+  top: 5px;
 }
 
 
@@ -183,9 +260,80 @@ img.venueimage, img.pageimage {
   vertical-align: top;
 }
 
+/*
 .wrap {
   white-space: normal !important;
+}*/
+
+.sml-margin {
+  margin-right: 10px;
 }
+
+.bar-subheader {
+    top: 0px !important;
+}
+
+
+.venuetitlecontainer {
+  width:100%; 
+  text-align:center;
+  max-height: 25px;
+  vertical-align: top !important;
+}
+
+.venuetitlediv {
+  vertical-align: top !important;
+}
+
+/*
+.venuetitlediv {
+  max-height: 20px;
+}*/
+
+
+
+.venue-button {
+  line-height: 10px !important;
+  max-height: 20px !important;
+}
+
+.image-button {
+  border: none;
+  background: none;
+}
+
+/*
+div.item-divider {
+  max-height: 50px !important;
+  margin: 0px !important;
+  vertical-align: top !important;
+}
+*/
+
+/*
+.list {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+*/
+
+/*
+ion-header-bar.sub-header {
+  max-height: 50px !important;
+  top: 64px !important;
+}
+*/
+
+/*
+.item {
+  padding: 2px;
+}
+*/
+
+.item-complex .item-content, .item-radio .item-content {
+    padding: 20px 49px 15px 16px;
+}
+
 
 
 
