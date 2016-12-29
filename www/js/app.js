@@ -5,10 +5,23 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
 
+console.log("Opened app.js");
+
 
 angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
+//Triggers focus on iOS Keyboards (potentially on other devices as well) 
 
+.directive('focusMe', function($timeout) {
+  return {
+    link: function(scope, element, attrs) {
+
+      $timeout(function() {
+        element[0].focus(); 
+      });
+    }
+  };
+})
 
 
 .constant("config", {
@@ -19,26 +32,30 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 })
 
 
-//.value('api_url', 'http://www.itlyst.com')
-.value('api_url', 'http://mars.local:5000')
+.value('api_url', 'http://www.itlyst.com')
+//.value('api_url', 'http://mars.local:5000')
+//.value('api_url', 'http://localhost:5000')
 
 
 .run(function($ionicPlatform) {
+  console.log("Starting ionic ready...");
+
+
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
     if (window.cordova && window.cordova.plugins.Keyboard) {
+      console.log("Loading keyboard plugin settings...");
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
       cordova.plugins.Keyboard.disableScroll(true);
-
     }
     if (window.StatusBar) {
-      // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
+    console.log("Completed ionicPlatform.ready...");
+
   });
 })
-
 
 
 .config(function($stateProvider, $urlRouterProvider) {
@@ -50,6 +67,17 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     templateUrl: 'templates/menu.html',
     controller: 'AppCtrl'
   })
+
+  .state('app.map', {
+    url: '/map',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/map.html',
+        controller: 'MapCtrl'
+      }
+    }
+  })
+
 
   .state('app.filters', {
     url: '/filters',
@@ -106,7 +134,23 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     }
   })
 
+  .state('app.start', {
+    url: '/start',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/start.html',
+        controller: 'StartCtrl'
+      },
+      'popup@start': { 
+          templateUrl: 'templates/popup.html',
+          controller: 'PopupCtrl',
+          cache: false
+      }
+    }
+  })
+
   .state('app.image', {
+    cache: false,
     url: '/image/:imageId',
     views: {
       'menuContent': {
@@ -140,56 +184,15 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     }
   })
 
-
-  /*
-  .state('app.search', {
-    url: '/search',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/search.html'
-      }
-    }
-  })
-
-  .state('app.browse', {
-      url: '/browse',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/browse.html'
-        }
-      }
-  })
-
-  .state('app.playlists', {
-      url: '/playlists',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/playlists.html',
-          controller: 'PlaylistsCtrl'
-        }
-      }
-  })
-
-  .state('app.single', {
-    url: '/playlists/:playlistId',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/playlist.html',
-        controller: 'PlaylistCtrl'
-      }
-    }
-  });
-  */
-
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/venues');
+  $urlRouterProvider.otherwise('/app/start');
 });
 
 // --------------------------------------------------------------------
 // Services
 
 (function(){
-  function ClipboardService($http, config, api_url) {
+  function ClipboardService(config) {
 
     var data = {
       addedClipboardData: "",
@@ -257,11 +260,20 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     };
   }
 
-  function VenueService($http, config, api_url) {
+
+
+  function VenueService($http, config) {
+
+    var zoom_options = [1, 3, 5, 10, 25, 50];
+    var venue_type_options = [ 'food', 'place', 'coffee', 'all' ]
+    
 
     var data = {
       venues: {},
-      zoom: 10,
+      zoom_options: zoom_options,
+      zoom: 50,
+      venue_type_options: venue_type_options,
+      venue_type: 'all',
       city: 'Los Angeles',
       refreshVenues: false
     };
@@ -310,20 +322,85 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
         };
     }
 
+
+    var extractVenueFromUrl = function (venue_url) {
+      console.log("Querying: " + venue_url);
+      return $http({
+              method: 'GET',
+              url: venue_url
+          })
+          .then(function(response) {
+              //console.log(response.data);
+              return response.data;
+          }, function(rejection) {
+              return response;
+      });
+    }
+
+
+    function createVenue(response, venue_url, source) {
+      console.log("Creating venue: " + venue_url);
+
+      //Set page object
+      p = new Page();
+      p.url = venue_url;
+      p.title = $(response).filter('title').text();
+
+      //Set attributes for supported venue object
+      if (source == 'foursquare') {
+        v = new FoursquareVenue(p);
+      } else if (source == 'yelp') {
+        v = new YelpVenue(p);
+      } else if (source == 'tripadvisor') {
+        v = new TripadvisorVenue(p);
+      } else {
+        console.log("Unknown source. Just submitting page");
+        v = null; 
+        // !!! .....
+      }
+
+      if (v) {
+        console.log("Found venue on " + source + ": " + v.name);
+        v.setJQueryDocument(response);
+        v.setName();
+        setVenueProperties(v, response);
+        v.setPostParameters();
+        return v;
+      }
+    }
+
+    function setVenueProperties (v, response) {
+      //v.setJQueryDocument(response);
+      //v.setName();
+      v.setSourceId();
+      v.setLatitude();
+      v.setLongitude();
+      v.setCity();
+      v.setRating();
+      v.setReviews();
+      //add image detected here
+      v.findImageOnPage();    //This needs to come before the simplify url call
+      v.simplifyPageUrl();
+      //v.setCategories();
+      //v.setPostParameters();
+    }
+
     return {
+      extractVenues: extractVenues,
+      extractVenueFromUrl: extractVenueFromUrl,
+      createVenue: createVenue,
       setVenues: setVenues,
       setForceRefreshVenues: setForceRefreshVenues,
-      extractVenues: extractVenues,
       setZoom: setZoom,
       setCity: setCity,
       data: data
     };
   } 
 
-  function VenueApi($http, config, api_url) {
+  function VenueApi($http, config) {
 
-    function remove(id) {
-      console.log("About to delete venue id: " + id);
+    function remove(id, api_url) {
+      console.log("About to delete venue id: " + id + " on " + api_url);
 
       $http({
           method: 'DELETE',
@@ -343,15 +420,67 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
     }
   
+    //Add a venue note
+    function search(api_url, name, city) {
+      console.log("About to search for venue name: " + name);
+
+      return $http({
+          method: 'POST',
+          url: api_url + '/api/v1/venue/search',
+          data: {
+            name: name,
+            city: city       
+          }, 
+          headers: {
+            'Content-type': 'application/json;charset=utf-8'
+          }
+      })
+      .then(function(response) {
+          console.log("Foursquare API Response: ");
+          console.log(response.data['venues']);
+          return response.data['venues'];
+      }, function(rejection) {
+          console.log(rejection.data);
+      });
+    }
+
     return {
       remove: remove,
+      search: search
     };
   }
 
-  function NoteApi($http, config, api_url) {
+  function ImageApi($http, config) {
 
-    function remove(id) {
-      console.log("About to delete note id: " + id);
+    //Remove an image
+    function remove(id, api_url) {
+      console.log("About to delete image id in server: " + id);
+
+      $http({
+          method: 'DELETE',
+          url: api_url + '/api/v1/image/' + id,
+          headers: {
+              'Content-type': 'application/json;charset=utf-8'
+          }
+      })
+      .then(function(response) {
+          console.log(response.data);
+
+      }, function(rejection) {
+          console.log(rejection.data);
+      });
+    }
+
+    return {
+      remove: remove
+    };
+  }
+
+  function NoteApi($http, config) {
+
+    //Remove a venue note
+    function remove(id, api_url) {
+      console.log("About to delete note id in server: " + id);
 
       $http({
           method: 'DELETE',
@@ -362,15 +491,92 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       })
       .then(function(response) {
           console.log(response.data);
+
       }, function(rejection) {
           console.log(rejection.data);
       });
-
     }
+
+    //Edit a venue note
+    function edit(id, note, api_url) {
+      console.log("About to post edited note to server. note id: " + id + ", note: " + note);
+
+      $http({
+          method: 'PUT',
+          url: api_url + '/api/v1/note/' + id,
+          data: {
+            note: note
+          },
+          headers: {
+            'Content-type': 'application/json;charset=utf-8'
+          }
+      })
+      .then(function(response) {
+          console.log(response.data);
+      }, function(rejection) {
+          console.log(rejection.data);
+      });
+    }
+
+    //Add a venue note
+    function add(venue_id, note, api_url) {
+      console.log("About to post new note note to server. venue id: " + venue_id + ", note: " + note);
+
+      $http({
+          method: 'POST',
+          url: api_url + '/api/v1/note',
+          data: {
+            note: note,
+            venue_id: venue_id
+          },
+          headers: {
+            'Content-type': 'application/json;charset=utf-8'
+          }
+      })
+      .then(function(response) {
+          console.log(response.data);
+      }, function(rejection) {
+          console.log(rejection.data);
+      });
+    }
+
     return {
       remove: remove,
+      edit: edit,
+      add: add
     };
   }
+
+  function TextApi($http, config) {
+
+    //Add a venue note
+    var analyze = function(api_url, text) {
+      console.log("About to post text to server: " + text);
+
+      return $http({
+          method: 'POST',
+          url: api_url + '/api/v1/text',
+          data: {
+            text: text          
+          }, 
+          headers: {
+            'Content-type': 'application/json;charset=utf-8'
+          }
+      })
+      .then(function(response) {
+          console.log("Text API Response: ");
+          console.log(response.data['potential_venues']);
+          return response.data['potential_venues'];
+      }, function(rejection) {
+          console.log(rejection.data);
+      });
+    }
+
+    return {
+      analyze: analyze
+    };
+  }
+
 
   angular
     .module('starter')
@@ -379,6 +585,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     .factory('ClipboardService', ClipboardService)
     .factory('VenueApi', VenueApi)
     .factory('NoteApi', NoteApi)
+    .factory('ImageApi', ImageApi)
+    .factory('TextApi', TextApi)
 
     ;
     

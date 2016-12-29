@@ -4,6 +4,10 @@ https://codepen.io/-kaik-/pen/ONNzWe
 
 <ion-view >
   <ion-nav-bar class="bar-positive">
+    <!--<ion-nav-back-button class="button-clear"
+    ng-click="myGoBack()">
+    <i class="ion-arrow-left-c"></i> Back
+    </ion-nav-back-button>-->
     <ion-nav-back-button>
     </ion-nav-back-button>
   </ion-nav-bar>
@@ -15,12 +19,16 @@ https://codepen.io/-kaik-/pen/ONNzWe
      <img src="img/itlyst-fork-logo.png" style="width: 20px;">
      <!--&nbsp;&nbsp;&nbsp;&nbsp; 
      <i class="button"><i class="ion-map"></i>map</i></i>&nbsp;&nbsp;&nbsp;&nbsp;-->
+     <button class="button button-icon icon imagedeletebutton" ng-click="deleteImage(currentImageId)">
+      <i class="ion-ios-trash-outline"></i>
+     </button>
+    
   </ion-nav-title>
   <ion-content scroll="false" style="background-color: black;">
       <ion-slides options="data.sliderOptions" slider="data.sliderDelegate">
         <ion-slide-page ng-repeat="image in images">
           <div class="imagebox image{{image.id}} imageslide">
-            <img src="{{image.image_url}}" class="imageslide">
+            <img src="{{image.image_large}}" class="imageslide">
             <br> <font color=white>Lysted from {{image.venue_name}}</font>
           </div>
         </ion-slide-page>

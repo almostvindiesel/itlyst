@@ -26,7 +26,7 @@
                item-view-value-key="name"
                items-method="getCities(query)"
                items-method-value-key="items"
-               placeholder="eg, San Francisco"
+               placeholder="Los Angeles"
                items-clicked-method="citiesClicked(callback)"
                items-removed-method="itemsRemoved(callback)"
                cancel-label="Cancel"
@@ -47,12 +47,13 @@
           <ion-list>
             <div class="button-bar" >
               <ion-radio 
-                  ng-repeat="distance in zoom_options" 
-                  ng-model="defaultRadioChecked.radioChecked" 
-                  ng-value="{{distance}}" 
-                  ng-click="changeZoom(distance)"
+                  name="zoom"
+                  ng-repeat="item in zoom_options" 
+                  ng-value="item" 
+                  ng-model="zoom_selected"
+                  ng-click="changeZoom(item)"
                   >
-                {{distance}}
+                {{item}}
               </ion-radio>
             </div>
           </ion-list>
@@ -60,23 +61,31 @@
 
         <label class="item item-input">
           <span class="input-label">Venue Type</span>
-          <div ng-repeat="venue_type in venue_options">
-            <a class="button button-small">
-              <span ng-if="venue_type == 'coffee'">
-                <i class='fa-coffee'></i> 
-              </span>
-              <span ng-if="venue_type == 'food'">
-                <i class='fa-cutlery'></i> 
-              </span>
-             {{venue_type}}</a>
-          </div>
+           <ion-list>
+            <div class="button-bar small" >
+              <ion-radio 
+                  name="venue_type"
+                  ng-repeat="item in venue_type_options" 
+                  ng-value="item"
+                  ng-model="venue_type_selected" 
+                  ng-click=""
+                  >
+                <i style="font-size: 80%;">
+                  <i ng-if="item == 'food'" class='fa-cutlery'></i> 
+                  <i ng-if="item == 'coffee'" class='fa-coffee'></i> 
+                  <i ng-if="item == 'place'" class='fa-map-marker'></i> 
+                  {{item}}
+                </i>
+              </ion-radio>
+            </div>
+          </ion-list>
         </label>
 
       </form>
 
-      <br><a href="#/app/venues">
-        <button class="button button-stable button-small" style="width:100px;"><i class="fa-filter"></i> Save Filters </button>
-      </a>
+      <!-- button-small -->
+      <br>&nbsp;<button class="button button-stable button button-positive" style="width:140px;" ng-click="go('app/venues')"><i class="fa-filter"></i> Save Filters </button>
+      
 
     </div>
   </ion-content>

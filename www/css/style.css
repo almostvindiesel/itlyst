@@ -30,6 +30,75 @@ textarea {
 }
 
 */
+.searchglass {
+  width: 5% !important;
+}
+
+.introtext {
+  color: #f5f6f7;
+  background-color: black;
+}
+
+.large {
+  font-size: 4em;
+  font-weight: 700;
+  text-shadow: 2px 2px 3px rgba(0,0,0,0.6);
+} 
+
+.splash {
+    background-color: black;
+}
+
+.item-radio input:checked + .radio-content .item-content {
+    /* style the item content when its checked */
+    background: #387ef5; 
+    color: white;
+}
+
+textarea {
+  height: 210px !important;
+  box-shadow:0px 0px 5px 1px rgba(0,0,0,0.1);
+  margin: 0px 15px 0px 0px;
+  font-size: 13px;
+  line-height:1em;
+}
+
+.venuebutton {
+  min-height: 40px !important;
+  float: left !important;
+}
+
+.imagedeletebutton {
+  min-height: 40px !important;
+  float: right !important;
+}
+
+.popover {
+  height: 375px;
+  width: 95%;
+  text-align: center;
+}
+
+/*
+Screen: 568;
+ IP5: Keyboard 320px
+
+ 240
+
+*/
+.black {
+ background-color: black !important;
+}
+
+.scroll {
+    height: 100%;
+}
+ 
+#map {
+    width: 100%;
+    height: 100%;
+}
+
 
 
 
@@ -41,14 +110,44 @@ textarea {
   text-align: center;
 }
 
+/* For city input on detected Venues popover */
+input[type="text"].citySelection {
+  height: 25px;
+  display: inline-block;
+  font-size: 10px;
+  color: "blue" !important;
+  vertical-align: middle;
+}
+input.citySelection::-webkit-input-placeholder {
+color: black !important;
+}
+ 
+input.citySelection:-moz-placeholder { /* Firefox 18- */
+color: black !important;  
+}
+ 
+input.citySelection::-moz-placeholder {  /* Firefox 19+ */
+color: black !important;  
+}
+ 
+input.citySelection:-ms-input-placeholder {  
+color: black !important;  
+}
+
+
+
+.detectedVenues {
+  text-align: left;
+  height: 75px;
+}
+
+
 .popover-wrapper {
   text-align: center !important;
 }
 
-.popover {
-  height: 165px;
-  width: 95%;
-  text-align: center;
+.adminbutton {
+  padding: 0px 8px 1px !important;
 }
 
 .spinner svg {
@@ -57,8 +156,8 @@ textarea {
 } 
 
 ion-popover-view {
-  top: 30% !important;
-  margin-left: 5px !important;
+  top: 2% !important;
+  margin-left: 3px !important;
 }
 
 .imagebox  {
@@ -98,6 +197,13 @@ ion-view.title {
   content: "\f180";
 }
 
+
+
+.fa-eraser:before {
+  font-family: "fontawesome";
+  content: "\f12d";
+}
+
 .fa-yelp:before {
   font-family: "fontawesome";
   content: "\f1e9";
@@ -126,6 +232,11 @@ ion-view.title {
 .fa-cutlery:before { 
   font-family: "fontawesome";
   content:"\f0f5";
+}
+
+.fa-map-marker:before { 
+  font-family: "fontawesome";
+  content:"\f041";
 }
 
 .fa-support:before { 
@@ -178,7 +289,7 @@ h1.title {
 
 
 .item-content.disable-pointer-events {
-   padding: 5px 0px 0px 0px !important;
+   padding: 5px 10px 5px 10px !important;
 
 }
 
@@ -186,6 +297,7 @@ h1.title {
 
 /* Adjustments to the radio button when checkmark was removed */
 
+/*
 div.radio-content {
   min-width: 35px !important;
   height: 30px !important;
@@ -193,7 +305,7 @@ div.radio-content {
   vertical-align: middle !important;
 
 }
-
+*/
 
 
 /* Hide the ionic checkmark */
@@ -244,6 +356,13 @@ div.radio-content {
 
 }
 
+/*
+.savebuttons {
+  position:absolute; 
+  bottom: 5px;
+  left: 5px;
+}*/
+
 
 .imageblock {
   padding-left: 10px;
@@ -251,6 +370,11 @@ div.radio-content {
   top: 5px;
 }
 
+.thumbnail-lg {
+  max-width: 300px;
+  border-radius: 10px; 
+  
+}
 
 
 img.venueimage, img.pageimage {
@@ -258,6 +382,7 @@ img.venueimage, img.pageimage {
   max-height: 100px;
   border-radius: 10px; 
   vertical-align: top;
+  float:left;
 }
 
 /*
@@ -298,6 +423,7 @@ img.venueimage, img.pageimage {
 }
 
 .image-button {
+  float: left;
   border: none;
   background: none;
 }
@@ -330,9 +456,48 @@ ion-header-bar.sub-header {
 }
 */
 
-.item-complex .item-content, .item-radio .item-content {
+.item-complex .item-content, /*.item-radio*/ .item-content {
     padding: 20px 49px 15px 16px;
 }
+
+
+input.inputbuttons { 
+  display:none; 
+}
+span.inputbuttons {
+    display: inline-block
+}
+
+div.inputbuttons {
+  display: inline-block;
+}
+
+input.inputbuttons:checked ~ label.inputbuttons { 
+  background: #444444 !important;
+  border:1px solid #444444 !important;
+  color:#f8f8fb !important;
+}
+
+label.inputbuttons {
+
+  background:#ddd !important;
+  color: #b2b2b2 !important;
+  cursor:pointer;
+  border:1px solid #ddd;
+
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* Internet Explorer/Edge */
+  user-select: none;           /* Non-prefixed version, currently
+                                  not supported by any browser */
+  border-radius: 3px;
+  /*padding: 2px 2px 2px 2px;*/
+  margin: 2px 0px 2px 2px;
+
+}
+
 
 
 

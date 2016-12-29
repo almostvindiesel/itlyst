@@ -5,22 +5,17 @@
     </ion-nav-buttons>
   </ion-nav-bar>
   <ion-nav-title>
-    <!--<a href="#/app/filters"><i class="button">
-        <i class="ion-android-options">
-        </i> filters</i></a> </i> 
-     &nbsp;&nbsp;&nbsp;&nbsp; -->
-     
+   <button class="button button-icon icon venuebutton" ng-click="go('app/map')">
+    <i class="ion-map"></i>
+   </button>
      <img src="img/itlyst-fork-logo.png" style="width: 20px;">
      Venues  
-     <!--&nbsp;&nbsp;&nbsp;&nbsp; 
-     <i class="button"><i class="ion-map"></i>map</i></i>&nbsp;&nbsp;&nbsp;&nbsp;-->
   </ion-nav-title>
-
 
   <ion-content>
 
+  <div ui-view="popup@venues"></div>
 
-    <div ui-view="popup@venues"></div>
     
     <!-- Spinner: Show when the content is loading-->
     <ion-spinner icon="spiral" ng-hide=isDoneLoading></ion-spinner>
@@ -37,11 +32,16 @@
             <div style="float: left;">
               <button class="button button-icon icon ion-ios-minus-outline venue-button" ng-click="data.showDelete = !data.showDelete"></button>
             </div>
+            <div style="float: left;">
+              <button class="button button-icon icon ion-ios-plus-outline venue-button" ng-click="addNote($event, item.id)"></button>
+            </div>
             <div style="float: right; ">
               <button class="button icon venue-button" ng-click="go('app/venue/{{item.id}}/detail')"><i class="ion-more icon-lg" ></i></button>
             </div>
             <div class=venuetitlediv>
-             <h4 class=venuetitle>{{item.name}}</h4>
+             <h4 class=venuetitle>
+              {{ item.name | limitTo: 20 }}{{item.name.length > 20 ? '...' : ''}}
+            </h4>
             </div>
           </div>
 
@@ -50,24 +50,46 @@
           <!-- !!! must be a better way to seperate these two divs so tjhat they don't overlap... adding temp filler div for now -->
           <div style="clear:both; height:35px"></div>
           <div style="clear:both;">
+
             <ion-list show-delete="data.showDelete">
-              <ion-item ng-repeat="note in item.notes" class="item-remove-animate item-text-wrap" item="item" >
+
+              <ul ng-if="(item.images.length == 1 && item.notes.length == 1)">
+                  <span class="imageblock " ng-repeat="image in item.images" >
+                    <ion-item ng-repeat="note in item.notes" class="item-text-wrap" item="item" style="min-height:130px !important;">
+                      <button class="image-button" ng-click="go('app/image/{{image.id}}')"><img src="{{image.image_thumb}}" class="venueimage animated bounceInRight" ></button>
+                      {{note.note}}
+                      <ion-delete-button class="icon ion-minus-circled" ng-click="deleteNote(note.id)"></ion-delete-button>
+                      <ion-option-button class="button-assertive" ng-click="editNote($event,note.id,note.note)">Edit</ion-option-button>
+                    </ion-item>
+                  </span>
+              </ul>
+
+              <ul ng-if="(item.images.length == 1 && item.notes.length == 0)">
+                <div style="height:100px !important;"><br>
+                  <span class="imageblock" ng-repeat="image in item.images" >
+                      <button class="image-button" ng-click="go('app/image/{{image.id}}')"><img src="{{image.image_thumb}}" class="venueimage animated bounceInRight" ></button>
+                  </span>
+                </div>
+              </ul>
+
+              <ion-item ng-repeat="note in item.notes" class="item-remove-animate item-text-wrap" item="item" ng-if="!(item.images.length == 1 && item.notes.length == 1)">
                 {{note.note}}
                 <ion-delete-button class="icon ion-minus-circled" ng-click="deleteNote(note.id)"></ion-delete-button>
                 <ion-option-button class="button-assertive" ng-click="editNote($event,note.id,note.note)">Edit</ion-option-button>
               </ion-item>
+
             </ion-list>
 
             <!-- Venue Images -->
-            <ul ng-if="!(item.images.length == 1 && item.notes.length == 1)">
-              <li>
-                <span class="imageblock"  ng-repeat="image in item.images">
-                  <!--<a href ="#/app/image/{{image.id}}"><img src="{{image.image_url}}" class="venueimage" ></a>-->
-                  <button class="image-button" ng-click="go('app/image/{{image.id}}')"><img src="{{image.image_url}}" class="venueimage" ></button>
-
-                </span>
-              </li>
-            </ul>
+            <div style="clear:both; height:100px" ng-if="item.images.length > 1">
+              <ul>
+                <li>
+                  <span class="imageblock"  ng-repeat="image in item.images">
+                    <button class="image-button" ng-click="go('app/image/{{image.id}}')"><img src="{{image.image_thumb}}" class="venueimage animated bounceInRight" ></button>
+                  </span>
+                </li>
+              </ul>
+            </div>
           </div>
       </body>   
     </div>
@@ -79,14 +101,38 @@
   <ion-popover-view>
     <ion-content>
       <label class="item item-input">
-        <textarea id="additionalVenueNotes" placeholder="Additional Notes">{{noteToEdit}}</textarea>
+        <textarea  #input id="editVenueNote" autofocus focus-me placeholder="Additional Notes">{{noteToEdit}}</textarea>
       </label>
+      <span>
+      <button class="button button-calm round"  ng-click="saveEditedNote()">
+        Save
+      </button>
+      <button class="button button-stable round" ng-click="cancelEditOnNote()"> 
+        <i class="icon ion-close"></i> Cancel
+      </button><br>
+    </span>
     </ion-content>
   </ion-popover-view>
 </script>
 
-<!-- style="display: none;" -->
 
+<script id="newNotePopup" type="text/ng-template">
+  <ion-popover-view>
+    <ion-content>
+      <label class="item item-input">
+        <textarea #input id="newVenueNote" autofocus focus-me placeholder="Additional notes"></textarea>
+      </label>
+      <span>
+      <button class="button button-calm round"  ng-click="saveNewNote()">
+        Save
+      </button>
+      <button class="button button-stable round" ng-click="cancelNewNote()"> 
+        <i class="icon ion-close"></i> Cancel
+      </button><br>
+    </span>
+    </ion-content>
+  </ion-popover-view>
+</script>
 
 
 

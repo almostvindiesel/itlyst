@@ -1,8 +1,12 @@
+
+<!-- 
+     Layover is triggered when there a review url detected in copied text
+  -->
 <script id="clipboardPopup" type="text/ng-template">
   <ion-popover-view>
     <ion-content>
     <span>
-      <button class="button button-calm round" style="min-width: 70%" ng-click="addClipboardData()">
+      <button class="button button-positive round" style="min-width: 70%" ng-click="addClipboardData()">
         Add: 
           <ion-spinner class="extractvenue" icon="spiral" ng-hide=venueFromReviewSourceName></ion-spinner>
           <b>{{venueFromReviewSourceName}}</b>
@@ -17,10 +21,81 @@
 
       <label class="item item-input">
         <textarea id="additionalVenueNotes" placeholder="Additional Notes"></textarea>
+        <img src="{{image_url}}" ng-hide={{image_url}} style="width: 100px;"> 
       </label>
     </ion-content>
   </ion-popover-view>
 </script>
 
+<button id='reviewVenuePopupButton' ng-click="openPopover($event)" style="display: none;">Open Popover</button>
 
-<button id='popupbutton' ng-click="openPopover($event)" style="display: none;">Open Popover</button>
+<!-- 
+     Layover is triggered when there is no url detected in copied text, but
+     potential venues are detected 
+  -->
+<script id="clipboardDetectVenuePopup" type="text/ng-template">
+  <ion-popover-view>
+    <ion-content>
+      <div>
+        <div class="detectedVenues">
+          <ion-spinner icon="spiral" ng-hide=hasFoundVenues></ion-spinner>
+          <span ng-repeat="venue in analyzedVenues track by $index" class="inputbuttons">
+            <div class="inputbuttons ">
+              <input class="inputbuttons" type="checkbox" id="{{venue.name}}"
+                     ng-checked="selection.indexOf(venue) > -1"
+                     ng-click="toggleSelection(venue)">
+              <label class="inputbuttons" for="{{venue.name}}">
+                {{ venue.name | limitTo: 18 }}{{venue.name.length > 18 ? '...' : ''}}
+                <i style="font-size: 80%;">{{ venue.foursquare_reviews }} tips</i>
+              </label>
+            </div>
+          </span>
+        </div>
+        <div> 
+           
+        </div>
+        <div style="height:20px">
+          <div style="height:60px">
+            <!--
+            <button class="button button-light button-small adminbutton" ng-click="triggerCitySearch(callback)">
+              <i class="icon ion-ios-search"></i><i style="font-size: 80%;">Not &nbsp;{{selectedCity}}? </i>
+            </button>-->
+ <input id="citySearch" ion-autocomplete type="text" readonly="readonly" class="ion-autocomplete citySelection" autocomplete="on"
+                 ng-model="model"
+                 item-value-key="id"
+                 item-view-value-key="name"
+                 items-method="getCities(query)"
+                 items-method-value-key="items"
+                 placeholder="Not {{selectedCity}}?"
+                 items-clicked-method="citiesClicked(callback)"
+                 items-removed-method="itemsRemoved(callback)"
+                 cancel-label="Cancel"
+                 max-selected-items="1"/>
+            <button class="button button-light button-small adminbutton" style="height:20px !important;"ng-click="clearClipboardNotes()">
+              <i class="fa-eraser"></i> <i style="font-size: 80%;">Clear Notes</i>
+            </button>
+          </div>
+        </div>
+        <div style="clear:both;"></div>
+        <div>
+          <label class="item item-input">
+            <textarea id="detectedVenueNotes"></textarea>
+          </label>
+        </div>
+      </div>
+        <span>
+          <button class="button button-positive round button-small" style="min-width: 60%" ng-click="saveDetectedVenues()">
+            <i class="icon ion-close"></i> Save {{selectedVenues.length}} selected venue(s)
+          </button>
+          &nbsp; &nbsp;
+          <button class="button button-stable button-small round" ng-click="closePopover()"> 
+            <i class="icon ion-close"></i> Cancel
+          </button>
+        </span>
+      </div>    
+    </ion-content>
+  </ion-popover-view>
+</script>
+
+<button id='potentialVenuePopupButton' ng-click="openPopover($event)" style="display: none;">Open Popover</button>
+

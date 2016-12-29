@@ -1,0 +1,50 @@
+<ion-view >
+  <ion-nav-bar class="bar-dark black">
+    <ion-nav-buttons side="left">
+ 
+    </ion-nav-buttons>
+  </ion-nav-bar>
+
+  <ion-content class="splash">
+
+  <div ui-view="popup@start"></div>
+
+  <body >
+    <br><br>
+    <div style="text-align:center;">
+      <br><br><br><br><br><br>
+      <span>
+        <img class="animated bounceInUp" src="img/itlyst-fork-logo.png" style="width: 60px;">
+        <i class="introtext large">itlyst</h3>
+        <h4 class="introtext"> Remember the places you want to visit</h3>
+      </span>
+
+    <br><br>
+    <div class="row">
+      <div class="col col-60 col-offset-20">
+        <form>
+          <label class="item item-input">
+            <span class="input-label searchglass"><i class="ion-ios-search"></i></span>
+            <input ion-autocomplete type="text" readonly="readonly" class="ion-autocomplete" autocomplete="off"
+                 ng-model="model"
+                 item-value-key="id"
+                 item-view-value-key="name"
+                 items-method="getCities(query)"
+                 items-method-value-key="items"
+                 placeholder="eg, San Francisco"
+                 items-clicked-method="citiesClicked(callback)"
+                 items-removed-method="itemsRemoved(callback)"
+                 cancel-label="Cancel"
+                 max-selected-items="1"/>
+            </label>
+        </form>
+      </div>
+      <div class="col col-30"></div>
+    </div>
+        
+  </body>
+
+  </ion-content>
+</ion-view>
+
+

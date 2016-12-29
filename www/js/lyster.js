@@ -1,12 +1,5 @@
 // ---------------------------------------------------------------------------------------------------------
 // http://phrogz.net/js/classes/OOPinJS2.html
-/*
-function auto_grow(element) {
-    element.style.height = "5px";
-    element.style.height = (element.scrollHeight)+"px";
-}
-*/
-
 
 TextMetaData.prototype = new TextMetaData();  
 TextMetaData.prototype.constructor=TextMetaData; 
@@ -15,7 +8,7 @@ function TextMetaData (original_text) {
 	this.original_url = "";
 	this.original_url_without_querystring = "";
 	this.display_url = "";
-	this.final_url = "";
+	this.final_url = "";	
 	this.source = "";
 
 	//Find the first url in the string)
@@ -57,10 +50,7 @@ function TextMetaData (original_text) {
 		}
 		console.log("Detected Source: " + this.source);
 	}
-
 }
-
-
 
 function Page () {
 	this.url = "";
@@ -68,12 +58,6 @@ function Page () {
 	this.note = "";
 	this.image_url = "";
 }
-/*
-Page.prototype = {
-    constructor: Page
-}
-*/
-
 
 function Location () {
 	this.latitude = null;
@@ -82,26 +66,20 @@ function Location () {
 	this.state = "";
 	this.country = "";
 }
-/*
-Location.prototype = {
-    constructor: Location
-}
-*/
-
 
 function Venue () {
 	this.source_id = null;
 	this.name = "";
 	this.source = "";
 	this.url = "";
-	this.rating = "";
-	this.reviews = "";
+	this.rating = null;
+	this.reviews = null;
 	this.categories = [];
 	this.location = new Location();
 	this.post_params = {};
-
 	this.jqdoc = null;
 }
+
 Venue.prototype.setPostParameters = function ()  {
 	this.post_params = { 
 		"source_id": this.source_id,
@@ -125,6 +103,7 @@ Venue.prototype.setPostParameters = function ()  {
 	console.log("Post params:")
 	console.log(this.post_params);
 }
+
 Venue.prototype.setJQueryDocument = function (jquery_document) {
 	this.jqdoc = jquery_document;
 }
@@ -135,6 +114,14 @@ FoursquareVenue.prototype.constructor=FoursquareVenue;
 function FoursquareVenue(page){
 	this.source = 'foursquare';
 	this.page = page;
+
+	this.findImageOnPage = function () {
+		//prototype		
+	}
+
+	this.simplifyPageUrl = function () {
+		//prototype
+	}
 
 	this.setName = function () {
 		//this.name = document.querySelectorAll("[property='og:title']")[0].content;
@@ -164,7 +151,16 @@ function FoursquareVenue(page){
 		//this.location.latitude = elements.getAttribute('data-lat');
 		//this.location.city = 
 		//console.log(this.jqdoc);
-		this.location.city = $(this.jqdoc).find("[itemprop='addressLocality']").text(); 
+		try {
+			this.location.city = $(this.jqdoc).find("[itemprop='addressLocality']").text(); 
+		} catch(err) {
+			console.log("Could not find embedded json on page. Retrying.... Err: " + err.message);
+			try {
+				this.location.city = $(this.jqdoc).find("span.venueCity").text(); 
+			} catch(err) {
+				console.log("Could not find embedded json on page 2nd time. : " + err.message);
+			}
+		}		
 	}
 
 	//<span itemprop="ratingValue">9.4</span>
@@ -208,8 +204,15 @@ TripadvisorVenue.prototype.constructor=TripadvisorVenue;
 function TripadvisorVenue(page){
 	this.source = 'tripadvisor';
 	this.page = page;
-
 	this.pageJson = null;
+
+	this.simplifyPageUrl = function () {
+		//prototype
+	}
+
+	this.findImageOnPage = function () {
+		//prototype		
+	}
 
 	//Overrides standard setJQueryDocument for tripadvisor
 	this.setJQueryDocument = function (jquery_document) {
@@ -321,7 +324,7 @@ function TripadvisorVenue(page){
 	//<span class="geoName" data-title="Florence">Florence</span>
 	this.setCity = function () {
 		
-		/*
+		/* !!! I think this works on desktop.... re-enable?
 		try {
 			this.location.city = $(this.jqdoc).find("span.geoName").text(); 		
 			console.log("--- city: " + this.location.city);
@@ -402,58 +405,156 @@ function TripadvisorVenue(page){
 	
 }
 
+
 YelpVenue.prototype = new Venue();  
 YelpVenue.prototype.constructor=YelpVenue; 
 function YelpVenue(page){
 	this.source = 'yelp';
 	this.page = page;
 
- 	// <h1 class="biz-page-title embossed-text-white shortenough" itemprop="name">Proof Bakery</h1> 
-	this.setName = function () {
-		this.name = $(this.jqdoc).find(".biz-page-title").first().text().trim();
+	this.simplifyPageUrl = function () {
+		if (this.source_id.length > 1) {
+			this.page.url = 'https://www.yelp.com/biz/' + this.source_id;
+		}
+	}
 
-		// iOS: <meta itemprop="name" content="Ohana Poke" />
-		if (!(this.name.length > 0)) {
-			console.log("First attempt to find name failed. Retrying...");
-			//this.name = $(this.jqdoc).filter("[itemprop='name']")[1].attr('content');
-			this.name = $(this.jqdoc).find("[itemprop='name']").last().attr('content');
+	this.findImageOnPage = function () {
+		//console.log("page url: " + this.page.url);
+		if (this.page.url.indexOf('https://www.yelp.com/biz_photos/') >= 0) {
+			console.log("Page likely contains an image... Searching...");
 
-			console.log("Second attempt to find name: " + this.name);
-			console.log("Other name stuff: ");
-			//console.log($(this.jqdoc).filter("[itemprop='name']")[0]);
+			try {
+				//<meta property="og:image" content="https://s3-media4.fl.yelpcdn.com/bphoto/fUYM8vA84pHxQdoedWYgug/o.jpg">
+				this.page.image_url = $(this.jqdoc).filter("[property='og:image']").first().attr('content');
+			} catch(err) {
+				console.log("ERROR. Could not get image_url. Error: " + err.message);
+			}
+
+
+			if (!(this.page.image_url > 0)) {
+				console.log("Retrying second attempt to get image_url");
+				try {
+					//<meta property="og:image" content="https://s3-media4.fl.yelpcdn.com/bphoto/fUYM8vA84pHxQdoedWYgug/o.jpg">
+					this.page.image_url = $(this.jqdoc).find('[property="og:image"]').first().attr('content');
+				} catch(err) {
+					console.log("ERROR. Could not get image_url. Error: " + err.message);
+				}
+			}
+
+			if (!(this.page.image_url > 0)) {
+				console.log("Retrying third attempt to get image_url");
+				try {
+					//<meta property="og:image" content="https://s3-media4.fl.yelpcdn.com/bphoto/fUYM8vA84pHxQdoedWYgug/o.jpg">
+					this.page.image_url = $(this.jqdoc).find('[class="photo-box-img"]').first().attr('src');
+				} catch(err) {
+					console.log("ERROR. Could not get image_url. Error: " + err.message);
+				}
+			}
+
 		}
 
-		console.log("Yelp Name: " + this.name);
+		console.log("image_url: " + this.page.image_url);
+		//console.log("=====================================");
+		//console.log(this.jqdoc);
+		//console.log("=====================================");
+
+	}
+
+	this.setName = function () {
+
+		try {
+			// <h1 class="biz-page-title embossed-text-white shortenough" itemprop="name">Proof Bakery</h1> 
+			this.name = $(this.jqdoc).find(".biz-page-title").first().text().trim();
+		} catch(err) {
+			console.log("Could not get name. " + err.message);
+		}
+		
+		if (!(this.name.length > 0)) {
+			console.log("Retrying second attempt to get name");
+			try {
+				// iOS: <meta itemprop="name" content="Ohana Poke" />
+				this.name = $(this.jqdoc).find("[itemprop='name']").last().attr('content');
+			} catch(err) {
+				console.log("Could not get name. " + err.message);
+			}
+		} 
+
+
+		if (!(this.name) || this.name == 'Yelp')  {
+			console.log("Retrying third attempt to get name");
+			try {
+				this.name = $(this.jqdoc).find("[property='og:title']").last().attr('content');
+				this.name = this.name.replace(" photos","");
+			} catch(err) {
+				console.log("Could not get name. " + err.message);
+			}
+		} 
+
+		if (!(this.name) || this.name == 'Yelp')  {
+			console.log("Retrying fourth attempt to get name");
+			try {
+				//<meta property="og:title" content="Trick Dog photos">
+				this.name = $(this.jqdoc).filter("[property='og:title']").first().attr('content');
+				this.name = this.name.replace(" photos","");
+			} catch(err) {
+				console.log("Could not get name. " + err.message);
+			}
+		} 
+
+		console.log("--- name: " + this.name);
+
+		//console.log("=====================================");
+		//console.log(this.jqdoc);
+		//console.log("=====================================");
 
 	}
 
 
-
-	// Regular page:
-	// <meta name="yelp-biz-id" content="jQXj5x1V-mtVMFYoMQYOkg">
-	// image page: 
-	// <meta property="twitter:app:url:iphone" content="yelp:///biz/photo?biz_id=BmDHbBWKESB6d3ZFRT5y_Q&amp;....">
+	
 	this.setSourceId = function () {
 		try {
-			//this.source_id = document.querySelectorAll("[name='yelp-biz-id']")[0].content;
+			// <meta name="yelp-biz-id" content="jQXj5x1V-mtVMFYoMQYOkg">
 			this.source_id = $(this.jqdoc).filter("[name='yelp-biz-id']").first().attr('content');
-
 		} catch(err) {
-			console.log("Could not get source_id. Retrying via other method: " + err.message);
+			console.log("ERROR. Could not get source_id. Error: " + err.message);
+		}
+
+		if (!(this.source_id)) {
+			console.log("Retrying second attempt to get source_id");
 			try {
-				//var textWhichContainsSourceId= document.querySelectorAll("[property='twitter:app:url:iphone']")[0].content;
-				var textWhichContainsSourceId= $(this.jqdoc).filter("[property='twitter:app:url:iphone']").first().attr('content');
-				textWhichContainsSourceId =  textWhichContainsSourceId.match("id(.*)campaign")[1];
-				textWhichContainsSourceId = textWhichContainsSourceId.replace("&","");
-				textWhichContainsSourceId = textWhichContainsSourceId.replace("=","");
-				this.source_id = textWhichContainsSourceId.replace("utm_","");
+				//<meta property="twitter:app:url:iphone" content="yelp:///biz/photo?biz_id=1CkTVogrU7pmy4pkEFIubw&amp;photo_id=fUYM8vA84pHxQdoedWYgug&amp;utm_campaign=default&amp;utm_source=twitter-card">
+				var textWhichContainsSourceId = $(this.jqdoc).filter("[property='twitter:app:url:iphone']").first().attr('content');
+				this.source_id =gup('biz_id',textWhichContainsSourceId)
 			} catch(err) {
-				console.log("ERROR. Could not get source_id second time. Retrying via other method: " + err.message);			
+				console.log("ERROR. Could not get source_id. Error: " + err.message);
 			}
 		}
-		console.log("Yelp Source ID: " + this.source_id);
 
+		if (!(this.source_id)) {
+			console.log("Retrying third attempt to get source_id");
+			try {
+				var textWhichContainsSourceId = document.querySelectorAll("[property='twitter:app:url:iphone']")[0].content;
+
+ 				if  (textWhichContainsSourceId.indexOf("yelp:///biz/photo") >= 0) {
+					//<meta property="twitter:app:url:iphone" content="yelp:///biz/photo?biz_id=trn_8V-tdgU9iYUziOclzw&amp;photo_id=16mRzcIt4Ewjl3aQnGSUXQ&amp;utm_campaign=default&amp;utm_source=twitter-card">
+ 					this.source_id = gup('biz_id',textWhichContainsSourceId);
+				} else if  (textWhichContainsSourceId.indexOf("yelp:///biz/") >= 0) {
+					this.source_id =gup('biz_id',textWhichContainsSourceId)
+					textWhichContainsSourceId =  textWhichContainsSourceId.match("biz(.*)\\?")[1];
+					textWhichContainsSourceId = textWhichContainsSourceId.replace("&","");
+					textWhichContainsSourceId = textWhichContainsSourceId.replace("photos","");
+					textWhichContainsSourceId = textWhichContainsSourceId.replace("/","");
+					textWhichContainsSourceId = textWhichContainsSourceId.replace("?","");
+					this.source_id = textWhichContainsSourceId.replace("utm_","");
+				} 
+				
+			} catch(err) {
+				console.log("ERROR. Could not get source_id. Giving up. Error: " + err.message);			
+			}
+		}
+		console.log("--- source_id:" + this.source_id);
 	}
+
 
 	//<div class="lightbox-map hidden"...
 	this.setLatitude = function () {
@@ -467,14 +568,10 @@ function YelpVenue(page){
 			textWhichContainsLatitude = textWhichContainsLatitude.replace(",","");
 
 
-
 			this.location.latitude = textWhichContainsLatitude.trim();
 		} catch(err) {
 			console.log("ERROR. Could not get latitude " + err.message);	
 			try {
-				//latitude": 37.761412279396, "longitude"
-
-
 				var textWhichContainsLatitude = this.jqdoc.match("latitude(.*)longitude")[1];
 				textWhichContainsLatitude = textWhichContainsLatitude.replace(",","");
 				textWhichContainsLatitude = textWhichContainsLatitude.replace(":","");
@@ -482,9 +579,6 @@ function YelpVenue(page){
 				textWhichContainsLatitude = textWhichContainsLatitude.replace(/"/g,"");
 				var n = textWhichContainsLatitude.indexOf("longitude");
 				textWhichContainsLatitude = textWhichContainsLatitude.substring(0,n-1);
-				//textWhichContainsLatitude = textWhichContainsLatitude.replace(/longitude*//,"");
-				//console.log("@@@@@@@@@@@@@@@@@@ latitude @@@@@@@@@@@@@@@@@@");
-				//console.log(textWhichContainsLatitude);
 				this.location.latitude = textWhichContainsLatitude;
 			
 			} catch(err) {
@@ -493,13 +587,10 @@ function YelpVenue(page){
 		}	
 	}
 
-			
-
-
+		
 	this.setLongitude = function () {
 		try {
 			var textWhichContainsLongitude = $(this.jqdoc).find(".lightbox-map").first().attr('data-map-state');
-			//console.log(textWhichContainsLongitude);
 			textWhichContainsLongitude = textWhichContainsLongitude.match("url(.*)starred_business")[1];
 			textWhichContainsLongitude = textWhichContainsLongitude.match("longitude(.*)key")[1];
 			textWhichContainsLongitude = textWhichContainsLongitude.replace(/"/g,"");
@@ -517,8 +608,6 @@ function YelpVenue(page){
 				textWhichContainsLongitude = textWhichContainsLongitude.replace(/"/g,"");
 				var n = textWhichContainsLongitude.indexOf("}");
 				textWhichContainsLongitude = textWhichContainsLongitude.substring(0,n);
-				//console.log("@@@@@@@@@@@@@@@@@@ Longitude @@@@@@@@@@@@@@@@@@");
-				//console.log(textWhichContainsLongitude);
 				this.location.longitude = textWhichContainsLongitude;
 			} catch(err) {
 				console.log("ERROR. Could not get longitude second time " + err.message);		
@@ -526,26 +615,26 @@ function YelpVenue(page){
 		}	
 	}
 
-	//<span itemprop="addressLocality">Los Angeles</span>
+	
 	this.setCity = function () {
 		try {
-			//this.location.city = document.querySelectorAll("[itemprop='addressLocality']")[0].textContent;
-			//this.location.city = $(this.jqdoc).filter("[itemprop='addressLocality']").first().text();
-			
-			// --> this.location.city = $(this.jqdoc).find('.map-box-address [itemprop="addressLocality"]').first().text();
+			//<span itemprop="addressLocality">Los Angeles</span>
 			this.location.city = $(this.jqdoc).find('[itemprop="address"] [itemprop="addressLocality"]').first().text();
-
-			//console.log("----- city:")
-			//console.log( $(this.jqdoc).find('.map-box-address [itemprop="addressLocality"]').first().text() );
-			//console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-			//console.log(this.jqdoc);
-			//console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-
 		} catch(err) {
-			console.log("ERROR. Could not get city " + err.message);		
+			console.log("ERROR. Could not get city in first attempt " + err.message);		
 		}
 
-	
+		
+		if (!(this.location.city.length) || this.location.city.length < 1) {
+			try {
+				//<input maxlength="80" name="find_loc" id="dropperText_Mast" autocomplete="off" value="Los Angeles, CA" ... >
+				console.log("ERROR. Attempting to find city for second time");	
+				this.location.city = $(this.jqdoc).find('[name="find_loc"]').first().attr('value');	
+			} catch(err) {
+				console.log("ERROR. Could not get city in second attempt. Failing" + err.message);		
+			}
+		}
+		console.log("city: " + this.location.city);
  	}
 
 	//<meta itemprop="ratingValue" content="4.0">
@@ -556,8 +645,6 @@ function YelpVenue(page){
 		} catch(err) {
 			console.log("ERROR. Could not set rating " + err.message);		
 		}
-
-
 	} 
 
 	//<span itemprop="reviewCount">591</span> reviews
@@ -600,5 +687,12 @@ function isNumeric(n) {
 	  return !isNaN(parseFloat(n)) && isFinite(n);
 	}
 
-
+function gup( name, url ) {
+    if (!url) url = location.href;
+    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+    var regexS = "[\\?&]"+name+"=([^&#]*)";
+    var regex = new RegExp( regexS );
+    var results = regex.exec( url );
+    return results == null ? null : results[1];
+}
 
