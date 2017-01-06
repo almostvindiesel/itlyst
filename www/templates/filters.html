@@ -1,8 +1,8 @@
 <ion-view >
   <ion-nav-bar class="bar-positive">
-    <ion-nav-buttons side="left">
+    <!--<ion-nav-buttons side="left">
      <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
-    </ion-nav-buttons>
+    </ion-nav-buttons>-->
   </ion-nav-bar>
   <ion-nav-title>
     <!--<a href="#/app/filters"><i class="button">
@@ -11,7 +11,7 @@
      &nbsp;&nbsp;&nbsp;&nbsp; -->
      <img src="img/itlyst-fork-logo.png" style="width: 20px;">
      Filters  
-     <!--&nbsp;&nbsp;&nbsp;&nbsp; 
+     <!--&nbsp;&nbsp;&nbsp;&nbsp;  ø
      <i class="button"><i class="ion-map"></i>map</i></i>&nbsp;&nbsp;&nbsp;&nbsp;-->
   </ion-nav-title>
   <ion-content>
@@ -26,7 +26,7 @@
                item-view-value-key="name"
                items-method="getCities(query)"
                items-method-value-key="items"
-               placeholder="Los Angeles"
+               placeholder="{{city_selected}}"
                items-clicked-method="citiesClicked(callback)"
                items-removed-method="itemsRemoved(callback)"
                cancel-label="Cancel"
@@ -70,7 +70,7 @@
                   ng-model="venue_type_selected" 
                   ng-click=""
                   >
-                <i style="font-size: 80%;">
+                <i style="font-size: 75%;">
                   <i ng-if="item == 'food'" class='fa-cutlery'></i> 
                   <i ng-if="item == 'coffee'" class='fa-coffee'></i> 
                   <i ng-if="item == 'place'" class='fa-map-marker'></i> 

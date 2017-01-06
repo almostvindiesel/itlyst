@@ -1,3 +1,57 @@
+<ion-view >
+  <ion-nav-bar class="bar-positive">
+    <!--<ion-nav-buttons side="left">
+     <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+    </ion-nav-buttons>-->
+  </ion-nav-bar>
+  <ion-nav-title>
+    <!--<a href="#/app/filters"><i class="button">
+        <i class="ion-android-options">
+        </i> filters</i></a> </i> 
+     &nbsp;&nbsp;&nbsp;&nbsp; -->
+     <img src="img/itlyst-fork-logo.png" style="width: 20px;">
+     <!--&nbsp;&nbsp;&nbsp;&nbsp; 
+     <i class="button"><i class="ion-map"></i>map</i></i>&nbsp;&nbsp;&nbsp;&nbsp;-->
+  </ion-nav-title>
+
+  <ion-content>
+
+
+    <!-- Show if a venue has been added -->
+    <ion-header-bar class="bar-subheader bar-dark" ng-show="selectedVenues.length > 0">
+      <h3 class="mwhite"> 
+        Adding Venue Content
+      </h3>
+    </ion-header-bar>
+    <br><br>
+    
+    <ion-list>
+      <ion-item ng-repeat="addedVenueName in addedVenueNames">
+        <i class="ion-checkmark-circled button-positive"></i> {{addedVenueName}}</h3>
+      </ion-item>
+    </ion-list>
+    <div class="lmargin10 tmargin10">
+    <ion-spinner icon="spiral" 
+                 ng-hide="(selectedVenues.length == addedVenueNames.length) || (selectedVenues.length == 0) || (selectedVenues.length === undefined)"></ion-spinner>
+    </div>
+    <div class="lmargin10 tmargin10"
+         ng-show="(selectedVenues.length == addedVenueNames.length) && (selectedVenues.length > 0)">
+      <button class="button button-positive" ng-click="go('app/venues')">
+        Back to Venues
+      </button>
+    </div>
+    
+
+    <!--
+    <br>
+    <br>selectedVenues.length: {{selectedVenues.length}}
+    <br>addedVenueNames.length: {{addedVenueNames.length}}
+    -->
+   
+
+
+
+
 
 <!-- 
      Layover is triggered when there a review url detected in copied text
@@ -28,6 +82,8 @@
 </script>
 
 <button id='reviewVenuePopupButton' ng-click="openPopover($event)" style="display: none;">Open Popover</button>
+
+
 
 <!-- 
      Layover is triggered when there is no url detected in copied text, but

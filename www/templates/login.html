@@ -6,20 +6,32 @@
     </div>
   </ion-header-bar>
   <ion-content>
+
+  <!--<iframe src="http://mars:5000/user/sign-in" width="100%" height="100%"></iframe>-->
+  
     <form ng-submit="doLogin()">
       <div class="list">
         <label class="item item-input">
-          <span class="input-label">Username</span>
-          <input type="text" ng-model="loginData.username">
+          <span class="input-label">Email</span>
+          <input type="text" ng-model="loginData.email">
         </label>
         <label class="item item-input">
           <span class="input-label">Password</span>
           <input type="password" ng-model="loginData.password">
         </label>
+
         <label class="item">
-          <button class="button button-block button-positive" type="submit">Log in</button>
+          <div ng-show="login_error_message !== null"  class="alerttext" >{{login_error_message}}</div>
+          <button class="button button-block button-positive" type="submit">{{login_button_message}}</button>
         </label>
+
       </div>
     </form>
+    <div style="text-align:center"><br>
+      <button class="button button-icon icon" ng-click=signup()>Don't have an account? Signup</button>
+    </div>
+    
   </ion-content>
 </ion-modal-view>
+
+

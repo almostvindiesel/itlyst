@@ -5,7 +5,9 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
 
+
 console.log("Opened app.js");
+
 
 
 angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
@@ -34,6 +36,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
 .value('api_url', 'http://www.itlyst.com')
 //.value('api_url', 'http://mars.local:5000')
+//.value('api_url', 'http://mars.local:5000')
 //.value('api_url', 'http://localhost:5000')
 
 
@@ -58,68 +61,113 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 })
 
 
+/*
+    .state('tab', {
+    url: '/tab',
+    abstract: true,
+    templateUrl: 'templates/tabs.html'
+  })
+*/
+
 .config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
 
   .state('app', {
     url: '/app',
     abstract: true,
-    templateUrl: 'templates/menu.html',
+    templateUrl: 'templates/tabs.html',
     controller: 'AppCtrl'
   })
 
   .state('app.map', {
+    cache: false, 
     url: '/map',
     views: {
-      'menuContent': {
+      'venues-tab': {
         templateUrl: 'templates/map.html',
         controller: 'MapCtrl'
+      }/*,
+      'popup@map': { 
+          templateUrl: 'templates/popup.html',
+          controller: 'PopupCtrl',
+          cache: false
+      }*/
+    }
+  })
+
+  .state('app.blank', {
+    cache: false, 
+    url: '/blank',
+    views: {
+      'clipboard-tab': {
+        templateUrl: 'templates/blank.html',
+        controller: 'PopupCtrl',
+        cache: false
       }
     }
   })
 
-
   .state('app.filters', {
     url: '/filters',
     views: {
-      'menuContent': {
+      'filters-tab': {
         templateUrl: 'templates/filters.html',
         controller: 'FiltersCtrl'
       }
     }
   })
-
+  /*
   .state('app.profile', {
     url: '/profile',
     views: {
-      'menuContent': {
+      'profile-tab': {
         templateUrl: 'templates/profile.html',
         controller: 'UserProfileCtrl'
       }
     }
   })
+  */
 
   .state('app.venues', {
     url: '/venues',
     views: {
-      'menuContent': {
+      'venues-tab': {
         templateUrl: 'templates/venues.html',
         controller: 'VenuesCtrl'
       },
-      'popup@venues': { 
+     /* 'popup@venues': { 
           templateUrl: 'templates/popup.html',
           controller: 'PopupCtrl',
-          cache: false
-      }
+          //cache: false
+      }*/
     }
   })
 
   .state('app.venue', {
-    url: '/venue/:venueId/detail',
+    url: '/venue/:venueId',
     views: {
-      'menuContent': {
+      'venues-tab': {
         templateUrl: 'templates/venue_detail.html',
+        abstract: true,
         controller: 'VenueDetailCtrl'
+      },/*
+      'popup@venue': { 
+          templateUrl: 'templates/popup.html',
+          controller: 'PopupCtrl',
+          cache: false, 
+         // cache: false
+      }*/
+    }
+  })
+
+  .state('app.image', {
+    //cache: false,
+    url: '/image/:imageId',
+    views: {
+      'venues-tab': {
+        templateUrl: 'templates/images.html',
+        abstract: true,
+        controller: 'ImageCtrl'
       }
     }
   })
@@ -127,65 +175,57 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
   .state('app.redirector', {
     url: '/redirector',
     views: {
-      'menuContent': {
+      'venues-tab': {
         templateUrl: 'templates/redirector.html',
         controller: 'RedirectorCtrl'
       }
     }
   })
 
-  .state('app.start', {
+  .state('start', {
     url: '/start',
     views: {
-      'menuContent': {
+      '': {
         templateUrl: 'templates/start.html',
         controller: 'StartCtrl'
       },
-      'popup@start': { 
+    /*  'popup@start': { 
           templateUrl: 'templates/popup.html',
           controller: 'PopupCtrl',
           cache: false
-      }
+      } */
     }
   })
 
-  .state('app.image', {
-    cache: false,
-    url: '/image/:imageId',
-    views: {
-      'menuContent': {
-        templateUrl: 'templates/images.html',
-        controller: 'ImageCtrl'
-      }
-    }
-  })
+
 
   .state('app.admin', {
     url: '/admin',
     views: {
-      'menuContent': {
+      'admin-tab': {
         templateUrl: 'templates/admin.html',
         controller: 'AdminCtrl'
-      },
+      },/*
       'popup@admin': { 
           templateUrl: 'templates/popup.html',
           controller: 'PopupCtrl',
           cache: false
-      }
+      }*/
     }
   })
-
+  /*
   .state('app.pages', {
     url: '/pages',
     views: {
-      'menuContent': {
+      'pages-tab': {
         templateUrl: 'templates/pages.html'
       }
     }
   })
+  */
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/start');
+  $urlRouterProvider.otherwise('/start');
 });
 
 // --------------------------------------------------------------------
@@ -236,6 +276,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     };
   }
 
+ 
+
   function ApiService($http, config, api_url) {
 
     var server = {
@@ -262,6 +304,104 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
 
 
+  function LoginService($base64, $http) {
+
+    var status = {
+      isLoggedIn: false
+    };
+
+    function init() {
+      getEmail();
+      getPassword();
+      //login(api_url);
+    }
+
+
+  var extractVenueFromUrl = function (venue_url) {
+      console.log("Querying: " + venue_url);
+      return $http({
+              method: 'GET',
+              url: venue_url
+          })
+          .then(function(response) {
+              //console.log(response.data);
+              return response.data;
+          }, function(rejection) {
+              return response;
+      });
+    }
+
+
+  //function login(api_url) {
+  var login = function (api_url) {
+      //Note that the username is the email address in this case
+      var username = getEmail();
+      var password = getPassword();
+      var headers = { headers: {'Authorization': 'Basic '+ $base64.encode( username + ':' + password) } }
+      var url = api_url + '/api/v1/login';
+
+      //console.log("--- Params leveraged to make login call");
+      //console.log("url: " + url);
+      //console.log("username: " + username);
+      //console.log("password: " + password);
+
+      
+     return $http.get(url, headers)
+      .success(function(response){
+        status.isLoggedIn = response.login_status;
+        console.log("User logged in? " + response.login_status);
+        return response;
+      })
+      .error(function(rejection, status) {
+        status.isLoggedIn = rejection.login_status;
+        console.error('Rejection login response from server', rejection, status);
+        return rejection;
+      });
+    }
+
+    function getLoginHeader() {
+      return {'Authorization': 'Basic '+ $base64.encode( getEmail() + ':' + getPassword()) }
+    }
+
+    function getEmail() {
+      try {
+        return window.localStorage.getItem("email");
+      } catch(err) {
+        console.log ("No email stored locally");
+        return '';
+      }
+    }
+
+    function getPassword() {
+      try {
+        return window.localStorage.getItem("password");
+      } catch(err) {
+        console.log ("No password stored locally");
+        return '';
+      }
+    }
+
+    function setEmail(email) {
+      window.localStorage.setItem ("email",email);
+    }
+
+    function setPassword(password) {
+      window.localStorage.setItem ("password",password);
+    }
+
+    return {
+      init: init,
+      login: login,
+      getEmail: getEmail,
+      getPassword: getPassword,
+      setEmail: setEmail,
+      setPassword: setPassword,
+      getLoginHeader: getLoginHeader,
+      status: status
+    };
+  }
+
+
   function VenueService($http, config) {
 
     var zoom_options = [1, 3, 5, 10, 25, 50];
@@ -274,7 +414,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       zoom: 50,
       venue_type_options: venue_type_options,
       venue_type: 'all',
-      city: 'Los Angeles',
+      city: 'San Francisco',
       refreshVenues: false
     };
 
@@ -289,7 +429,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
         }
       }
       return jQuery.param(params_obj);
-
     }
 
     function setForceRefreshVenues(bol){
@@ -312,16 +451,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       data['venues'] = val;
     }
 
-    function extractVenues(api_url) {
+    function extractVenues(api_url, loginHeader) {
+        var headers = {'headers': loginHeader}
         return {
           async: function() {
             var venue_url = api_url + '/api/v1/venues?' + generateUrlParameters();
             console.log("Querying: " + venue_url);
-            return $http.get(venue_url); 
+            return $http.get(venue_url, headers); 
           }
         };
     }
-
 
     var extractVenueFromUrl = function (venue_url) {
       console.log("Querying: " + venue_url);
@@ -336,7 +475,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
               return response;
       });
     }
-
 
     function createVenue(response, venue_url, source) {
       console.log("Creating venue: " + venue_url);
@@ -362,28 +500,29 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       if (v) {
         console.log("Found venue on " + source + ": " + v.name);
         v.setJQueryDocument(response);
-        v.setName();
-        setVenueProperties(v, response);
+        //v.setName();
+        setVenueProperties(v, source);
         v.setPostParameters();
         return v;
       }
     }
 
-    function setVenueProperties (v, response) {
+    function setVenueProperties (v, source) {
+      //console.log("1------------------------------");
       //v.setJQueryDocument(response);
-      //v.setName();
+      //v.findImageOnPage();    // This function needs to be called before simplifyPageUrl
+      v.setName();
       v.setSourceId();
       v.setLatitude();
       v.setLongitude();
       v.setCity();
       v.setRating();
       v.setReviews();
-      //add image detected here
-      v.findImageOnPage();    //This needs to come before the simplify url call
       v.simplifyPageUrl();
       //v.setCategories();
       //v.setPostParameters();
     }
+
 
     return {
       extractVenues: extractVenues,
@@ -399,8 +538,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
   function VenueApi($http, config) {
 
-    function remove(id, api_url) {
+    function remove(id, api_url, loginHeader) {
       console.log("About to delete venue id: " + id + " on " + api_url);
+
+      //headers['Content-type'] = 'application/json;charset=utf-8';
+      //console.log("delete headers:")
+      //console.log(headers.headers);
 
       $http({
           method: 'DELETE',
@@ -408,9 +551,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
           /*data: {
               user: userId
           },*/
-          headers: {
-              'Content-type': 'application/json;charset=utf-8'
-          }
+          headers: loginHeader
       })
       .then(function(response) {
           console.log(response.data);
@@ -420,7 +561,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
     }
   
-    //Add a venue note
     function search(api_url, name, city) {
       console.log("About to search for venue name: " + name);
 
@@ -453,15 +593,13 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
   function ImageApi($http, config) {
 
     //Remove an image
-    function remove(id, api_url) {
+    function remove(id, api_url, loginHeader) {
       console.log("About to delete image id in server: " + id);
 
       $http({
           method: 'DELETE',
           url: api_url + '/api/v1/image/' + id,
-          headers: {
-              'Content-type': 'application/json;charset=utf-8'
-          }
+          headers: loginHeader
       })
       .then(function(response) {
           console.log(response.data);
@@ -479,15 +617,13 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
   function NoteApi($http, config) {
 
     //Remove a venue note
-    function remove(id, api_url) {
+    function remove(id, api_url, loginHeader) {
       console.log("About to delete note id in server: " + id);
 
       $http({
           method: 'DELETE',
           url: api_url + '/api/v1/note/' + id,
-          headers: {
-              'Content-type': 'application/json;charset=utf-8'
-          }
+          headers: loginHeader
       })
       .then(function(response) {
           console.log(response.data);
@@ -498,17 +634,17 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     }
 
     //Edit a venue note
-    function edit(id, note, api_url) {
+    function edit(id, note, api_url, loginHeader) {
       console.log("About to post edited note to server. note id: " + id + ", note: " + note);
+      var headers = loginHeader;
+      headers['Content-type'] = 'application/json;charset=utf-8';
 
       $http({
           method: 'PUT',
           url: api_url + '/api/v1/note/' + id,
+          headers: headers,
           data: {
             note: note
-          },
-          headers: {
-            'Content-type': 'application/json;charset=utf-8'
           }
       })
       .then(function(response) {
@@ -519,18 +655,18 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     }
 
     //Add a venue note
-    function add(venue_id, note, api_url) {
+    function add(venue_id, note, api_url, loginHeader) {
       console.log("About to post new note note to server. venue id: " + venue_id + ", note: " + note);
+      var headers = loginHeader;
+      headers['Content-type'] = 'application/json;charset=utf-8';
 
       $http({
           method: 'POST',
           url: api_url + '/api/v1/note',
+          headers: headers,
           data: {
             note: note,
             venue_id: venue_id
-          },
-          headers: {
-            'Content-type': 'application/json;charset=utf-8'
           }
       })
       .then(function(response) {
@@ -546,6 +682,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       add: add
     };
   }
+
+
 
   function TextApi($http, config) {
 
@@ -582,6 +720,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     .module('starter')
     .factory('ApiService', ApiService)
     .factory('VenueService', VenueService)
+    .factory('LoginService', LoginService)
     .factory('ClipboardService', ClipboardService)
     .factory('VenueApi', VenueApi)
     .factory('NoteApi', NoteApi)

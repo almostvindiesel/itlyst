@@ -1,0 +1,112 @@
+<ion-view>
+  <ion-nav-bar class="bar-positive">
+    <ion-nav-buttons side="left">
+     <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+  <ion-nav-title>
+     <img src="img/itlyst-fork-logo.png" style="width: 20px;">
+     Venues  
+  </ion-nav-title>
+
+  <ion-content>
+
+    <div ui-view="popup@venues"></div>
+    
+    <!-- Spinner: Show when the content is loading-->
+    <ion-spinner icon="spiral" ng-hide=isDoneLoading></ion-spinner>
+
+    <!-- Venue Content --> 
+    <div class="list" ng-repeat="venue in venues">
+
+      <body ng-controller="VenuesCtrl">
+
+        <!-- Venue Header -->
+        <ion-header-bar class="bar-subheader bar-dark">
+          <!-- Venue Title and Buttons -->
+          <div class="venuetitlecontainer">
+            <div style="float: left;">
+              <button class="button button-icon icon ion-ios-minus-outline venue-button" ng-click="data.showDelete = !data.showDelete"></button>
+            </div>
+            <div style="float: left;">
+              <button class="button button-icon icon ion-ios-plus-outline venue-button" ng-click="addNote($event, venue.id)"></button>
+            </div>
+            <div style="float: right; ">
+              <button class="button icon venue-button" ng-click="go('app/venue/{{venue.id}}/detail')"><i class="ion-more icon-lg" ></i></button>
+            </div>
+            <div class=venuetitlediv>
+             <h4 class=venuetitle>{{venue.name}}</h4>
+            </div>
+          </div>
+
+        <!-- Venue Notes -->
+        </ion-header-bar>
+          <!-- !!! must be a better way to seperate these two divs so tjhat they don't overlap... adding temp filler div for now -->
+          <div style="clear:both; height:35px"></div>
+          <div style="clear:both;">
+            <ion-list show-delete="data.showDelete">
+              <ion-item ng-repeat="note in venue.notes" class="item-remove-animate item-text-wrap predictedvenues" item="item" >
+                <small>{{note.note}}<small>
+                <ion-delete-button class="icon ion-minus-circled" ng-click="deleteNote(note.id)"></ion-delete-button>
+                <ion-option-button class="button-assertive" ng-click="editNote($event,note.id,note.note)">Edit</ion-option-button>
+              </ion-item>
+            </ion-list>
+
+            <!-- Venue Images -->
+            <ul ng-if="!(venue.images.length == 1 && venue.notes.length == 1)">
+              <li>
+                <span class="imageblock"  ng-repeat="image in venue.images">
+                  <!--<a href ="#/app/image/{{image.id}}"><img src="{{image.image_url}}" class="venueimage" ></a>-->
+                  <button class="image-button" ng-click="go('app/image/{{image.id}}')"><img src="{{image.image_url}}" class="venueimage" ></button>
+                </span>
+              </li>
+
+            </ul>
+          </div>
+      </body>   
+    </div>
+  </ion-content>
+
+
+
+<script id="editNotePopup" type="text/ng-template">
+  <ion-popover-view>
+    <ion-content>
+      <label class="item item-input">
+        <textarea  #input id="editVenueNote" autofocus focus-me placeholder="Additional Notes">{{noteToEdit}}</textarea>
+      </label>
+      <span>
+      <button class="button button-calm round"  ng-click="saveEditedNote()">
+        Save
+      </button>
+      <button class="button button-stable round" ng-click="cancelEditOnNote()"> 
+        <i class="icon ion-close"></i> Cancel
+      </button><br>
+    </span>
+    </ion-content>
+  </ion-popover-view>
+</script>
+
+
+<script id="newNotePopup" type="text/ng-template">
+  <ion-popover-view>
+    <ion-content>
+      <label class="item item-input">
+        <textarea #input id="newVenueNote" autofocus focus-me placeholder="Additional notes"></textarea>
+      </label>
+      <span>
+      <button class="button button-calm round"  ng-click="saveNewNote()">
+        Save
+      </button>
+      <button class="button button-stable round" ng-click="cancelNewNote()"> 
+        <i class="icon ion-close"></i> Cancel
+      </button><br>
+    </span>
+    </ion-content>
+  </ion-popover-view>
+</script>
+
+
+
+
+</ion-view>

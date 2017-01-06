@@ -244,7 +244,7 @@ function TripadvisorVenue(page){
 				throw "Could not find name in first attempt. Retrying";
 			}
 		} catch(err) {
-			console.log("Error: " + err.message);
+			console.log("EXCEPTION: " + err.message);
 
 			try {
 				this.name = page.page_title;
@@ -260,7 +260,7 @@ function TripadvisorVenue(page){
 					throw "Could not find name on second attempt. Retrying final time";
 				}
 			} catch(err) {
-				console.log("Error: " + err.message);
+				console.log("EXCEPTION: " + err.message);
 
 				try {
 					this.name = this.pageJson.name;
@@ -269,7 +269,7 @@ function TripadvisorVenue(page){
 						throw "Could not find name on third attempt. Failing";
 					}
 				} catch(err) {
-					console.log("Error: " + err.message);
+					console.log("EXCEPTION: " + err.message);
 				}
 			}
 		}
@@ -299,7 +299,7 @@ function TripadvisorVenue(page){
 
 		}
 		catch(err) {
-			console.log("Could not get latitude. Error: " + err.message);
+			console.log("Could not get latitude. EXCEPTION: " + err.message);
 		}
 		console.log("--- latitude: " + this.location.latitude);
 	}
@@ -316,7 +316,7 @@ function TripadvisorVenue(page){
 			}
 
 		} catch(err) {
-			console.log("Could not get longitude. Error: " + err.message);
+			console.log("Could not get longitude. EXCEPTION: " + err.message);
 		}
 		console.log("--- longitude: " + this.location.longitude);
 	}
@@ -329,7 +329,7 @@ function TripadvisorVenue(page){
 			this.location.city = $(this.jqdoc).find("span.geoName").text(); 		
 			console.log("--- city: " + this.location.city);
 		} catch(err) {
-			console.log("Could not get city. Error: " + err.message);
+			console.log("Could not get city. EXCEPTION: " + err.message);
 		}
 		*/
 		
@@ -342,7 +342,7 @@ function TripadvisorVenue(page){
 				console.log("Also setting rating, name, and reviews since we have them with this object");
 
 			} catch(err) {
-				console.log("Could not get city. Error: " + err.message);
+				console.log("EXCEPTION. Could not get city. Err:" + err.message);
 			}
 		}
 	}
@@ -355,11 +355,11 @@ function TripadvisorVenue(page){
 				throw "Rating parsed is not a number. Retrying";
 			}
 		} catch(err) {
-			console.log("Could not get rating. Error: " + err.message);
+			console.log("EXCEPTION. Could not get rating. Err: " + err.message);
 			try {
 				this.rating = this.pageJson.aggregateRating.ratingValue;
 			} catch(err) {
-				console.log("Could not get rating on second attempt. Giving up. Error: " + err.message);
+				console.log("EXCEPTION. Could not get rating on second attempt. Giving up. Err: " + err.message);
 			}
 		}
 	} 
@@ -376,11 +376,11 @@ function TripadvisorVenue(page){
 				throw "Reviews parsed is not a number. Retrying...";
 			}
 		} catch(err) {
-			console.log("Could not get reviews. Error: " + err.message);
+			console.log("EXCEPTION. Could not get reviews. Err: " + err.message);
 			try {
 				this.reviews = this.pageJson.aggregateRating.reviewCount.replace(',','');
 			} catch(err) {
-				console.log("Could not get reviews on second attempt. Giving up. Error: " + err.message);
+				console.log("EXCEPTION. Could not get reviews on second attempt. Giving up. Err: " + err.message);
 			}
 		}
 	} 
@@ -397,7 +397,7 @@ function TripadvisorVenue(page){
 			while ($("#PAGE").find("span[property='servesCuisine']").eq(i).attr("content"))
 		}
 		catch(err) {
-			console.log("Could not set categories. Error: " + err.message);
+			console.log("Could not set categories. Err: " + err.message);
 		}
 		*/
 	}
@@ -412,9 +412,18 @@ function YelpVenue(page){
 	this.source = 'yelp';
 	this.page = page;
 
+  	// https://www.yelp.com/biz_photos/1CkTVogrU7pmy4pkEFIubw?select=fUYM8vA84pHxQdoedWYgug&utm_source=ishare&utm_content=photo&utm_campaign=psb_sq
+  	// to
+  	// https://www.yelp.com/biz/1CkTVogrU7pmy4pkEFIubw
+  	
+
 	this.simplifyPageUrl = function () {
-		if (this.source_id.length > 1) {
-			this.page.url = 'https://www.yelp.com/biz/' + this.source_id;
+		try {
+			if (this.source_id.length > 1) {
+				this.page.url = 'https://www.yelp.com/biz/' + this.source_id;
+			}
+		} catch(err) {
+			console.log("EXCEPTION. Could not get simplify page url. Err: " + err.message);
 		}
 	}
 
@@ -427,7 +436,7 @@ function YelpVenue(page){
 				//<meta property="og:image" content="https://s3-media4.fl.yelpcdn.com/bphoto/fUYM8vA84pHxQdoedWYgug/o.jpg">
 				this.page.image_url = $(this.jqdoc).filter("[property='og:image']").first().attr('content');
 			} catch(err) {
-				console.log("ERROR. Could not get image_url. Error: " + err.message);
+				console.log("EXCEPTION. Could not get image_url. Err: " + err.message);
 			}
 
 
@@ -437,7 +446,7 @@ function YelpVenue(page){
 					//<meta property="og:image" content="https://s3-media4.fl.yelpcdn.com/bphoto/fUYM8vA84pHxQdoedWYgug/o.jpg">
 					this.page.image_url = $(this.jqdoc).find('[property="og:image"]').first().attr('content');
 				} catch(err) {
-					console.log("ERROR. Could not get image_url. Error: " + err.message);
+					console.log("EXCEPTION. Could not get image_url. Err: " + err.message);
 				}
 			}
 
@@ -447,13 +456,13 @@ function YelpVenue(page){
 					//<meta property="og:image" content="https://s3-media4.fl.yelpcdn.com/bphoto/fUYM8vA84pHxQdoedWYgug/o.jpg">
 					this.page.image_url = $(this.jqdoc).find('[class="photo-box-img"]').first().attr('src');
 				} catch(err) {
-					console.log("ERROR. Could not get image_url. Error: " + err.message);
+					console.log("EXCEPTION. Could not get image_url. Err: " + err.message);
 				}
 			}
 
 		}
 
-		console.log("image_url: " + this.page.image_url);
+		console.log("--- image_url: " + this.page.image_url);
 		//console.log("=====================================");
 		//console.log(this.jqdoc);
 		//console.log("=====================================");
@@ -466,7 +475,7 @@ function YelpVenue(page){
 			// <h1 class="biz-page-title embossed-text-white shortenough" itemprop="name">Proof Bakery</h1> 
 			this.name = $(this.jqdoc).find(".biz-page-title").first().text().trim();
 		} catch(err) {
-			console.log("Could not get name. " + err.message);
+			console.log("EXCEPTION. Could not get name. " + err.message);
 		}
 		
 		if (!(this.name.length > 0)) {
@@ -475,7 +484,7 @@ function YelpVenue(page){
 				// iOS: <meta itemprop="name" content="Ohana Poke" />
 				this.name = $(this.jqdoc).find("[itemprop='name']").last().attr('content');
 			} catch(err) {
-				console.log("Could not get name. " + err.message);
+				console.log("EXCEPTION. Could not get name. " + err.message);
 			}
 		} 
 
@@ -516,7 +525,7 @@ function YelpVenue(page){
 			// <meta name="yelp-biz-id" content="jQXj5x1V-mtVMFYoMQYOkg">
 			this.source_id = $(this.jqdoc).filter("[name='yelp-biz-id']").first().attr('content');
 		} catch(err) {
-			console.log("ERROR. Could not get source_id. Error: " + err.message);
+			console.log("EXCEPTION. Could not get source_id. Err: " + err.message);
 		}
 
 		if (!(this.source_id)) {
@@ -526,7 +535,7 @@ function YelpVenue(page){
 				var textWhichContainsSourceId = $(this.jqdoc).filter("[property='twitter:app:url:iphone']").first().attr('content');
 				this.source_id =gup('biz_id',textWhichContainsSourceId)
 			} catch(err) {
-				console.log("ERROR. Could not get source_id. Error: " + err.message);
+				console.log("EXCEPTION. Could not get source_id. Err: " + err.message);
 			}
 		}
 
@@ -549,9 +558,11 @@ function YelpVenue(page){
 				} 
 				
 			} catch(err) {
-				console.log("ERROR. Could not get source_id. Giving up. Error: " + err.message);			
+				console.log("EXCEPTION. Could not get source_id. Giving up. Err: " + err.message);		
+				this.source_id = '';	
 			}
 		}
+
 		console.log("--- source_id:" + this.source_id);
 	}
 
@@ -570,7 +581,7 @@ function YelpVenue(page){
 
 			this.location.latitude = textWhichContainsLatitude.trim();
 		} catch(err) {
-			console.log("ERROR. Could not get latitude " + err.message);	
+			console.log("EXCEPTION. Could not get latitude " + err.message);	
 			try {
 				var textWhichContainsLatitude = this.jqdoc.match("latitude(.*)longitude")[1];
 				textWhichContainsLatitude = textWhichContainsLatitude.replace(",","");
@@ -582,7 +593,7 @@ function YelpVenue(page){
 				this.location.latitude = textWhichContainsLatitude;
 			
 			} catch(err) {
-				console.log("ERROR. Could not get latitude second time " + err.message);		
+				console.log("EXCEPTION. Could not get latitude second time " + err.message);		
 			}	
 		}	
 	}
@@ -599,7 +610,7 @@ function YelpVenue(page){
 			textWhichContainsLongitude = textWhichContainsLongitude.replace("}","");
 			this.location.longitude = textWhichContainsLongitude.trim();
 		} catch(err) {
-			console.log("ERROR. Could not get longitude " + err.message);	
+			console.log("EXCEPTION. Could not get longitude " + err.message);	
 			try {
 				var textWhichContainsLongitude = this.jqdoc.match("longitude(.*)zoom")[1];
 				textWhichContainsLongitude = textWhichContainsLongitude.replace(",","");
@@ -610,7 +621,7 @@ function YelpVenue(page){
 				textWhichContainsLongitude = textWhichContainsLongitude.substring(0,n);
 				this.location.longitude = textWhichContainsLongitude;
 			} catch(err) {
-				console.log("ERROR. Could not get longitude second time " + err.message);		
+				console.log("EXCEPTION. Could not get longitude second time " + err.message);		
 			}	
 		}	
 	}
@@ -621,20 +632,20 @@ function YelpVenue(page){
 			//<span itemprop="addressLocality">Los Angeles</span>
 			this.location.city = $(this.jqdoc).find('[itemprop="address"] [itemprop="addressLocality"]').first().text();
 		} catch(err) {
-			console.log("ERROR. Could not get city in first attempt " + err.message);		
+			console.log("EXCEPTION. Could not get city in first attempt " + err.message);		
 		}
 
 		
 		if (!(this.location.city.length) || this.location.city.length < 1) {
 			try {
 				//<input maxlength="80" name="find_loc" id="dropperText_Mast" autocomplete="off" value="Los Angeles, CA" ... >
-				console.log("ERROR. Attempting to find city for second time");	
+				console.log("EXCEPTION. Attempting to find city for second time");	
 				this.location.city = $(this.jqdoc).find('[name="find_loc"]').first().attr('value');	
 			} catch(err) {
-				console.log("ERROR. Could not get city in second attempt. Failing" + err.message);		
+				console.log("EXCEPTION. Could not get city in second attempt. Failing" + err.message);		
 			}
 		}
-		console.log("city: " + this.location.city);
+		console.log("--- city: " + this.location.city);
  	}
 
 	//<meta itemprop="ratingValue" content="4.0">
@@ -643,7 +654,7 @@ function YelpVenue(page){
 			//this.rating = document.querySelectorAll("[itemprop='ratingValue']")[0].content;
 			this.rating = $(this.jqdoc).find("[itemprop='ratingValue']").first().attr('content');
 		} catch(err) {
-			console.log("ERROR. Could not set rating " + err.message);		
+			console.log("EXCEPTION. Could not set rating " + err.message);		
 		}
 	} 
 
@@ -653,7 +664,7 @@ function YelpVenue(page){
 			//this.reviews = document.querySelectorAll("[itemprop='reviewCount']")[0].textContent;
 			this.reviews = $(this.jqdoc).find("[itemprop='reviewCount']").first().text();
 		} catch(err) {
-			console.log("ERROR. Could not set reviews " + err.message);		
+			console.log("EXCEPTION. Could not set reviews " + err.message);		
 		}
 	}
 
@@ -666,6 +677,15 @@ function YelpVenue(page){
 	this.setCategories = function () {
 		// !!!
 	}
+}
+YelpVenue.generateVenueUrlFromBizPhotoURL = function (biz_photo_url) {
+	return 'https://www.yelp.com/biz/' + biz_photo_url.match("photos/(.*)\\?")[1];
+}
+YelpVenue.generateImageUrlFromBizPhotoURL = function (biz_photo_url) {
+	//console.log("Lyster url: " + biz_photo_url);
+	//console.log("Lyster image id: " + gup('select',biz_photo_url));
+	return 'https://s3-media1.fl.yelpcdn.com/bphoto/'+ gup('select',biz_photo_url) + '/o.jpg';
+	//console.log(gup('select',biz_photo_url));
 }
 
 

@@ -34,6 +34,14 @@ textarea {
   width: 5% !important;
 }
 
+.venuedetailheader {
+  background-color: #444444;
+  color: white;
+  height: 35px;
+  padding: 3px 0px 3px 5px;
+
+}
+
 .introtext {
   color: #f5f6f7;
   background-color: black;
@@ -53,6 +61,12 @@ textarea {
     /* style the item content when its checked */
     background: #387ef5; 
     color: white;
+}
+
+.alerttext {
+  color:red;
+  text-align: center;
+
 }
 
 textarea {
@@ -275,6 +289,19 @@ ion-view.title {
   content:"\f1db";
 }
 
+.fa-user:before {
+  font-family: "fontawesome";
+  content: "\f007";
+}
+
+.lmargin10 {
+   margin-left: 10px;
+}
+
+.tmargin10 {
+   margin-top: 10px !important;
+}
+
 
 /*
 .bar.bar-stable {
@@ -284,6 +311,10 @@ ion-view.title {
 
 h1.title {
 	color:white !important;
+}
+
+.mwhite {
+  color:white !important;
 }
 
 
@@ -498,8 +529,36 @@ label.inputbuttons {
 
 }
 
+.notesource {
+  float: right;
+  bottom: 0;
+  color: #c4cacb;
+}
 
 
+/* Added CSS to Enable Right Swipe */
+.item-options-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  height: 100%; }
+.item-options-left .button {
+  height: 100%;
+  border: none;
+  border-radius: 0;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -moz-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  -moz-align-items: center;
+  align-items: center; }
+.item-options .button:before {
+  margin: 0 auto; }
 
 
 /*

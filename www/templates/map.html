@@ -1,11 +1,5 @@
-
-
-
 <ion-view>
-  <ion-nav-bar class="bar-positive">
-    <ion-nav-buttons side="left">
-     <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
-    </ion-nav-buttons>
+   <ion-nav-bar class="bar-positive">
     <ion-nav-back-button>
     </ion-nav-back-button>
   </ion-nav-bar>
@@ -15,12 +9,15 @@
   </ion-nav-title>
 
   <ion-content>
-    <!-- Venue Content --> 
-	<body ng-controller="MapCtrl">
-	    <ion-content>
-	      <div id="map" data-tap-disabled="true"></div>
-	    </ion-content>
-	</body>  
+
+    <!--<div ui-view="popup@map"></div>-->
+
+      <!-- Venue Content --> 
+  	<body ng-controller="MapCtrl">
+  	    <ion-content>
+  	      <div id="map" data-tap-disabled="true"></div>
+  	    </ion-content>
+  	</body>  
     </div>
   </ion-content>
 </ion-view>
