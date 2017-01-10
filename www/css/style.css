@@ -30,6 +30,24 @@ textarea {
 }
 
 */
+
+.clearbutton {
+  background-color: Transparent;
+  background-repeat:no-repeat;
+  border: none;
+  cursor:pointer;
+  overflow: hidden;
+  outline:none;
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+}
+
+.hrefbutton {
+  /*text-decoration: underline;*/
+  font-weight: bold;
+  color: blue;
+}
+
 .searchglass {
   width: 5% !important;
 }

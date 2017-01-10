@@ -24,21 +24,98 @@ angular
   //----------------------------------------------------------------
 
 
-  //Login on startup of the app
+  //----------------------------------------------------------------  
+})
+
+.controller('FtueCtrl', function($scope, $ionicModal, $ionicPlatform, config, VenueService, ApiService, LoginService, $ionicHistory, $location, $q, $http, $base64, $timeout) {
+})
+
+.controller('StartCtrl', function($scope, $ionicModal, $ionicPlatform, config, VenueService, ApiService, LoginService, $ionicHistory, $location, $q, $http, $base64, $timeout) {
+
+  // Login on Page Load
+  // ------------------------------------------------------------------------------------------------------
   LoginService.init();
   LoginService.login(ApiService.server.url);
 
 
-  //----------------------------------------------------------------
+  // ------------------------------------------------------------------------------------------------------
+  // Login Modal
 
-  
+  $scope.$on('$ionicView.enter', function(e) {
+    $scope.loginData = {'email': LoginService.getEmail(), 'password': LoginService.getPassword()};
+    $scope.login_button_message = "Log in";
+    $scope.login_error_message = "";
+  });  
 
-  
+
+  // Create the login modal that we will use later
+  $ionicModal.fromTemplateUrl('templates/login.html', {
+    scope: $scope
+  }).then(function(modal) {
+    $scope.modal = modal;
+  });
+
+  // Triggered in the login modal to close it
+  $scope.closeLogin = function() {
+    $scope.modal.hide();
+   $timeout(function() {
+      $scope.login_button_message = "Login";
+    }, 1500);
+  };
+
+  // Open the login modal
+  $scope.login = function() {
+    //If there's an existing modal--such as when a user hits login from the signup modal--close it:
+    if ($scope.modalSignup) {
+      $scope.modalSignup.hide();
+    }  
+    
+    //Now show the login modal
+    $scope.modal.show();
+
+  };
+
+  // !! Is this needed?
+  /*
+  $timeout(function() {
+     $scope.closeLogin();
+  }, 1000);
+  */
+
+  // Perform the login action when the user submits the login form
+  $scope.doLogin = function() {
+    LoginService.setEmail($scope.loginData.email);
+    LoginService.setPassword($scope.loginData.password);
+    $scope.login_button_message = "Logging in...";
+    $scope.login_error_message = "";
 
 
+    //LoginService.login(ApiService.server.url);
 
+    var loginPromise = LoginService.login(ApiService.server.url);
+    
+    loginPromise.then(function(response) {
+      //console.log("Logged in!:");
+      if (response.data.login_status) {
+        console.log("User logged in");
+        $scope.login_button_message = "Success";
+        $timeout(function() {
+          $scope.closeLogin();
+        }, 1000);
+        
+      } else {
+        console.log("User NOT logged in");
+        $scope.login_button_message = "Log in";
+        $scope.login_error_message = "Ruh roh. Something went wrong. Try again?";
 
-  //----------------------------------------------------------------
+      }
+    });
+    
+
+  };
+
+  // ------------------------------------------------------------------------------------------------------
+  // Signup 
 
   // Form data for the login modal
   $scope.signupData = {};
@@ -83,80 +160,9 @@ angular
 
 
 
-
     $timeout(function() {
       $scope.closeSignup();
     }, 500);
-  };
-
-
-
-})
-
-
-
-.controller('StartCtrl', function($scope, $ionicModal, $ionicPlatform, config, VenueService, ApiService, LoginService, $ionicHistory, $location, $q, $http, $base64, $timeout) {
-
-// ------------------------------------------------------------------------------------------------------
-// Login Component of the Controller
-
-
-$scope.$on('$ionicView.enter', function(e) {
-    $scope.loginData = {'email': LoginService.getEmail(), 'password': LoginService.getPassword()};
-    $scope.login_button_message = "Log in";
-    $scope.login_error_message = "";
-  });  
-
-
-  // Create the login modal that we will use later
-  $ionicModal.fromTemplateUrl('templates/login.html', {
-    scope: $scope
-  }).then(function(modal) {
-    $scope.modal = modal;
-  });
-
-  // Triggered in the login modal to close it
-  $scope.closeLogin = function() {
-    $scope.modal.hide();
-  };
-
-  // Open the login modal
-  $scope.login = function() {
-    $scope.modal.show();
-  };$timeout(function() {
-     $scope.closeLogin();
-  }, 1000);
-
-  // Perform the login action when the user submits the login form
-  $scope.doLogin = function() {
-    LoginService.setEmail($scope.loginData.email);
-    LoginService.setPassword($scope.loginData.password);
-    $scope.login_button_message = "Logging in...";
-    $scope.login_error_message = "";
-
-
-    //LoginService.login(ApiService.server.url);
-
-    var loginPromise = LoginService.login(ApiService.server.url);
-    
-    loginPromise.then(function(response) {
-      //console.log("Logged in!:");
-      if (response.data.login_status) {
-        console.log("User logged in");
-        $scope.login_button_message = "Success";
-        $timeout(function() {
-          $scope.closeLogin();
-        }, 1000);
-        
-      } else {
-        console.log("User NOT logged in");
-        $scope.login_button_message = "Log in";
-        $scope.login_error_message = "Ruh roh. Something went wrong. Try again?";
-
-      }
-    });
-    
-
   };
 
   // ------------------------------------------------------------------------------------------------------
@@ -198,7 +204,7 @@ $scope.$on('$ionicView.enter', function(e) {
 
     console.log("City Selected: " + $scope.city_selected);
     VenueService.setCity(callback.item.name);
-    VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader()).async().then(function(d) { //2. so you can use .then()
+    VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId).async().then(function(d) { //2. so you can use .then()
       VenueService.setVenues(d.data.venues);
     });
 
@@ -209,8 +215,6 @@ $scope.$on('$ionicView.enter', function(e) {
     $location.path( 'app/venues' );
 
   };
-
-
 })
 
 .controller('MapCtrl', function($scope, $ionicLoading, $compile, VenueService, ApiService, LoginService) {
@@ -224,7 +228,7 @@ $scope.$on('$ionicView.enter', function(e) {
         $scope.venues = VenueService.data.venues;
         initialize();
     } else {
-      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader()).async().then(function(d) { 
+      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId).async().then(function(d) { 
         $scope.venues = d.data.venues;
         VenueService.setVenues($scope.venues);
         console.log("Got venues: " + $scope.venues.length);
@@ -291,7 +295,6 @@ $scope.$on('$ionicView.enter', function(e) {
 
       $scope.map = map;
   }
-
 })
 
 .controller('VenueDetailCtrl', function($scope, $http, $location, $state, $timeout, $stateParams, VenueService, ApiService, LoginService, VenueApi, $ionicHistory) {
@@ -335,7 +338,7 @@ $scope.$on('$ionicView.enter', function(e) {
 
   $scope.deleteVenue = function (venue_id) {
     VenueService.setForceRefreshVenues(true);
-    VenueApi.remove(venue_id, ApiService.server.url, LoginService.getLoginHeader());
+    VenueApi.remove(venue_id, ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId);
     console.log("redirecting...");
     //$location.path( 'app.venues' );
 
@@ -366,6 +369,21 @@ $scope.$on('$ionicView.enter', function(e) {
     });
   };
 
+
+
+  $scope.open_app = function (app) {
+    if (app =='yelp') {
+      window.location.href = "yelp:///";
+    } else if (app == 'foursquare') {
+      window.location.href = "foursquare://";
+    } else if (app == 'tripadvisor') {
+      window.location.href = "tripadvisor://";
+    } else if (app == 'gmaps') {
+      window.location.href = "comgooglemaps://";
+    }
+  };
+
+
   $scope.go_image_detail = function ($event, path, venueId ) {
     $event.preventDefault();
     $state.transitionTo('app.image', {
@@ -392,7 +410,7 @@ $scope.$on('$ionicView.enter', function(e) {
     if (VenueService.data.refreshVenues == true) {
       console.log("Refreshing venues from service per request...");
       $scope.venues = [];
-      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader()).async().then(function(d) { 
+      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId).async().then(function(d) { 
         $scope.venues = d.data.venues;
         VenueService.setVenues(d.data.venues);
         $scope.isDoneLoading = true;
@@ -417,7 +435,7 @@ $scope.$on('$ionicView.enter', function(e) {
     // Pull default set of venues
     } else {
       console.log("Retrieving first 50 venues from api since no city was selected");
-      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader()).async().then(function(d) { //2. so you can use .then()
+      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId).async().then(function(d) { //2. so you can use .then()
         $scope.venues = d.data.venues.slice(0,49);
         VenueService.setVenues(d.data.venues.slice(0,49));
         $scope.isDoneLoading = true;
@@ -473,7 +491,7 @@ $scope.$on('$ionicView.enter', function(e) {
     //console.log("Closing Edit Dialog and saving");
     note = document.getElementById("editVenueNote").value
     console.log("Saving this note: " + note);
-    NoteApi.edit($scope.noteIdtoEdit, note, ApiService.server.url, LoginService.getLoginHeader());
+    NoteApi.edit($scope.noteIdtoEdit, note, ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId);
     $scope.popover.remove();
     VenueService.setForceRefreshVenues(true);
     $ionicListDelegate.closeOptionButtons();
@@ -497,7 +515,7 @@ $scope.$on('$ionicView.enter', function(e) {
           console.log("Deleting note id: " + $scope.venues[i].notes[j].id);
 
           //Remove via api
-          NoteApi.remove(note_id, ApiService.server.url, LoginService.getLoginHeader());
+          NoteApi.remove(note_id, ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId);
 
           //console.log($scope.venues[i].notes.length);
           //Remove in UI
@@ -534,7 +552,7 @@ $scope.$on('$ionicView.enter', function(e) {
     //console.log("Closing Edit Dialog and saving");
     note = document.getElementById("newVenueNote").value
     console.log("Saving this note: " + note);
-    NoteApi.add($scope.venueIdtoEdit, note, ApiService.server.url, LoginService.getLoginHeader());
+    NoteApi.add($scope.venueIdtoEdit, note, ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId);
     $scope.popover.remove();
     VenueService.setForceRefreshVenues(true);
     $ionicListDelegate.closeOptionButtons();
@@ -621,7 +639,7 @@ $scope.$on('$ionicView.enter', function(e) {
     console.log("Deleting image" + image_id);
     
     VenueService.setForceRefreshVenues(true);
-    ImageApi.remove(image_id, ApiService.server.url, LoginService.getLoginHeader());
+    ImageApi.remove(image_id, ApiService.server.url, LoginService.getLoginHeader(),LoginService.status.userId);
     console.log("redirecting...");
     $timeout(function() {
       $state.go('app.redirector', {}, {});
@@ -782,11 +800,16 @@ $scope.$on('$ionicView.enter', function(e) {
         venue.page.note =  $scope.detectedVenueNotesText;
         venue.setPostParameters();
 
+        //Set current city to the last city added 
+        if (venue.city != undefined && venue.city.length > 0) {
+          VenueService.setCity(venue.city);
+        }
+
         //doSetTimeout(secs);
         console.log(">>>>> About to save venue to server...");
         console.log("  url: " + venue.page.url); 
         console.log("  note: " + venue.page.note); 
-        var serverResponsePromise = sendToServer(venue.post_params, ApiService.server.url, LoginService.getLoginHeader());
+        var serverResponsePromise = sendToServer(venue.post_params, ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId);
         serverResponsePromise.then(function(serverResponse) {
           console.log(">>> serverResponse: ");
           console.log(serverResponse);
@@ -804,6 +827,7 @@ $scope.$on('$ionicView.enter', function(e) {
     $timeout(function() {
         ClipboardService.setThreadStatus(false);
         VenueService.setForceRefreshVenues(true);
+
         ClipboardService.setAddedClipboardData(ClipboardService.data.extractedClipboardData);
         $ionicHistory.nextViewOptions({
           disableBack: true
@@ -991,6 +1015,8 @@ $scope.$on('$ionicView.enter', function(e) {
         //copiedText = "https://www.yelp.com/biz_photos/bUr4iq2mKKiBOu2HKynylg?select=ImvLt9I8ACHwfYthZw8vVw&utm_source=oshare&utm_content=photo&utm_campaign=psb_sq";
         //copiedText = 'https://www.yelp.com/biz/1CkTVogrU7pmy4pkEFIubw';
         //copiedText = "https://www.yelp.com/biz/scoops-los-angeles";
+        copiedText = "http://4sq.com/OJDpF2";
+        copiedText = "https://www.yelp.com/biz_photos/the-mill-san-francisco?select=Yd2jWpWpogSW23m12O0hIg";
         
 
         if (copiedText && ClipboardService.data.addedClipboardData != copiedText
@@ -1100,7 +1126,7 @@ $scope.$on('$ionicView.enter', function(e) {
       ClipboardService.setThreadStatus(true);
       ClipboardService.setExtractedClipboardData(copiedText);
 
-      var potentialVenuesPromise = TextApi.analyze(ApiService.server.url, copiedText);
+      var potentialVenuesPromise = TextApi.analyze(ApiService.server.url, copiedText, LoginService.status.userId);
       $scope.copiedText = copiedText;
 
       $scope.analyzedVenues = new Array();
@@ -1166,9 +1192,14 @@ $scope.$on('$ionicView.enter', function(e) {
         $scope.venue.setPostParameters();
         //console.log("note after: " + $scope.venue.page.note);
 
-        sendToServer($scope.venue.post_params, ApiService.server.url, LoginService.getLoginHeader());
+        sendToServer($scope.venue.post_params, ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId);
 
+        //Force Venues to refresh, and set current city to the city view that was just added, if possible
         VenueService.setForceRefreshVenues(true);
+        if ($scope.venue.city != undefined && $scope.venue.city.length > 0) {
+          VenueService.setCity($scope.venue.city);
+        }
+
         $ionicHistory.nextViewOptions({
           disableBack: true
         });
@@ -1185,7 +1216,8 @@ $scope.$on('$ionicView.enter', function(e) {
       }
   };
 
-  function sendToServer(parameters, server_url, loginHeader) {
+  function sendToServer(parameters, server_url, loginHeader, user_id) {
+    parameters.user_id = user_id;
     console.log("Posting venue to server: ");
     console.log("  Server: " + server_url);
     console.log("  Post Params: ");
@@ -1288,14 +1320,14 @@ $scope.$on('$ionicView.enter', function(e) {
 
       console.log("City Selected: " + $scope.city_selected);
       VenueService.setCity(callback.item.name);
-      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader()).async().then(function(d) { //2. so you can use .then()
+      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId).async().then(function(d) { //2. so you can use .then()
         VenueService.setVenues(d.data.venues);
       });
   };
 
   $scope.changeZoom = function (distance) {
       VenueService.setZoom(distance);
-      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader()).async().then(function(d) { //2. so you can use .then()
+      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId).async().then(function(d) { //2. so you can use .then()
         VenueService.setVenues(d.data.venues);
       });
   };    

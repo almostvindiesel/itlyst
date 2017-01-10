@@ -23,6 +23,15 @@
     <ion-spinner icon="spiral" ng-hide=isDoneLoading></ion-spinner>
 
     <!-- Venue Content --> 
+    <div ng-if="venues.length == 0">
+      <p>You have no venues saved.</p>
+
+      <p>Why not open the 
+        <button class="hrefbutton clearbutton" ng-click="open_app('yelp')">yelp</button>, 
+        <button class="hrefbutton clearbutton" ng-click="open_app('foursquare')">foursquare</button>, or 
+        <button class="hrefbutton clearbutton" ng-click="open_app('tripadvisor')">tripadvisor</button> apps and start listing?</>
+    </div>
+
     <div class="list" ng-repeat="item in venues">
 
       <body ng-controller="VenuesCtrl">
@@ -56,18 +65,23 @@
           <div style="clear:both; height:35px"></div>
           <div style="clear:both;">
 
+
+
+
             <!--show-delete="data.showDelete"--> 
             <ion-list show-delete="false" can-swipe="true" swipe-direction="both">
 
-              <!-- 1 image, 1 note --> 
+              
+              
 
+              <!-- 1 image, 1 note --> 
               <ul ng-if="(item.images.length == 1 && item.notes.length == 1)">
                   <span class="imageblock " ng-repeat="image in item.images" >
                     <ion-item ng-repeat="note in item.notes" class="item-text-wrap" item="item" style="min-height:130px !important;">
                       <button class="image-button" ng-click="go('app/image/{{image.id}}')">
                         <img src="{{image.image_thumb}}" class="venueimage animated bounceInRight" >
                       </button>
-                      {{note.note}}
+                      {{note.note}} 
                       <div class="notesource">
                         <i class="fa-foursquare"   ng-if="(note.source == 'foursquare')"></i>
                         <i class="fa-yelp"         ng-if="(note.source == 'yelp')"></i>
@@ -87,7 +101,7 @@
 
               <ion-item ng-repeat="note in item.notes" class="item-text-wrap" item="item" 
                         ng-if="(item.images.length >= 1 || item.notes.length >= 1) && !(item.images.length == 1 && item.notes.length == 1)">
-                {{note.note}}
+                {{note.note}} 
                 <div class="notesource">
                   <i class="fa-foursquare"   ng-if="(note.source == 'foursquare')"></i>
                   <i class="fa-yelp"         ng-if="(note.source == 'yelp')"></i>

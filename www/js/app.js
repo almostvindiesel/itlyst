@@ -12,12 +12,23 @@ console.log("Opened app.js");
 
 angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
-//Triggers focus on iOS Keyboards (potentially on other devices as well) 
+/*
+.directive('capture', function(){
+   return {
+     link : function(scope, element, attributes){
+       element.contents().find('body').bind('click', function () {
+            console.log("hello");
+            alert("hello");
+        });
+     }
+   };
+ })
+ */
 
+//Triggers focus on iOS Keyboards (potentially on other devices as well) 
 .directive('focusMe', function($timeout) {
   return {
     link: function(scope, element, attrs) {
-
       $timeout(function() {
         element[0].focus(); 
       });
@@ -35,7 +46,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
 
 .value('api_url', 'http://www.itlyst.com')
-//.value('api_url', 'http://mars.local:5000')
 //.value('api_url', 'http://mars.local:5000')
 //.value('api_url', 'http://localhost:5000')
 
@@ -78,6 +88,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     templateUrl: 'templates/tabs.html',
     controller: 'AppCtrl'
   })
+
 
   .state('app.map', {
     cache: false, 
@@ -172,6 +183,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     }
   })
 
+
+
   .state('app.redirector', {
     url: '/redirector',
     views: {
@@ -194,6 +207,17 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
           controller: 'PopupCtrl',
           cache: false
       } */
+    }
+  })
+
+  .state('ftue', {
+    url: '/ftue',
+    views: {
+      '': {
+        templateUrl: 'templates/ftue.html',
+        abstract: true,
+        controller: 'FtueCtrl'
+      }
     }
   })
 
@@ -307,7 +331,9 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
   function LoginService($base64, $http) {
 
     var status = {
-      isLoggedIn: false
+      isLoggedIn: false,
+      hasCompletedFtue: false,
+      userId: null
     };
 
     function init() {
@@ -331,32 +357,41 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       });
     }
 
-
-  //function login(api_url) {
   var login = function (api_url) {
       //Note that the username is the email address in this case
       var username = getEmail();
       var password = getPassword();
-      var headers = { headers: {'Authorization': 'Basic '+ $base64.encode( username + ':' + password) } }
-      var url = api_url + '/api/v1/login';
+      if (username == null && password == null) {
+        var msg = "No username and password stored in local storage.";
+        status.hasCompletedFtue = false;
+        console.log(msg);
+        return msg;
+        
+      } else {
+        status.hasCompletedFtue = true;
 
-      //console.log("--- Params leveraged to make login call");
-      //console.log("url: " + url);
-      //console.log("username: " + username);
-      //console.log("password: " + password);
+        var headers = { headers: {'Authorization': 'Basic '+ $base64.encode( username + ':' + password) } }
+        var url = api_url + '/api/v1/login';
 
-      
-     return $http.get(url, headers)
-      .success(function(response){
-        status.isLoggedIn = response.login_status;
-        console.log("User logged in? " + response.login_status);
-        return response;
-      })
-      .error(function(rejection, status) {
-        status.isLoggedIn = rejection.login_status;
-        console.error('Rejection login response from server', rejection, status);
-        return rejection;
-      });
+       return $http.get(url, headers)
+        .success(function(response){
+
+          //Set the login status
+          status.isLoggedIn = response.login_status;
+          console.log("User logged in? " + response.login_status);
+
+          //Set the user id
+          status.userId = response.user_id
+          console.log("User Id: ", status.userId);
+          return response;
+        })
+        .error(function(rejection, status) {
+          status.isLoggedIn = rejection.login_status;
+          console.error('Rejection login response from server', rejection, status);
+          return rejection;
+        });
+    }
+
     }
 
     function getLoginHeader() {
@@ -364,21 +399,11 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     }
 
     function getEmail() {
-      try {
-        return window.localStorage.getItem("email");
-      } catch(err) {
-        console.log ("No email stored locally");
-        return '';
-      }
+      return window.localStorage.getItem("email");
     }
 
     function getPassword() {
-      try {
-        return window.localStorage.getItem("password");
-      } catch(err) {
-        console.log ("No password stored locally");
-        return '';
-      }
+      return window.localStorage.getItem("password");
     }
 
     function setEmail(email) {
@@ -451,11 +476,11 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       data['venues'] = val;
     }
 
-    function extractVenues(api_url, loginHeader) {
+    function extractVenues(api_url, loginHeader, user_id) {
         var headers = {'headers': loginHeader}
         return {
           async: function() {
-            var venue_url = api_url + '/api/v1/venues?' + generateUrlParameters();
+            var venue_url = api_url + '/api/v1/venues?' + generateUrlParameters() + "&user_id=" + user_id;
             console.log("Querying: " + venue_url);
             return $http.get(venue_url, headers); 
           }
@@ -538,19 +563,20 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
   function VenueApi($http, config) {
 
-    function remove(id, api_url, loginHeader) {
+    function remove(id, api_url, loginHeader, user_id) {
       console.log("About to delete venue id: " + id + " on " + api_url);
 
       //headers['Content-type'] = 'application/json;charset=utf-8';
       //console.log("delete headers:")
       //console.log(headers.headers);
+      console.log("user_id-->: " + user_id);
 
       $http({
           method: 'DELETE',
           url: api_url + '/api/v1/venue/' + id,
-          /*data: {
-              user: userId
-          },*/
+          data: {
+              user_id: user_id
+          },
           headers: loginHeader
       })
       .then(function(response) {
@@ -560,7 +586,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       });
 
     }
-  
+
+    //!!! should have headers here too...
     function search(api_url, name, city) {
       console.log("About to search for venue name: " + name);
 
@@ -569,7 +596,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
           url: api_url + '/api/v1/venue/search',
           data: {
             name: name,
-            city: city       
+            city: city   
           }, 
           headers: {
             'Content-type': 'application/json;charset=utf-8'
@@ -593,12 +620,15 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
   function ImageApi($http, config) {
 
     //Remove an image
-    function remove(id, api_url, loginHeader) {
+    function remove(id, api_url, loginHeader, user_id) {
       console.log("About to delete image id in server: " + id);
 
       $http({
           method: 'DELETE',
           url: api_url + '/api/v1/image/' + id,
+          data: {
+            user_id: user_id  
+          }, 
           headers: loginHeader
       })
       .then(function(response) {
@@ -617,13 +647,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
   function NoteApi($http, config) {
 
     //Remove a venue note
-    function remove(id, api_url, loginHeader) {
+    function remove(id, api_url, loginHeader, user_id) {
       console.log("About to delete note id in server: " + id);
 
       $http({
           method: 'DELETE',
           url: api_url + '/api/v1/note/' + id,
-          headers: loginHeader
+          headers: loginHeader,
+          data: {
+            user_id: user_id
+          }
       })
       .then(function(response) {
           console.log(response.data);
@@ -634,8 +667,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     }
 
     //Edit a venue note
-    function edit(id, note, api_url, loginHeader) {
-      console.log("About to post edited note to server. note id: " + id + ", note: " + note);
+    function edit(id, note, api_url, loginHeader, user_id) {
+      console.log("About to post edited note to server. note id: " + id + ", note: " + note, " user_id: " + user_id);
       var headers = loginHeader;
       headers['Content-type'] = 'application/json;charset=utf-8';
 
@@ -644,7 +677,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
           url: api_url + '/api/v1/note/' + id,
           headers: headers,
           data: {
-            note: note
+            note: note,
+            user_id: user_id
           }
       })
       .then(function(response) {
@@ -655,7 +689,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     }
 
     //Add a venue note
-    function add(venue_id, note, api_url, loginHeader) {
+    function add(venue_id, note, api_url, loginHeader, user_id) {
       console.log("About to post new note note to server. venue id: " + venue_id + ", note: " + note);
       var headers = loginHeader;
       headers['Content-type'] = 'application/json;charset=utf-8';
@@ -666,7 +700,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
           headers: headers,
           data: {
             note: note,
-            venue_id: venue_id
+            venue_id: venue_id,
+            user_id: user_id
           }
       })
       .then(function(response) {
@@ -688,14 +723,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
   function TextApi($http, config) {
 
     //Add a venue note
-    var analyze = function(api_url, text) {
+    //!!! need to add authentication here too
+    var analyze = function(api_url, text, user_id) {
       console.log("About to post text to server: " + text);
 
       return $http({
           method: 'POST',
           url: api_url + '/api/v1/text',
           data: {
-            text: text          
+            text: text,
+            user_id: user_id             
           }, 
           headers: {
             'Content-type': 'application/json;charset=utf-8'
