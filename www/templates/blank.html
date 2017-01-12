@@ -18,13 +18,25 @@
 
 
     <!-- Show if a venue has been added -->
-    <ion-header-bar class="bar-subheader bar-dark" ng-show="selectedVenues.length > 0">
+    <div class="headerbar" ng-show="selectedVenues.length > 0">
+      <!-- Venue Title and Buttons -->
+      <div class="venuetitlecontainer">
+        <div class=venuetitlediv>
+          <h4 class=venuetitle>
+            Adding to itlyst...
+          </h4>
+        </div>
+      </div>
+    </div>
+
+
+    <!--
+    <ion-header-bar class="bar-subheader bar-dark" ng-show="selectedVenues.length > 0 && addedVenueNames">
       <h3 class="mwhite"> 
         Adding Venue Content
       </h3>
     </ion-header-bar>
-    <br><br>
-    
+    -->    
     <ion-list>
       <ion-item ng-repeat="addedVenueName in addedVenueNames">
         <i class="ion-checkmark-circled button-positive"></i> {{addedVenueName}}</h3>
@@ -74,7 +86,7 @@
       </small>
 
       <label class="item item-input">
-        <textarea id="additionalVenueNotes" placeholder="Additional Notes"></textarea>
+        <textarea id="additionalVenueNotes" placeholder="Optional Notes"></textarea>
         <img src="{{image_url}}" ng-show="image_url != null" style="width: 100px;"> 
       </label>
     </ion-content>

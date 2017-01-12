@@ -11,18 +11,19 @@
     <div style="text-align:center;">
       <br><br><br><br><br><br>
       <span>
-        <img class="animated bounceInUp" src="img/itlyst-fork-logo.png" style="width: 60px;">
+        <img class="animated" src="img/itlyst-fork-logo.png" style="width: 60px;">
         <i class="introtext large">itlyst</h3>
         <h4 class="introtext"> Remember places you want to visit</h3>
       </span>
 
     <br>
-    <div class="row">
+    <div class="row" ng-hide="isLoggedIn" style="height: 140px !important;"></div>
+    <div class="row" ng-show="isLoggedIn" style="height: 145px !important;">
       <div class="col col-60 col-offset-20">
         <form>
           <label class="item item-input">
-            <span class="input-label searchglass"><i class="ion-ios-search"></i></span>
-            <input ion-autocomplete type="text" readonly="readonly" class="ion-autocomplete" autocomplete="off"
+            <span class="input-label searchglass" ><i class="ion-ios-search" ></i></span>
+            <input ion-autocomplete type="text" readonly="readonly" class="ion-autocomplete" autocomplete="off" 
                  ng-model="model"
                  item-value-key="id"
                  item-view-value-key="name"
@@ -41,11 +42,14 @@
     <br>
 
     <div>
-      <button class="button button-icon icon" ng-click="login()">Sign in</button>
-      <button class="button button-icon icon">or</button>
-      <button class="button button-icon icon" ng-click="signup()">Sign up</button>
+      
+      <button class="clearbutton mwhite mediumfont" ng-click="login()" ng-hide="isLoggedIn">Sign in</button>
+      <button class="clearbutton mwhite mediumfont bounceInDown" ng-click="logout()" ng-show="isLoggedIn">Sign Out</button>
+      <i class="mediumfont mwhite">or</i>
+      <button class="clearbutton mwhite mediumfont" ng-click="signup()">Sign up</button>
       <br><br>
-      <button class="button button-icon icon" ng-click="go('ftue')">Tutorial</button>
+      <!--<button class="clearbutton mwhite mediumfont" ng-click="go('ftue')">Tutorial</button>-->
+
 
 
 

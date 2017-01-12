@@ -31,6 +31,54 @@ textarea {
 
 */
 
+.appicon {
+  width: 80px !important;
+}
+
+.ftueimagecontainer {
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, .5);
+}
+
+.highlightcontainer {
+  box-shadow: 3px 5px 5px rgba(0, 0, 0, .5);
+}
+
+.ftueimage {
+  width: 175px;
+  border-radius: 12px; 
+  padding: 10px 5px 3px 10px !important;
+}
+
+.clipboardimagecontainer {
+   width: 30px;
+   display: inline-block;
+}
+.clipboardimage {
+   border-radius: 5px; 
+}
+
+.mediumfont {
+  font-size: .3em;
+  font-weight: 50;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+}
+
+.headerbar {
+  background-color: #1a203b;
+  height: 30px;
+}
+
+.bar-subheader {
+  top: 44px;
+  height: 25px;
+}
+
+.headerbutton {
+  padding: 0px 10px 0px 10px !important;
+  margin: 0px 5px 0px 5px !important;
+
+}
+
 .clearbutton {
   background-color: Transparent;
   background-repeat:no-repeat;
@@ -53,7 +101,7 @@ textarea {
 }
 
 .venuedetailheader {
-  background-color: #444444;
+  background-color: #1a203b;
   color: white;
   height: 35px;
   padding: 3px 0px 3px 5px;
@@ -180,6 +228,7 @@ color: black !important;
 
 .adminbutton {
   padding: 0px 8px 1px !important;
+  min-height: 20px !important;
 }
 
 .spinner svg {
@@ -224,12 +273,36 @@ ion-view.title {
 
 /* Font Awesome ****** */
 
+.fa-lg {
+  font-size: 1.33333333em;
+  line-height: 0.75em;
+  vertical-align: -15%;
+}
+.fa-1_5x {
+  font-size: 1.8em;
+}
+.fa-2x {
+  font-size: 2em;
+}
+.fa-3x {
+  font-size: 3em;
+}
+.fa-4x {
+  font-size: 4em;
+}
+.fa-5x {
+  font-size: 5em;
+}
+
+.fa-ellipsis-h:before {
+  font-family: "fontawesome";
+  content: "\f141";
+}
+
 .fa-foursquare:before {
   font-family: "fontawesome";
   content: "\f180";
 }
-
-
 
 .fa-eraser:before {
   font-family: "fontawesome";
@@ -274,6 +347,11 @@ ion-view.title {
 .fa-support:before { 
   font-family: "fontawesome";
   content:"\f1cd";
+}
+
+.fa-plus-square-o:before {
+  font-family: "fontawesome";
+  content: "\f196";
 }
 
 .fa-coffee:before {
@@ -376,6 +454,21 @@ div.radio-content {
   display: none !important;
 }
 
+span.number {
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+    line-height: 20px;
+
+    -moz-border-radius: 10px; /* or 50% */
+    border-radius: 10px; /* or 50% */
+
+    background-color: #1a203b;
+    color: white;
+    text-align: center;
+    font-size: 1.2em;
+}
+
 
 .title-center.header-item {
 	color:white !important;
@@ -405,6 +498,8 @@ div.radio-content {
 
 }
 
+
+
 /*
 .savebuttons {
   position:absolute; 
@@ -414,10 +509,15 @@ div.radio-content {
 
 
 .imageblock {
-  padding-left: 10px;
-  position: relative;
-  top: 5px;
+  float: left;
+  padding-left: 5px;
+  vertical-align: top;
+  top: 0px;
+  margin: 0;
+  padding: 0;
 }
+
+
 
 .thumbnail-lg {
   max-width: 300px;
@@ -427,8 +527,8 @@ div.radio-content {
 
 
 img.venueimage, img.pageimage {
-  max-width: 100px;
-  max-height: 100px;
+  max-width: 150px;
+  max-height: 150px;
   border-radius: 10px; 
   vertical-align: top;
   float:left;
@@ -459,6 +559,10 @@ img.venueimage, img.pageimage {
   vertical-align: top !important;
 }
 
+.button {
+  min-height: 40px;
+}
+
 /*
 .venuetitlediv {
   max-height: 20px;
@@ -468,13 +572,22 @@ img.venueimage, img.pageimage {
 
 .venue-button {
   line-height: 10px !important;
-  max-height: 20px !important;
+  height: 15px !important;
 }
 
 .image-button {
   float: left;
+  float: top;
   border: none;
   background: none;
+}
+
+
+.grid-item {
+  float: left;
+  width: 80px;
+  height: 60px;
+  border: 2px solid hsla(0, 0%, 0%, 0.5);
 }
 
 /*
@@ -506,7 +619,7 @@ ion-header-bar.sub-header {
 */
 
 .item-complex .item-content, /*.item-radio*/ .item-content {
-    padding: 20px 49px 15px 16px;
+    padding: 10px 20px 10px 20px;
 }
 
 
@@ -522,7 +635,7 @@ div.inputbuttons {
 }
 
 input.inputbuttons:checked ~ label.inputbuttons { 
-  background: #444444 !important;
+  background: #1a203b !important;
   border:1px solid #444444 !important;
   color:#f8f8fb !important;
 }
@@ -548,9 +661,17 @@ label.inputbuttons {
 }
 
 .notesource {
-  float: right;
-  bottom: 0;
-  color: #c4cacb;
+  display: inline-block;
+  position: absolute;
+  opacity: 0.8;
+  right: 0;
+  margin: 0px 5px 0px 0px;
+  transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
+  color: #1a203b;
 }
 
 

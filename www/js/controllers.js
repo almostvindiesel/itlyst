@@ -28,14 +28,72 @@ angular
 })
 
 .controller('FtueCtrl', function($scope, $ionicModal, $ionicPlatform, config, VenueService, ApiService, LoginService, $ionicHistory, $location, $q, $http, $base64, $timeout) {
+
+  $scope.go_and_complete_ftue = function ( path ) {
+    console.log("Going to " + path);
+    LoginService.completeMobileFtue(ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId());
+    $ionicHistory.nextViewOptions({
+      disableBack: false
+    });
+    $location.path( path );
+  };
+
+  $scope.open_app = function (app) {
+    if (app =='yelp') {
+      window.location.href = "yelp:///";
+    } else if (app == 'foursquare') {
+      window.location.href = "foursquare://";
+    } else if (app == 'tripadvisor') {
+      window.location.href = "tripadvisor://";
+    } else if (app == 'gmaps') {
+      window.location.href = "comgooglemaps://";
+    }
+  };
+
+
+
+  console.log("loading ImageCtrl... ");
+
+  $scope.options = {
+    loop: false,
+    //effect: 'fade',
+    //speed: 500,
+  }
+
+  $scope.ftueTitles = ["Save travel locations from anywhere", "Save places from review apps", "Save pictures from review apps", "Start Lysting!"]
+  $scope.ftueTitle = $scope.ftueTitles[0];
+
+  $scope.$on("$ionicSlides.sliderInitialized", function(event, data){
+    // data.slider is the instance of Swiper
+    $scope.slider = data.slider;
+  });
+
+  $scope.$on("$ionicSlides.slideChangeStart", function(event, data){
+    console.log('Slide change is beginning');
+    console.log("data.slider.activeIndex: " + data.slider.activeIndex);
+    $scope.ftueTitle = $scope.ftueTitles[data.slider.activeIndex];
+    console.log("$scope.ftueTitle: " + $scope.ftueTitle);
+    $scope.$apply();
+  });
+
+  $scope.$on("$ionicSlides.slideChangeEnd", function(event, data){
+    // note: the indexes are 0-based
+    console.log('slideChangeEnd');
+
+    $scope.activeIndex = data.slider.activeIndex;
+    $scope.previousIndex = data.slider.previousIndex;
+    
+  });
+
 })
 
 .controller('StartCtrl', function($scope, $ionicModal, $ionicPlatform, config, VenueService, ApiService, LoginService, $ionicHistory, $location, $q, $http, $base64, $timeout) {
 
   // Login on Page Load
   // ------------------------------------------------------------------------------------------------------
-  LoginService.init();
+  //LoginService.init();
   LoginService.login(ApiService.server.url);
+
 
 
   // ------------------------------------------------------------------------------------------------------
@@ -45,6 +103,11 @@ angular
     $scope.loginData = {'email': LoginService.getEmail(), 'password': LoginService.getPassword()};
     $scope.login_button_message = "Log in";
     $scope.login_error_message = "";
+    $scope.isLoggedIn = LoginService.status.isLoggedIn;
+    $timeout(function() {
+      $scope.isLoggedIn = LoginService.status.isLoggedIn;
+    }, 2000);
+
   });  
 
 
@@ -58,18 +121,28 @@ angular
   // Triggered in the login modal to close it
   $scope.closeLogin = function() {
     $scope.modal.hide();
-   $timeout(function() {
+    $timeout(function() {
       $scope.login_button_message = "Login";
     }, 1500);
   };
 
   // Open the login modal
+  $scope.logout = function() {
+    //If there's an existing modal--such as when a user hits login from the signup modal--close it:
+    LoginService.status.isLoggedIn = false;
+    LoginService.setUserId(0);
+    $timeout(function() {
+      $scope.isLoggedIn = false;
+    }, 300);
+
+
+  };
+
   $scope.login = function() {
     //If there's an existing modal--such as when a user hits login from the signup modal--close it:
     if ($scope.modalSignup) {
       $scope.modalSignup.hide();
     }  
-    
     //Now show the login modal
     $scope.modal.show();
 
@@ -98,10 +171,17 @@ angular
       //console.log("Logged in!:");
       if (response.data.login_status) {
         console.log("User logged in");
+        $scope.isLoggedIn = LoginService.status.isLoggedIn;
         $scope.login_button_message = "Success";
         $timeout(function() {
           $scope.closeLogin();
         }, 1000);
+
+        if(LoginService.status.hasCompletedFtue == 0) {
+           $timeout(function() {
+            $scope.go('ftue')
+          }, 1500);
+        }
         
       } else {
         console.log("User NOT logged in");
@@ -204,7 +284,7 @@ angular
 
     console.log("City Selected: " + $scope.city_selected);
     VenueService.setCity(callback.item.name);
-    VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId).async().then(function(d) { //2. so you can use .then()
+    VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId()).async().then(function(d) { //2. so you can use .then()
       VenueService.setVenues(d.data.venues);
     });
 
@@ -228,7 +308,7 @@ angular
         $scope.venues = VenueService.data.venues;
         initialize();
     } else {
-      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId).async().then(function(d) { 
+      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId()).async().then(function(d) { 
         $scope.venues = d.data.venues;
         VenueService.setVenues($scope.venues);
         console.log("Got venues: " + $scope.venues.length);
@@ -338,7 +418,7 @@ angular
 
   $scope.deleteVenue = function (venue_id) {
     VenueService.setForceRefreshVenues(true);
-    VenueApi.remove(venue_id, ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId);
+    VenueApi.remove(venue_id, ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId());
     console.log("redirecting...");
     //$location.path( 'app.venues' );
 
@@ -368,7 +448,6 @@ angular
        venueId: venueId
     });
   };
-
 
 
   $scope.open_app = function (app) {
@@ -404,29 +483,29 @@ angular
   // ---------------------------------------------------------------------------------------------------------
   // Listing Venues
 
+  $scope.refreshVenues = function() {
+    console.log("Refreshing venues from service per request...");
+    VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId()).async().then(function(d) { 
+      $scope.venues = d.data.venues;
+      VenueService.setVenues(d.data.venues);
+      VenueService.setForceRefreshVenues(false);
+      $scope.isDoneLoading = true;
+      $scope.$broadcast('scroll.refreshComplete');
+    });
+
+  }
+
 
   $scope.$on('$ionicView.beforeEnter', function(e) {
+    //LoginService.init();
     //console.log("before loading...");
-    if (VenueService.data.refreshVenues == true) {
-      console.log("Refreshing venues from service per request...");
-      $scope.venues = [];
-      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId).async().then(function(d) { 
-        $scope.venues = d.data.venues;
-        VenueService.setVenues(d.data.venues);
-        $scope.isDoneLoading = true;
-        VenueService.setForceRefreshVenues(false);
-      });
-    }
-  });
-
-
-  $scope.$on('$ionicView.enter', function(e) {
     $scope.isDoneLoading = false;
+    $scope.active_city = VenueService.data.city;
 
-    console.log("Entered venue tab");
-
+    if (VenueService.data.refreshVenues == true) {
+      $scope.refreshVenues();
     // Retrieve last loaded venues from last data pull
-    if ( VenueService.data.venues && VenueService.data.venues.length > 0) {
+    } else if ( VenueService.data.venues && VenueService.data.venues.length > 0) {
       console.log("Retrieving venues from service...");
       $scope.venues = [];
       $scope.venues = VenueService.data.venues;
@@ -434,14 +513,25 @@ angular
 
     // Pull default set of venues
     } else {
-      console.log("Retrieving first 50 venues from api since no city was selected");
-      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId).async().then(function(d) { //2. so you can use .then()
-        $scope.venues = d.data.venues.slice(0,49);
-        VenueService.setVenues(d.data.venues.slice(0,49));
+      console.log("Retrieving first 100 venues with default city");
+      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId()).async().then(function(d) { //2. so you can use .then()
+        $scope.venues = d.data.venues.slice(0,100);
+        VenueService.setVenues(d.data.venues.slice(0,100));
         $scope.isDoneLoading = true;
       });
     }
   });
+
+  $scope.$on('$ionicView.enter', function(e) {
+
+
+
+
+
+  });
+
+
+
 
 
   // --------------------------------------------------------------------------------
@@ -491,7 +581,7 @@ angular
     //console.log("Closing Edit Dialog and saving");
     note = document.getElementById("editVenueNote").value
     console.log("Saving this note: " + note);
-    NoteApi.edit($scope.noteIdtoEdit, note, ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId);
+    NoteApi.edit($scope.noteIdtoEdit, note, ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId());
     $scope.popover.remove();
     VenueService.setForceRefreshVenues(true);
     $ionicListDelegate.closeOptionButtons();
@@ -515,7 +605,7 @@ angular
           console.log("Deleting note id: " + $scope.venues[i].notes[j].id);
 
           //Remove via api
-          NoteApi.remove(note_id, ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId);
+          NoteApi.remove(note_id, ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId());
 
           //console.log($scope.venues[i].notes.length);
           //Remove in UI
@@ -552,7 +642,7 @@ angular
     //console.log("Closing Edit Dialog and saving");
     note = document.getElementById("newVenueNote").value
     console.log("Saving this note: " + note);
-    NoteApi.add($scope.venueIdtoEdit, note, ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId);
+    NoteApi.add($scope.venueIdtoEdit, note, ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId());
     $scope.popover.remove();
     VenueService.setForceRefreshVenues(true);
     $ionicListDelegate.closeOptionButtons();
@@ -639,7 +729,7 @@ angular
     console.log("Deleting image" + image_id);
     
     VenueService.setForceRefreshVenues(true);
-    ImageApi.remove(image_id, ApiService.server.url, LoginService.getLoginHeader(),LoginService.status.userId);
+    ImageApi.remove(image_id, ApiService.server.url, LoginService.getLoginHeader(),LoginService.getUserId());
     console.log("redirecting...");
     $timeout(function() {
       $state.go('app.redirector', {}, {});
@@ -809,7 +899,7 @@ angular
         console.log(">>>>> About to save venue to server...");
         console.log("  url: " + venue.page.url); 
         console.log("  note: " + venue.page.note); 
-        var serverResponsePromise = sendToServer(venue.post_params, ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId);
+        var serverResponsePromise = sendToServer(venue.post_params, ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId());
         serverResponsePromise.then(function(serverResponse) {
           console.log(">>> serverResponse: ");
           console.log(serverResponse);
@@ -1003,7 +1093,8 @@ angular
         //copiedText = "Make sure to eat pasta at Padella, get the matcha soft serve at Tombo, and get the chai and breakfast at Dishoom";
         //copiedText ="Tartine Bakery makes some amazing bread pudding. Rhea's Deli has great sandwiches"
         //copiedText ="I love fried Chicken sando at Bakesale betty. shandong restaurant is great too for chinese";
-        //copiedText = "2. Special Dumplings. Shan Dong Restaurant (Chinatown) 3. Louisiana BlueCrab & Lobster Thermidor. Pican (Uptown) 4. Tacos Al Pastor. Tacos Mi Rancho";
+        copiedText = "2. Special Dumplings. Shan Dong Restaurant (Chinatown) 3. Louisiana BlueCrab & Lobster Thermidor. Pican (Uptown) 4. Tacos Al Pastor. Tacos Mi Rancho";
+        copiedText = "Get the dry fried chicken wings at San Tung. Saigon Sandwiches has amazing banh mis. The kouign amanns at B Patisserie are to DIE for"
 
 
         //console.log("  addedClipboardData: " + ClipboardService.data.addedClipboardData);
@@ -1015,8 +1106,10 @@ angular
         //copiedText = "https://www.yelp.com/biz_photos/bUr4iq2mKKiBOu2HKynylg?select=ImvLt9I8ACHwfYthZw8vVw&utm_source=oshare&utm_content=photo&utm_campaign=psb_sq";
         //copiedText = 'https://www.yelp.com/biz/1CkTVogrU7pmy4pkEFIubw';
         //copiedText = "https://www.yelp.com/biz/scoops-los-angeles";
-        copiedText = "http://4sq.com/OJDpF2";
-        copiedText = "https://www.yelp.com/biz_photos/the-mill-san-francisco?select=Yd2jWpWpogSW23m12O0hIg";
+        //copiedText = "http://4sq.com/OJDpF2";
+        //copiedText = "https://www.yelp.com/biz_photos/the-mill-san-francisco?select=Yd2jWpWpogSW23m12O0hIg";
+        //copiedText = "https://www.yelp.com/biz/the-mill-san-francisco";
+        //copiedText = "https://www.yelp.com/biz/won-kok-restaurant-los-angeles?uid=aP9ItssHKgjX2UaddWfRrA&utm_source=ishare&utm_medium=s_nb_";
         
 
         if (copiedText && ClipboardService.data.addedClipboardData != copiedText
@@ -1126,7 +1219,7 @@ angular
       ClipboardService.setThreadStatus(true);
       ClipboardService.setExtractedClipboardData(copiedText);
 
-      var potentialVenuesPromise = TextApi.analyze(ApiService.server.url, copiedText, LoginService.status.userId);
+      var potentialVenuesPromise = TextApi.analyze(ApiService.server.url, copiedText, LoginService.getUserId());
       $scope.copiedText = copiedText;
 
       $scope.analyzedVenues = new Array();
@@ -1192,7 +1285,7 @@ angular
         $scope.venue.setPostParameters();
         //console.log("note after: " + $scope.venue.page.note);
 
-        sendToServer($scope.venue.post_params, ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId);
+        sendToServer($scope.venue.post_params, ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId());
 
         //Force Venues to refresh, and set current city to the city view that was just added, if possible
         VenueService.setForceRefreshVenues(true);
@@ -1247,7 +1340,19 @@ angular
   }
 })  
 
+.controller('AccountCtrl', function($scope, $http, $q, $ionicPlatform, ApiService, config, $ionicPopover) {
+  $scope.$on('$ionicView.beforeEnter', function(e) {
+      console.log("Entering AdminCtrl...")
+  });
+})
+
 .controller('AdminCtrl', function($scope, $http, $q, $ionicPlatform, ApiService, config, $ionicPopover) {
+
+  $scope.$on('$ionicView.beforeEnter', function(e) {
+      console.log("Entering AdminCtrl...")
+      
+  });
+
 
   
 
@@ -1320,14 +1425,14 @@ angular
 
       console.log("City Selected: " + $scope.city_selected);
       VenueService.setCity(callback.item.name);
-      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId).async().then(function(d) { //2. so you can use .then()
+      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId()).async().then(function(d) { //2. so you can use .then()
         VenueService.setVenues(d.data.venues);
       });
   };
 
   $scope.changeZoom = function (distance) {
       VenueService.setZoom(distance);
-      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.status.userId).async().then(function(d) { //2. so you can use .then()
+      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId()).async().then(function(d) { //2. so you can use .then()
         VenueService.setVenues(d.data.venues);
       });
   };    

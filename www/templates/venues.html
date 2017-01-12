@@ -11,10 +11,14 @@
     <i class="ion-map"></i>
    </button>
      <img src="img/itlyst-fork-logo.png" style="width: 20px;">
-     Venues  
+      {{active_city}}
   </ion-nav-title>
 
   <ion-content>
+   <ion-refresher
+    pulling-text="Pull to refresh..."
+    on-refresh="refreshVenues()">
+    </ion-refresher>
 
   <!--<div ui-view="popup@venues"></div>-->
 
@@ -23,79 +27,90 @@
     <ion-spinner icon="spiral" ng-hide=isDoneLoading></ion-spinner>
 
     <!-- Venue Content --> 
-    <div ng-if="venues.length == 0">
-      <p>You have no venues saved.</p>
+    <div ng-show="venues.length == 0 && isDoneLoading">
+      <span class=number>1</span> You have no venues saved. Open a review app and copy a venue or pic url:<br>
+      <span>&nbsp; &nbsp; &nbsp; &nbsp;
+        <button class="hrefbutton clearbutton" ng-click="open_app('yelp')"><img src=img/yelp-app-icon.jpeg class="appicon"></button>
+        <button class="hrefbutton clearbutton" ng-click="open_app('foursquare')"><img src=img/foursquare-app-icon.jpg class="appicon"></button>
+        <button class="hrefbutton clearbutton" ng-click="open_app('tripadvisor')"><img src=img/tripadvisor-app-icon.jpeg class="appicon"></button>
+      </span>
 
-      <p>Why not open the 
-        <button class="hrefbutton clearbutton" ng-click="open_app('yelp')">yelp</button>, 
-        <button class="hrefbutton clearbutton" ng-click="open_app('foursquare')">foursquare</button>, or 
-        <button class="hrefbutton clearbutton" ng-click="open_app('tripadvisor')">tripadvisor</button> apps and start listing?</>
+      <div class="row">
+        <div class = "col">
+          <span class=number>1</span> Find venue, tap Share<br>
+          <img src="img/1-yelp-venue.jpg" class="ftueimage">&nbsp;&nbsp;
+        </div>
+        <div class="col">
+          <span class=number>2</span> Copy the url<br>
+          <img src="img/2-yelp-venue-copy.jpg" class="ftueimage">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+        <span class=number>2</span> Navigate to the clipboard: <img src="img/clipboard-screen.png" class="clipboardimage" style="width:50px">
+        </div>
+      </div>
+
+
+
     </div>
 
     <div class="list" ng-repeat="item in venues">
 
-      <body ng-controller="VenuesCtrl">
+      <body>
 
         <!-- Venue Header -->
-        <ion-header-bar class="bar-subheader bar-dark">
+        <div class="headerbar">
+        <!--<ion-header-bar class="bar-subheader bar-dark">-->
           <!-- Venue Title and Buttons -->
           <div class="venuetitlecontainer">
             <!--<div style="float: left;">
               <button class="button button-icon icon ion-ios-minus-outline venue-button" ng-click="data.showDelete = !data.showDelete"></button>
             </div>-->
             <div style="float: left;">
-              <button class="button button-icon icon ion-ios-plus-outline venue-button" ng-click="addNote($event, item.id)"></button>
+              <button class="clearbutton headerbutton" ng-click="addNote($event, item.id)"><i class="fa fa-plus-square-o fa-1_5x mwhite" aria-hidden="true"></i></button>
             </div>
             <div style="float: right; ">
               <!--ng-click="go_venue_detail('app/venue/{{item.id}}/detail',item.id)" -->
-              <button class="button icon venue-button" ng-click="go_venue_detail($event, 'app.venue', item.id)"><i class="ion-more icon-lg" ></i></button>
+              <button class="clearbutton headerbutton" ng-click="go_venue_detail($event, 'app.venue', item.id)"><i class="fa fa-ellipsis-h fa-1_5x mwhite" aria-hidden="true"></i></button>
               <!--<a class="button icon icon-right ion-chevron-right" href="#/app/venue/{{item.id}}/detail">Scientific Facts</a>-->
             </div>
             <div class=venuetitlediv>
              <h4 class=venuetitle>
-              {{ item.name | limitTo: 20 }}{{item.name.length > 20 ? '...' : ''}}
+              {{ item.name | limitTo: 20 }}{{item.name.length > 20 ? '...' : ''}} 
             </h4>
             </div>
           </div>
-        </ion-header-bar>
+        </div>
+        <!--</ion-header-bar>-->
 
         <!-- Venue Notes -->
           <!-- !!! must be a better way to seperate these two divs so tjhat they don't overlap... adding temp filler div for now -->
           <!-- bug: two comments, image wont show -->
-          <div style="clear:both; height:35px"></div>
-          <div style="clear:both;">
-
-
+          <div style="clear:both;"></div>
 
 
             <!--show-delete="data.showDelete"--> 
             <ion-list show-delete="false" can-swipe="true" swipe-direction="both">
 
-              
-              
-
               <!-- 1 image, 1 note --> 
-              <ul ng-if="(item.images.length == 1 && item.notes.length == 1)">
-                  <span class="imageblock " ng-repeat="image in item.images" >
-                    <ion-item ng-repeat="note in item.notes" class="item-text-wrap" item="item" style="min-height:130px !important;">
-                      <button class="image-button" ng-click="go('app/image/{{image.id}}')">
-                        <img src="{{image.image_thumb}}" class="venueimage animated bounceInRight" >
-                      </button>
-                      {{note.note}} 
-                      <div class="notesource">
-                        <i class="fa-foursquare"   ng-if="(note.source == 'foursquare')"></i>
-                        <i class="fa-yelp"         ng-if="(note.source == 'yelp')"></i>
-                        <i class="fa-tripadvisor"  ng-if="(note.source == 'tripadvisor')"></i>
-                        <i class="fa-user"         ng-if="(note.source == 'other')"></i>
-                      </div>
-                      <!--<ion-delete-button class="icon ion-minus-circled" ng-click="deleteNote(note.id)"></ion-delete-button>-->
-                      <ion-option-button side="right" class="button-positive" ng-click="editNote($event,note.id,note.note)">Edit</ion-option-button>
-                      <ion-option-button side="left" class="button-assertive" ng-click="deleteNote(note.id)">Delete</ion-option-button>
-                    </ion-item>
-                  </span>
-              </ul>
-
-
+              <div class="imageblock " ng-repeat="image in item.images" ng-if="(item.images.length == 1 && item.notes.length == 1)">
+                <ion-item ng-repeat="note in item.notes" class="item-text-wrap" item="item" style="min-height:175px !important;">
+                  <button class="image-button" ng-click="go('app/image/{{image.id}}')">
+                    <img src="{{image.image_thumb}}" class="venueimage animated bounceInRight" >
+                  </button>
+                  {{note.note}} 
+                  <div class="notesource">
+                    <i class="fa-foursquare"   ng-if="(note.source == 'foursquare')"></i>
+                    <i class="fa-yelp"         ng-if="(note.source == 'yelp')"></i>
+                    <i class="fa-tripadvisor"  ng-if="(note.source == 'tripadvisor')"></i>
+                    <i class="fa-user"         ng-if="(note.source == 'other')"></i>
+                  </div>
+                  <!--<ion-delete-button class="icon ion-minus-circled" ng-click="deleteNote(note.id)"></ion-delete-button>-->
+                  <ion-option-button side="right" class="button-positive" ng-click="editNote($event,note.id,note.note)">Edit</ion-option-button>
+                  <ion-option-button side="left" class="button-assertive" ng-click="deleteNote(note.id)">Delete</ion-option-button>
+                </ion-item>
+              </div>
 
               <!-- >1 image or >1 note --> 
 
@@ -117,17 +132,14 @@
             </ion-list>
 
             <!-- Venue Images -->
-            <div style="clear:both; height:100px" ng-if="(item.images.length >= 1) && !(item.images.length == 1 && item.notes.length == 1)">
-              <ul>
-                <li>
-                  <span class="imageblock"  ng-repeat="image in item.images">
+            <div style="clear:both;" ng-if="(item.images.length >= 1) && !(item.images.length == 1 && item.notes.length == 1)">
+                  <div class="imageblock" ng-repeat="image in item.images">
                     <button class="image-button" ng-click="go('app/image/{{image.id}}')"><img src="{{image.image_thumb}}" class="venueimage animated bounceInRight" ></button>
-                  </span>
-                </li>
-              </ul>
+                  </div>
             </div>
+            <div style="clear:both"></div>
 
-          </div>
+          
       </body>   
     </div>
   </ion-content>

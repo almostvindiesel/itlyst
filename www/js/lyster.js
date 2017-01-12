@@ -558,6 +558,22 @@ function YelpVenue(page){
 				} 
 				
 			} catch(err) {
+				console.log("EXCEPTION. Could not get source_id. Err: " + err.message);		
+				this.source_id = '';	
+			}
+		}
+
+		if (!(this.source_id)) {
+			console.log("Retrying fourth attempt to get source_id");
+			try {
+				var n = this.jqdoc.indexOf("yelp:///biz/");
+				console.log("n is :" + n);
+				var textWhichContainsSourceId = this.jqdoc.substring(n,n+100);
+				console.log("textWhichContainsSourceId: " + textWhichContainsSourceId);
+				var locationOfQuestionMark = textWhichContainsSourceId.indexOf("?");
+				this.source_id = textWhichContainsSourceId.substring(12,locationOfQuestionMark);
+				
+			} catch(err) {
 				console.log("EXCEPTION. Could not get source_id. Giving up. Err: " + err.message);		
 				this.source_id = '';	
 			}

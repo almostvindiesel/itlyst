@@ -127,6 +127,18 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       }
     }
   })
+
+/*
+  .state('app.account', {
+    url: '/account',
+    views: {
+      'account-tab': {
+        templateUrl: 'templates/account.html',
+        controller: 'AccountCtrl'
+      }
+    }
+  })
+*/
   /*
   .state('app.profile', {
     url: '/profile',
@@ -332,15 +344,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
     var status = {
       isLoggedIn: false,
-      hasCompletedFtue: false,
-      userId: null
+      hasCompletedFtue: 0
     };
-
-    function init() {
-      getEmail();
-      getPassword();
-      //login(api_url);
-    }
 
 
   var extractVenueFromUrl = function (venue_url) {
@@ -363,12 +368,11 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       var password = getPassword();
       if (username == null && password == null) {
         var msg = "No username and password stored in local storage.";
-        status.hasCompletedFtue = false;
         console.log(msg);
         return msg;
         
       } else {
-        status.hasCompletedFtue = true;
+        //status.hasCompletedFtue = true;
 
         var headers = { headers: {'Authorization': 'Basic '+ $base64.encode( username + ':' + password) } }
         var url = api_url + '/api/v1/login';
@@ -379,10 +383,13 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
           //Set the login status
           status.isLoggedIn = response.login_status;
           console.log("User logged in? " + response.login_status);
+          console.log("User completed mobile ftue? " + response.has_completed_mobile_ftue);
+          console.log(response);
+          status.hasCompletedFtue = response.has_completed_mobile_ftue;
 
           //Set the user id
-          status.userId = response.user_id
-          console.log("User Id: ", status.userId);
+          setUserId(response.user_id);
+          console.log("User Id: ", getUserId());
           return response;
         })
         .error(function(rejection, status) {
@@ -390,12 +397,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
           console.error('Rejection login response from server', rejection, status);
           return rejection;
         });
-    }
+      }
 
     }
 
     function getLoginHeader() {
       return {'Authorization': 'Basic '+ $base64.encode( getEmail() + ':' + getPassword()) }
+    }
+
+    function getUserId() {
+      return window.localStorage.getItem("userId");
     }
 
     function getEmail() {
@@ -406,6 +417,10 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       return window.localStorage.getItem("password");
     }
 
+    function setUserId(user_id) {
+      window.localStorage.setItem ("userId",user_id);
+    }
+
     function setEmail(email) {
       window.localStorage.setItem ("email",email);
     }
@@ -414,14 +429,44 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       window.localStorage.setItem ("password",password);
     }
 
+
+
+    function completeMobileFtue(api_url, loginHeader, user_id) {
+      status.hasCompletedFtue = true;
+      var headers = loginHeader;
+      headers['Content-type'] = 'application/json;charset=utf-8';
+
+      //var headers = {'headers': loginHeader}
+
+      return $http({
+          method: 'POST',
+          url: api_url + '/api/v1/user',
+          data: {
+            has_completed_mobile_ftue: 1,
+            user_id: user_id
+          }, 
+          headers: headers
+      })
+      .then(function(response) {
+          //console.log("Response: " + response.data);
+          return response.data //.data['venues'];
+      }, function(rejection) {
+          //console.log(rejection.data);
+          return rejection.data;
+      });
+    }
+
+
     return {
-      init: init,
       login: login,
       getEmail: getEmail,
       getPassword: getPassword,
+      getUserId: getUserId,
       setEmail: setEmail,
       setPassword: setPassword,
+      setUserId: setUserId,
       getLoginHeader: getLoginHeader,
+      completeMobileFtue: completeMobileFtue,
       status: status
     };
   }
@@ -439,7 +484,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       zoom: 50,
       venue_type_options: venue_type_options,
       venue_type: 'all',
-      city: 'San Francisco',
+      city: 'Los Angeles',
       refreshVenues: false
     };
 
@@ -525,6 +570,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       if (v) {
         console.log("Found venue on " + source + ": " + v.name);
         v.setJQueryDocument(response);
+        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+        console.log(response);
         //v.setName();
         setVenueProperties(v, source);
         v.setPostParameters();
@@ -668,7 +715,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
     //Edit a venue note
     function edit(id, note, api_url, loginHeader, user_id) {
-      console.log("About to post edited note to server. note id: " + id + ", note: " + note, " user_id: " + user_id);
+      console.log("About to put edited note to server. note id: " + id + ", note: " + note, " user_id: " + user_id);
       var headers = loginHeader;
       headers['Content-type'] = 'application/json;charset=utf-8';
 

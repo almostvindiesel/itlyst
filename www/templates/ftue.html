@@ -1,27 +1,160 @@
 <ion-view >
-  <ion-nav-bar class="bar-dark black">
+  <ion-nav-bar class="bar-positive">
+    <ion-nav-back-button>
+    </ion-nav-back-button>
   </ion-nav-bar>
+
+  <ion-nav-title>
+  {{ftueTitle}}
+  </ion-nav-title>
 
   <ion-content scroll="false">
     <ion-slides options="options" slider="data.slider">
+
+
       <ion-slide-page>
-        <div class="box blue">
+        <div>
+          <div class="row">
+            <div class ="col">
+              <span class=number>1</span> Copy tips from Email, Facebook or any site:<br>
+            </div>
+          </div>
+          <div class="row">
+            <div class ="col">
+              <div class="ftueimagecontainer">
+                <img src="img/detected-venues-gmail.jpg" class="ftueimage">&nbsp;&nbsp;
+              </div>
+            </div>
+            <div class="col">
+              <br><br>
+              <div class="ftueimagecontainer">
+                <img src="img/detected-venues-facebook.jpg" class="ftueimage">
+              </div>
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class = "col">
+              <span class=number>3</span> Go to <div class=clipboardimagecontainer><img src="img/clipboard-screen.png" class="clipboardimage"></div>, itlyst detects the locations:<br>
+              <div class="ftueimagecontainer">
+                <img src="img/detected-venues.png" class="ftueimage">
+              </div>
+            </div>
+            <div class="col">
+              <span class=number>4</span> And saves them for you:<br><br>
+              <div class="ftueimagecontainer">
+               <img src="img/detected-venues-list.png" class="ftueimage">
+              </div>
+              
+            </div>
+          </div>
+          
+          
+        </div>
+      </ion-slide-page>
+
+      <!--Remember places from review apps -->
+      <ion-slide-page>
+        <div>
+
+          <p>Copy a url from 
+            <button class="hrefbutton clearbutton" ng-click="open_app('yelp')">yelp <i class="fa-yelp"></i></button>, 
+            <button class="hrefbutton clearbutton" ng-click="open_app('foursquare')">foursquare <i class="fa-foursquare"></i></button>, or the 
+            <button class="hrefbutton clearbutton" ng-click="open_app('tripadvisor')">tripadvisor <i class="fa-tripadvisor"></i></button>, 
+          then navigate to the itlyst clipboard
+          </p>
+
+          <div class="row">
+            <div class = "col">
+              <span class=number>1</span> Find venue, tap Share<br>
+              <img src="img/1-yelp-venue.jpg" class="ftueimage">&nbsp;&nbsp;
+            </div>
+            <div class="col">
+              <span class=number>2</span> Copy the url<br>
+              <img src="img/2-yelp-venue-copy.jpg" class="ftueimage">
+            </div>
+          </div>
+           <div class="row">
+            <div class="col">
+              <span class=number>3</span>Go to <div class=clipboardimagecontainer><img src="img/clipboard-screen.png" class="clipboardimage"></div>, itlyst detects the venue:<br>
+              <div class="ftueimagecontainer">
+                <img src="img/3-yelp-venue-itlyst-add.jpg" class="ftueimage">
+              </div>
+            </div>
+            <div class="col">
+              <span class=number>4</span>Itlyst saves the venue:<br>
+              <div class="ftueimagecontainer highlightcontainer">
+                <img src="img/4-yelp-venue-itlyst.jpg" class="ftueimage">
+              </div>
+            </div>
+          </div>
           
 
         </div>
       </ion-slide-page>
+
+
+
+
+      <!-- Save pictures from review apps -->
       <ion-slide-page>
-        <div class="box yellow">
+        <div>
+
+          <div class="row">
+            <div class = "col">
+              <span class=number>1</span> Find a Picture<br>
+              <img src="img/yelp-image.jpg" class="ftueimage">&nbsp;&nbsp;
+            </div>
+            <div class="col">
+              <span class=number>2</span> Copy the url<br>
+              <img src="img/yelp-image-copy.jpg" class="ftueimage">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <span class=number>3</span> Go to the itlyst clipboard: <br>
+               <img src="img/yelp-image-itlyst-add.jpg" class="ftueimage">
+            </div>
+              <div class="col">
+              <span class=number>4</span> itlyst saves the img w/ notes: <br>
+               <img src="img/yelp-image-itlyst.jpg" class="ftueimage">
+            </div>
+          </div>
           
 
         </div>
       </ion-slide-page>
+    
+
+     <!--Start Lysthing -->
       <ion-slide-page>
-        <div class="box pink">
-          
-          
+        <div>
+
+          <br><br>
+
+          <p><span class=number>1</span> Start by opening up one of these review apps and copy a venue or picture url:
+          <br>
+          <span>
+            <button class="hrefbutton clearbutton" ng-click="open_app('yelp')"><img src=img/yelp-app-icon.jpeg width=50 class="appicon"></button>
+            <button class="hrefbutton clearbutton" ng-click="open_app('foursquare')"><img src=img/foursquare-app-icon.jpg class="appicon"></button>
+            <button class="hrefbutton clearbutton" ng-click="open_app('tripadvisor')"><img src=img/tripadvisor-app-icon.jpeg class="appicon"></button>
+          </span>
+
+          <br><br>
+          <span class=number>2</span> Then click here to go to the clipboard:<br>
+          <button class="button button-icon icon" ng-click="go_and_complete_ftue('app/blank')"> 
+            <img src="img/clipboard-screen.png" class="clipboardimage">
+          </button>
+
+          <br><br>
+          Or go back to <button class="hrefbutton clearbutton" ng-click="go_and_complete_ftue('app/start')">start</button>
+
+
         </div>
       </ion-slide-page>
+
+
+
     </ion-slides>
   </ion-content>
 </ion-view>
