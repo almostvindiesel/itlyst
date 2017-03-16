@@ -17,11 +17,12 @@ angular
 
 
 .controller('AppCtrl', function($scope, $ionicModal, $timeout, $q, $ionicPlatform, config,  $location, $ionicHistory, LoginService, ApiService) {
-  console.log("Loading app controller...");
+  console.log("Loading AppCtrl...");
 })
 
 
 .controller('FtueCtrl', function($scope, $ionicModal, $ionicPlatform, config, VenueService, ApiService, LoginService, $ionicHistory, $location, $q, $http, $base64, $timeout) {
+  console.log("loading FtueCtrl...");
 
   $scope.go_and_complete_ftue = function ( path ) {
     console.log("Going to " + path);
@@ -45,8 +46,6 @@ angular
   };
 
 
-
-  console.log("loading ImageCtrl... ");
 
   $scope.options = {
     loop: false,

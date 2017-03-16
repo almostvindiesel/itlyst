@@ -37,7 +37,7 @@
                  max-selected-items="1"/>
             </label>
         </form>
-        <div ng-show="recent_cities">
+        <div ng-show="recent_cities.length > 0">
           <i class=buttonlabel>Recent:</i>
             <button class="clearbutton mwhite" ng-repeat="city in recent_cities" ng-click="selectRecentCity(city)" style="margin: 0px 5px 0px 0px;">{{city.name}}</button>
           </p>

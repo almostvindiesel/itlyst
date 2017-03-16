@@ -11,6 +11,17 @@ console.log("Opened app.js");
 
 angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
+.constant("config", {
+  "api_servers": [
+    {"name": "prod", "url": "http://www.itlyst.com"},
+    {"name": "local", "url": "http://mars.local:5000"},
+  ]
+})
+
+value('api_url', 'http://www.itlyst.com')
+//.value('api_url', 'http://mars.local:5000')
+//.value('api_url', 'http://localhost:5000')
+
 /*
 .directive('capture', function(){
    return {
@@ -36,19 +47,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 })
 
 
-.constant("config", {
-  "api_servers": [
-    {"name": "local", "url": "http://mars.local:5000"},
-    {"name": "prod", "url": "http://www.itlyst.com"},
-  ]
-})
 
 
 
 
-.value('api_url', 'http://www.itlyst.com')
-//.value('api_url', 'http://mars.local:5000')
-//.value('api_url', 'http://localhost:5000')
+
+
 
 
 .run(function($ionicPlatform) {
@@ -416,7 +420,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
           //Set the login status
           status.isLoggedIn = response.login_status;
           console.log("--- User completed mobile ftue: " + response.has_completed_mobile_ftue);
-          console.log("--- User logged stauts: " + response.login_status);
+          console.log("--- User logged status: " + response.login_status);
           //console.log(response);
           status.hasCompletedFtue = response.has_completed_mobile_ftue;
 
