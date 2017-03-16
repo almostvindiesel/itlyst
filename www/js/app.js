@@ -391,8 +391,13 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       var password = getPassword();
       if (username == null && password == null) {
         var msg = "No username and password stored in local storage.";
-        console.log(msg);
-        return msg;
+        console.log("got here..");
+        
+        //!!! Need to return an empty function here... probably should rethink arcitecture
+        function empty_function(msg) {
+            console.log(msg);
+        }
+        return empty_function;
         
       } else {
         //status.hasCompletedFtue = true;
