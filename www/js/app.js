@@ -46,8 +46,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
 
 
-//.value('api_url', 'http://www.itlyst.com')
-.value('api_url', 'http://mars.local:5000')
+.value('api_url', 'http://www.itlyst.com')
+//.value('api_url', 'http://mars.local:5000')
 //.value('api_url', 'http://localhost:5000')
 
 

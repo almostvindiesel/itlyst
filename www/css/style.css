@@ -331,7 +331,7 @@ color: black !important;
 }
 
 .imagebox  {
-  width: 600px;
+  width: ;
   height: 480px;
   padding: 20px 5px 20px 5px;
   opacity: 1.0;
@@ -340,7 +340,7 @@ color: black !important;
   vertical-align: middle;
 }
 
-ion-view, ion-tab {
+ion-view, ion-tabs {
   max-width: 768px !important;
 }
 
