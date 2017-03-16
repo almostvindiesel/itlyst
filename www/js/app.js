@@ -9,7 +9,6 @@
 console.log("Opened app.js");
 
 
-
 angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
 /*
@@ -45,8 +44,10 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 })
 
 
-.value('api_url', 'http://www.itlyst.com')
-//.value('api_url', 'http://mars.local:5000')
+
+
+//.value('api_url', 'http://www.itlyst.com')
+.value('api_url', 'http://mars.local:5000')
 //.value('api_url', 'http://localhost:5000')
 
 
@@ -79,7 +80,18 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
   })
 */
 
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider, $urlRouterProvider, $sceDelegateProvider) {
+
+  //!!! potential security issue?
+  $sceDelegateProvider.resourceUrlWhitelist(['**']);
+  /*
+  $sceDelegateProvider.resourceUrlWhitelist([
+   // Allow same origin resource loads.
+   'self',
+   // Allow loading from our assets domain.  Notice the difference between * and **.
+   'http://www.itlyst.com/**']);
+  */
+
   $stateProvider
 
   .state('app', {
@@ -89,12 +101,11 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     controller: 'AppCtrl'
   })
 
-
   .state('app.map', {
     cache: false, 
     url: '/map',
     views: {
-      'venues-tab': {
+      'map-tab': {
         templateUrl: 'templates/map.html',
         controller: 'MapCtrl'
       }/*,
@@ -150,6 +161,17 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     }
   })
   */
+
+  .state('app.venue_search', {
+    cache: false, 
+    url: '/venue_search',
+    views: {
+      'venues-tab': {
+        templateUrl: 'templates/venue_search.html',
+        controller: 'VenueSearchCtrl'
+      }
+    }
+  })
 
   .state('app.venues', {
     url: '/venues',
@@ -364,6 +386,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
   var login = function (api_url) {
       //Note that the username is the email address in this case
+      console.log("Attempting to login...");
       var username = getEmail();
       var password = getPassword();
       if (username == null && password == null) {
@@ -375,6 +398,11 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
         //status.hasCompletedFtue = true;
 
         var headers = { headers: {'Authorization': 'Basic '+ $base64.encode( username + ':' + password) } }
+        //console.log("auth heads --------------------");
+        //console.log("Encoding: " + $base64.encode( username + ':' + password));
+        //console.log(headers);
+        //console.log("--------------------");
+
         var url = api_url + '/api/v1/login';
 
        return $http.get(url, headers)
@@ -382,14 +410,14 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
           //Set the login status
           status.isLoggedIn = response.login_status;
-          console.log("User logged in? " + response.login_status);
-          console.log("User completed mobile ftue? " + response.has_completed_mobile_ftue);
-          console.log(response);
+          console.log("--- User completed mobile ftue: " + response.has_completed_mobile_ftue);
+          console.log("--- User logged stauts: " + response.login_status);
+          //console.log(response);
           status.hasCompletedFtue = response.has_completed_mobile_ftue;
 
           //Set the user id
           setUserId(response.user_id);
-          console.log("User Id: ", getUserId());
+          //console.log("User Id: ", getUserId());
           return response;
         })
         .error(function(rejection, status) {
@@ -472,45 +500,146 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
   }
 
 
+
+  function LocationService($http, config) {
+
+    //Default lat/long arbritrary set to San Francisco
+    var data = {
+      latitude: 37.773972,
+      longitude: -122.431297
+    };
+
+    function getLatLongFromIPAddress() {
+        return $http({
+              method: 'GET',
+              url: 'http://freegeoip.net/json/'
+          })
+          .then(function(response) {
+              data.latitude = response.data.latitude;
+              data.longitude = response.data.longitude;
+              //console.log("User IP Lat: "+ data.latitude);
+              //console.log("User IP Long: "+ data.longitude);
+              return {lat: data.latitude, lng: data.longitude}
+          }, function(rejection) {
+              return response;
+      });
+      }
+
+    return {
+      getLatLongFromIPAddress: getLatLongFromIPAddress,
+      data: data
+    };
+
+  }
+
+
+
+  function UserCityService($http, config) {
+
+    function getRecentlyAddedCities(numCities, api_url, loginHeader, user_id) {
+        var headers = {'headers': loginHeader};
+        return {
+          async: function() {
+            var url = api_url + '/api/v1/usercity/' + numCities + "?user_id=" + user_id;
+            //console.log("Querying: " + url);
+            return $http.get(url, headers); 
+          }
+        };
+      }
+
+    return {
+      getRecentlyAddedCities: getRecentlyAddedCities
+    };
+
+  }
+
+
+
+
   function VenueService($http, config) {
 
     var zoom_options = [1, 3, 5, 10, 25, 50];
     var venue_type_options = [ 'food', 'place', 'coffee', 'all' ]
+    var sort_by_options = [ 'recent', 'rating', 'distance' ]
     
-
     var data = {
       venues: {},
       zoom_options: zoom_options,
       zoom: 50,
+      latitude: 0,
+      longitude: 0,
+      user_ratings_filter: Array("0","1","4"),
       venue_type_options: venue_type_options,
       venue_type: 'all',
+      sort_by_options: sort_by_options,
+      sort_by: 'recent',
       city: 'Los Angeles',
+      google_place_id: null,
       refreshVenues: false
     };
 
     // Generates the parameters used to query the api. 
-    function generateUrlParameters () {
-      var params_obj = data;
+    function generateVenueUrlParameters () {
+      //console.log(data);
 
-      delete params_obj.venues;  
-      for (var key in params_obj) {
-        if (params_obj[key] == null) {
-          delete params_obj[key]; 
-        }
-      }
+      var params_obj = {};
+      params_obj['zoom'] = data['zoom'];
+      params_obj['city'] = data['city'];
+      params_obj['latitude'] = data.latitude;
+      params_obj['longitude'] = data.longitude;
+      params_obj['city'] = data['city'];
+      
+      params_obj['sort_by'] = data['sort_by'];
+      params_obj['user_rating'] = data.user_ratings_filter.join(",");
+
+      //console.log(params_obj);
+
       return jQuery.param(params_obj);
     }
 
     function setForceRefreshVenues(bol){
-      console.log("Setting refreshVenues: " + bol);
+      console.log("--- Setting refreshVenues: " + bol);
       data['refreshVenues'] = bol;
     }
 
-    function setCity(val){
-      console.log("Setting city: " + val);
-      data['city'] = val;
+
+    function setLatitude(val){
+      console.log("--- Setting latitude: " + val);
+      data['latitude'] = val;
     }
-    
+
+    function setLongitude(val){
+      console.log("--- Setting longitude: " + val);
+      data['longitude'] = val;
+    }
+
+    function setCity(val){
+      console.log("--- Setting city: " + val);
+      //console.log("Setting city from city object: ");
+      //console.log(obj);
+      data['city'] = val;
+      //data['google_place_id'] = obj.google_place_id;
+    }
+
+    function addUserRatingFilter(val){
+      console.log("--- Adding user rating filter: " + val);
+      data.user_ratings_filter.push(val);
+    }
+
+    function removeUserRatingFilter(val){
+      console.log("Removing user rating filter: " + val);
+      for (i = 0; i < data.user_ratings_filter.length; i++) {
+        if(data.user_ratings_filter[i] == val) {
+          data.user_ratings_filter.splice(i,1);
+        }      
+      }
+    }
+
+    function setSortBy(val){
+      console.log("Setting sort_by: " + val);
+      data['sort_by'] = val;
+    }
+
     function setZoom(val){
       console.log("Setting zoom: " + val);
       data['zoom'] = val;
@@ -521,11 +650,22 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       data['venues'] = val;
     }
 
+    function getLatLngFromGooglePlaceId(google_place_id, api_url) {
+        //var headers = {'headers': loginHeader}
+        return {
+          async: function() {
+            var url = api_url + '/api/v1/city?google_place_id=' + google_place_id; // + "&user_id=" + user_id;
+            console.log("Querying: " + url);
+            return $http.get(url); //, headers); 
+          }
+        };
+    }
+
     function extractVenues(api_url, loginHeader, user_id) {
         var headers = {'headers': loginHeader}
         return {
           async: function() {
-            var venue_url = api_url + '/api/v1/venues?' + generateUrlParameters() + "&user_id=" + user_id;
+            var venue_url = api_url + '/api/v1/venues?' + generateVenueUrlParameters() + "&user_id=" + user_id;
             console.log("Querying: " + venue_url);
             return $http.get(venue_url, headers); 
           }
@@ -570,14 +710,48 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       if (v) {
         console.log("Found venue on " + source + ": " + v.name);
         v.setJQueryDocument(response);
-        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-        console.log(response);
+        //console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+        //console.log(response);
         //v.setName();
         setVenueProperties(v, source);
         v.setPostParameters();
         return v;
       }
     }
+
+
+    function sendToServer(parameters, server_url, loginHeader, user_id) {
+      parameters.user_id = user_id;
+      console.log("Posting venue to server: ");
+      console.log("  Server: " + server_url);
+      console.log("  Post Params: ");
+      console.log(parameters);
+      //console.log($httpParamSerializerJQLike(parameters));
+      //console.log( JSON.stringify(parameters));
+      //console.log( parameters );
+      var headers = loginHeader;
+      headers['Content-type'] = 'application/json;charset=utf-8';
+      console.log("  Headers: ");
+      console.log(headers);
+
+      return $http({
+          method: 'POST',
+          url: server_url + '/addnote',
+          data: parameters,
+          headers: headers
+      })
+      .then(function(response) {
+          console.log("Response: ");
+          console.log(response.data);
+          return response.data;
+      }, 
+      function(rejection) { 
+          console.log("Rejection: ");
+          console.log(rejection);
+          return rejection;
+      });
+    }
+
 
     function setVenueProperties (v, source) {
       //console.log("1------------------------------");
@@ -595,14 +769,20 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       //v.setPostParameters();
     }
 
-
     return {
       extractVenues: extractVenues,
       extractVenueFromUrl: extractVenueFromUrl,
       createVenue: createVenue,
       setVenues: setVenues,
       setForceRefreshVenues: setForceRefreshVenues,
+      getLatLngFromGooglePlaceId: getLatLngFromGooglePlaceId,
+      sendToServer: sendToServer,
+      addUserRatingFilter: addUserRatingFilter,
+      removeUserRatingFilter: removeUserRatingFilter,
       setZoom: setZoom,
+      setLatitude: setLatitude,
+      setLongitude: setLongitude,
+      setSortBy: setSortBy,
       setCity: setCity,
       data: data
     };
@@ -634,6 +814,27 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
     }
 
+    function edit(user_rating, venue_id, api_url, loginHeader, user_id) {
+      console.log("About to put edited note to server. user_rating: " + user_rating + ", venue_id: " + venue_id, " user_id: " + user_id);
+      var headers = loginHeader;
+      headers['Content-type'] = 'application/json;charset=utf-8';
+
+      $http({
+          method: 'PUT',
+          url: api_url + '/api/v1/venue/' + venue_id,
+          headers: headers,
+          data: {
+            user_rating: user_rating,
+            user_id: user_id
+          }
+      })
+      .then(function(response) {
+          console.log(response.data);
+      }, function(rejection) {
+          console.log(rejection.data);
+      });
+    }
+
     //!!! should have headers here too...
     function search(api_url, name, city) {
       console.log("About to search for venue name: " + name);
@@ -650,8 +851,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
           }
       })
       .then(function(response) {
-          console.log("Foursquare API Response: ");
-          console.log(response.data['venues']);
+          //console.log("Foursquare API Response: ");
+          //console.log(response.data['venues']);
           return response.data['venues'];
       }, function(rejection) {
           console.log(rejection.data);
@@ -660,6 +861,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
     return {
       remove: remove,
+      edit: edit,
       search: search
     };
   }
@@ -805,13 +1007,15 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     .factory('ApiService', ApiService)
     .factory('VenueService', VenueService)
     .factory('LoginService', LoginService)
+    .factory('LocationService', LocationService)
     .factory('ClipboardService', ClipboardService)
+    .factory('UserCityService', UserCityService)
     .factory('VenueApi', VenueApi)
     .factory('NoteApi', NoteApi)
     .factory('ImageApi', ImageApi)
     .factory('TextApi', TextApi)
 
-    ;
+  ;
     
 
 })();

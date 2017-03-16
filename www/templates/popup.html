@@ -60,10 +60,10 @@
             <button class="button button-light button-small adminbutton" ng-click="triggerCitySearch(callback)">
               <i class="icon ion-ios-search"></i><i style="font-size: 80%;">Not &nbsp;{{selectedCity}}? </i>
             </button>-->
- <input id="citySearch" ion-autocomplete type="text" readonly="readonly" class="ion-autocomplete citySelection" autocomplete="on"
-                 ng-model="model"
-                 item-value-key="id"
-                 item-view-value-key="name"
+            <input id="citySearch" ion-autocomplete type="text" readonly="readonly" class="ion-autocomplete citySelection" autocomplete="on"
+                 ng-model="tbd"
+                 item-value-key="google_place_id"
+                 item-view-value-key="city_display"
                  items-method="getCities(query)"
                  items-method-value-key="items"
                  placeholder="Not {{selectedCity}}?"
@@ -71,7 +71,7 @@
                  items-removed-method="itemsRemoved(callback)"
                  cancel-label="Cancel"
                  max-selected-items="1"/>
-            <button class="button button-light button-small adminbutton" style="height:20px !important;"ng-click="clearClipboardNotes()">
+            <button class="button button-light button-small adminbutton" style="height:20px !important;" ng-click="clearClipboardNotes()">
               <i class="fa-eraser"></i> <i style="font-size: 80%;">Clear Notes</i>
             </button>
           </div>

@@ -1,0 +1,59 @@
+<ion-view >
+  <ion-nav-bar class="bar-positive">
+    <ion-nav-back-button>
+    </ion-nav-back-button>
+  </ion-nav-bar>
+  <ion-nav-title>
+     <img src="img/itlyst-fork-logo.png" style="width: 20px;">
+     Venue Search  
+  </ion-nav-title>
+  <ion-content>
+    <div class="list">
+      <form>
+
+        <label class="item item-input">
+          <span class="input-label">Venue:</span>
+          <input ion-autocomplete type="text" readonly="readonly" class="ion-autocomplete" autocomplete="off"
+               ng-model="modela"
+               item-value-key="id"
+               item-view-value-key="display_name"
+               items-method="getVenues(query)"
+               items-method-value-key="items"
+               items-clicked-method="venueClicked(callback)"
+               items-removed-method="venueRemoved(callback)"
+               cancel-label="Cancel"
+               max-selected-items="1"
+               ng-model-options="{ debounce: 150 }"
+               >
+        </label>
+
+        <label class="item item-input">
+          <span class="input-label">City:</span>
+          <input ion-autocomplete type="text" readonly="readonly" class="ion-autocomplete" autocomplete="off"
+               ng-model="modelb"
+               item-value-key="id"
+               item-view-value-key="name"
+               items-method="getCities(query)"
+               items-method-value-key="items"
+               placeholder="{{city_selected}}"
+               items-clicked-method="cityClicked(callback)"
+               items-removed-method="itemsRemoved(callback)"
+               cancel-label="Cancel"
+               max-selected-items="1"
+               ng-model-options="{ debounce: 150 }">
+        </label>
+
+        <label class="item item-input">
+          <textarea id="optionalVenueNotes"  style="height: 150px !important; min-width: 90% !important; margin: 0px 10px 0px 0px;" placeholder=" Optional Notes"></textarea>
+        </label>
+
+      </form>
+
+      <!-- button-small -->
+      <br>&nbsp;<button class="button button-stable button button-positive" style="width:140px;" ng-click="addVenueAndNote()"><i class="ion-ios-location-outline"></i> Save Venue </button>
+      
+
+    </div>
+  </ion-content>
+</ion-view>
+

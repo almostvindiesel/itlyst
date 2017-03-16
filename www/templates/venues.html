@@ -7,11 +7,19 @@
     -->
   </ion-nav-bar>
   <ion-nav-title>
-   <button class="button button-icon icon venuebutton" ng-click="go('app/map')">
-    <i class="ion-map"></i>
-   </button>
+
+    <button class="button button-icon icon headermapbutton" ng-click="go('app/venue_search')" style="float:left; min-height: 40px; padding: 0px 0px 0px 4px !important;"><i style="vertical-align: middle;" class="fa fa-plus-square-o fa-1_3x mwhite" aria-hidden="true"></i></button>
+  
      <img src="img/itlyst-fork-logo.png" style="width: 20px;">
       {{active_city}}
+
+    <button class="button button-icon icon venuebutton" ng-click="go('app/venue_search')">
+      <i class="ion-search mwhite"></i>
+    </button>
+    <button class="button button-icon icon venuebutton" ng-click="sendEmail()">
+      <i class="ion-ios-upload-outline mwhite"></i>
+    </button>
+
   </ion-nav-title>
 
   <ion-content>
@@ -68,21 +76,46 @@
               <button class="button button-icon icon ion-ios-minus-outline venue-button" ng-click="data.showDelete = !data.showDelete"></button>
             </div>-->
             <div style="float: left;">
-              <button class="clearbutton headerbutton" ng-click="addNote($event, item.id)"><i class="fa fa-plus-square-o fa-1_5x mwhite" aria-hidden="true"></i></button>
+              <button class="clearbutton headerbutton" ng-click="addNote($event, item.id)"><i class="fa fa-plus-square-o fa-1_3x mwhite" aria-hidden="true"></i></button>
             </div>
             <div style="float: right; ">
               <!--ng-click="go_venue_detail('app/venue/{{item.id}}/detail',item.id)" -->
-              <button class="clearbutton headerbutton" ng-click="go_venue_detail($event, 'app.venue', item.id)"><i class="fa fa-ellipsis-h fa-1_5x mwhite" aria-hidden="true"></i></button>
+              <button class="clearbutton headerbutton" ng-click="go_venue_detail($event, 'app.venue', item.id)"><i class="ion-chevron-right fa-1_3x mwhite" aria-hidden="true"></i></button>
               <!--<a class="button icon icon-right ion-chevron-right" href="#/app/venue/{{item.id}}/detail">Scientific Facts</a>-->
+            </div>
+            <div style = "float: right">
+              <button class="clearbutton headerbutton" ng-click="toggleUserRatingPrompt($event, item)">
+                <i ng-show="item.user_rating == 4" class="fa-smile-o fa-1_3x mwhite"></i>
+                <i ng-show="item.user_rating == 3" class="fa-meh-o fa-1_3x mwhite"></i>
+                <i ng-show="item.user_rating == 2" class="fa-frown-o fa-1_3x mwhite"></i>
+                <i ng-show="item.user_rating == 1" class="fa-thumb-tack fa-1_3x mwhite"></i>
+                <i ng-show="item.user_rating == 0" class="fa-circle-thin fa-1_3x mwhite"></i>
+              </button> 
             </div>
             <div class=venuetitlediv>
              <h4 class=venuetitle>
-              {{ item.name | limitTo: 20 }}{{item.name.length > 20 ? '...' : ''}} 
+              {{ item.name | limitTo: 23 }}{{item.name.length > 23 ? '...' : ''}} 
             </h4>
             </div>
           </div>
         </div>
+        <div class="headerbarclear" ng-show="item.user_rating_display"}>
+          <div class="venuetitlecontainer" style="text-align: right;">
+          <button class="clearbutton"
+                  ng-click="changeUserRating(item.id, 4 )"> <i class="fa-smile-o fa-3x" ></i></button> 
+          <button class="clearbutton"
+                  ng-click="changeUserRating(item.id, 3 )"> <i class="fa-meh-o fa-3x"></i></button> 
+          <button class="clearbutton"
+                  ng-click="changeUserRating(item.id, 2 )"> <i class="fa-frown-o fa-3x"></i></button> 
+          <button class="clearbutton"
+                  ng-click="changeUserRating(item.id, 1 )"> <i class="fa-thumb-tack fa-3x" ></i></button>
+          <button class="clearbutton"
+                  ng-click="changeUserRating(item.id, 0 )"> <i class="fa-circle-thin fa-3x"></i></button> 
+          &nbsp;
+          </div>
+        </div>
         <!--</ion-header-bar>-->
+
 
         <!-- Venue Notes -->
           <!-- !!! must be a better way to seperate these two divs so tjhat they don't overlap... adding temp filler div for now -->
@@ -94,7 +127,7 @@
             <ion-list show-delete="false" can-swipe="true" swipe-direction="both">
 
               <!-- 1 image, 1 note --> 
-              <div class="imageblock " ng-repeat="image in item.images" ng-if="(item.images.length == 1 && item.notes.length == 1)">
+              <div class="imageblock1" ng-repeat="image in item.images" ng-if="(item.images.length == 1 && item.notes.length == 1)">
                 <ion-item ng-repeat="note in item.notes" class="item-text-wrap" item="item" style="min-height:175px !important;">
                   <button class="image-button" ng-click="go('app/image/{{image.id}}')">
                     <img src="{{image.image_thumb}}" class="venueimage animated bounceInRight" >
@@ -133,7 +166,7 @@
 
             <!-- Venue Images -->
             <div style="clear:both;" ng-if="(item.images.length >= 1) && !(item.images.length == 1 && item.notes.length == 1)">
-                  <div class="imageblock" ng-repeat="image in item.images">
+                  <div class="imageblock2plus" ng-repeat="image in item.images">
                     <button class="image-button" ng-click="go('app/image/{{image.id}}')"><img src="{{image.image_thumb}}" class="venueimage animated bounceInRight" ></button>
                   </div>
             </div>
@@ -147,7 +180,7 @@
 
 
 <script id="editNotePopup" type="text/ng-template">
-  <ion-popover-view>
+  <ion-popover-view class='dialogpopover'>
     <ion-content>
       <label class="item item-input">
         <textarea  #input id="editVenueNote" autofocus focus-me placeholder="Additional Notes">{{noteToEdit}}</textarea>
@@ -166,12 +199,15 @@
 
 
 <script id="newNotePopup" type="text/ng-template">
-  <ion-popover-view>
+  <ion-popover-view class='dialogpopover'>
     <ion-content>
       <label class="item item-input">
         <textarea #input id="newVenueNote" autofocus focus-me placeholder="Additional notes"></textarea>
       </label>
       <span>
+      <!--<button class="button button-calm round" ng-click="selectNoteImages()">
+        Upload Images
+      </button>-->
       <button class="button button-positive round"  ng-click="saveNewNote()">
         Save
       </button>
@@ -182,6 +218,25 @@
     </ion-content>
   </ion-popover-view>
 </script>
+
+<!--
+<script id="rateVenuePopup" type="text/ng-template">
+  <ion-popover-view class='ratingpopover'>
+    <ion-content>
+          <button class="button button {{venueToRate.user_rating === 4 ? 'button-stable' : 'button-light'}} "
+                  ng-click="changeUserRating(venueToRate.id, 4 )"><i class="fa-smile-o" ></i></button> 
+          <button class="button button {{venueToRate.user_rating === 3 ? 'button-stable' : 'button-light'}} "
+                  ng-click="changeUserRating(venueToRate.id, 3 )"><i class="fa-meh-o"></i></button> 
+          <button class="button button {{venueToRate.user_rating === 2 ? 'button-stable' : 'button-light'}} "
+                  ng-click="changeUserRating(venueToRate.id, 2 )"><i class="fa-frown-o"></i></button> 
+          <button class="button button {{venueToRate.user_rating === 1 ? 'button-stable' : 'button-light'}} "
+                  ng-click="changeUserRating(venueToRate.id, 1 )"><i class="fa-thumb-tack" ></i></button>
+          <button class="button button {{venueToRate.user_rating === 0 ? 'button-stable' : 'button-light'}} "
+                  ng-click="changeUserRating(venueToRate.id, 0 )"><i class="fa-circle-thin"></i></button> 
+    </ion-content>
+  </ion-popover-view>
+</script>
+-->
 
 
 

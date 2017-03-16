@@ -123,16 +123,44 @@ function FoursquareVenue(page){
 		//prototype
 	}
 
+	//<meta content="Badmaash" property="og:title" />
 	this.setName = function () {
-		//this.name = document.querySelectorAll("[property='og:title']")[0].content;
-		//this.name = $("[property='og:title']").first().attr('content');
-		this.name = $(this.jqdoc).filter("[property='og:title']").first().attr('content');
+
+
+		try {
+			this.name = $(this.jqdoc).filter("[property='og:title']").first().attr('content');
+			console.log("name: " + this.name);
+			console.log("namelen: " + this.name.length);
+
+		} catch(err) {
+			console.log("Could not find name on page. Retrying...\r\n Err: " + err.message);
+		}
+
+		if (!(this.name)) {
+			console.log("got here...");
+			try {
+				this.name = $(this.jqdoc).find("[property='og:title']").first().attr('content');
+			} catch(err) {
+				console.log("Could not find name on page second time. Giving up: " + err.message);
+			}	
+		}
+
+	
 	}
 
 	//<meta content="foursquare://venues/48ff3964f964a52056521fe3" property="al:iphone:url" />
 	this.setSourceId = function () {
 		//this.source_id = document.querySelectorAll("[property='al:iphone:url']")[0].content.replace('foursquare://venues/','');
-		this.source_id = $(this.jqdoc).filter("[property='al:iphone:url']").first().attr('content').replace('foursquare://venues/','');
+		try {
+			this.source_id = $(this.jqdoc).filter("[property='al:iphone:url']").first().attr('content').replace('foursquare://venues/','');
+		} catch(err) {
+			console.log("Could not find source_id on page. Retrying... \r\n Err: " + err.message);
+			try {
+				this.source_id = $(this.jqdoc).find("[property='al:iphone:url").first().attr('content').replace('foursquare://venues/','');
+			} catch(err) {
+				console.log("Could not find source_id on page 2nd time. Giving up: " + err.message);
+			}
+		}
 	}
 
 	this.setLatitude = function () {

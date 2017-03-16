@@ -8,7 +8,9 @@
     </div>
   </ion-header-bar>
   <ion-content>
-    <iframe src="http://itlyst.com/user/register" capture width=100% height=100%></iframe>
+  {{forgetPassUrl}}
+
+  <iframe src="{{getSignupUrl()}}" capture width=100% height=100%></iframe>
   <!--
     <form ng-submit="doSignup()">
       <div class="list">

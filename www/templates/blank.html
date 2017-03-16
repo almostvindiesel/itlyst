@@ -69,7 +69,7 @@
      Layover is triggered when there a review url detected in copied text
   -->
 <script id="clipboardPopup" type="text/ng-template">
-  <ion-popover-view>
+  <ion-popover-view class='dialogpopover'>
     <ion-content>
     <span>
       <button class="button button-positive round" style="min-width: 70%" ng-click="addClipboardData()">
@@ -102,7 +102,7 @@
      potential venues are detected 
   -->
 <script id="clipboardDetectVenuePopup" type="text/ng-template">
-  <ion-popover-view>
+  <ion-popover-view class='dialogpopover'>
     <ion-content>
       <div>
         <div class="detectedVenues">
@@ -128,10 +128,11 @@
             <button class="button button-light button-small adminbutton" ng-click="triggerCitySearch(callback)">
               <i class="icon ion-ios-search"></i><i style="font-size: 80%;">Not &nbsp;{{selectedCity}}? </i>
             </button>-->
- <input id="citySearch" ion-autocomplete type="text" readonly="readonly" class="ion-autocomplete citySelection" autocomplete="on"
+
+            <input id="citySearch" ion-autocomplete type="text" readonly="readonly" class="ion-autocomplete citySelection" autocomplete="on"
                  ng-model="model"
-                 item-value-key="id"
-                 item-view-value-key="name"
+                 item-value-key="google_place_id"
+                 item-view-value-key="city_display"
                  items-method="getCities(query)"
                  items-method-value-key="items"
                  placeholder="Not {{selectedCity}}?"

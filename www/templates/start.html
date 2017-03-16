@@ -19,25 +19,31 @@
     <br>
     <div class="row" ng-hide="isLoggedIn" style="height: 140px !important;"></div>
     <div class="row" ng-show="isLoggedIn" style="height: 145px !important;">
-      <div class="col col-60 col-offset-20">
+      <div class="col col-80 col-offset-10">
         <form>
           <label class="item item-input">
             <span class="input-label searchglass" ><i class="ion-ios-search" ></i></span>
             <input ion-autocomplete type="text" readonly="readonly" class="ion-autocomplete" autocomplete="off" 
-                 ng-model="model"
-                 item-value-key="id"
-                 item-view-value-key="name"
+                 ng-model="tbd"
+                 item-value-key="google_place_id"
+                 item-view-value-key="city_display"
                  items-method="getCities(query)"
                  items-method-value-key="items"
                  placeholder="eg, San Francisco"
                  items-clicked-method="citiesClicked(callback)"
                  items-removed-method="itemsRemoved(callback)"
                  cancel-label="Cancel"
+                 multiple-select="false"
                  max-selected-items="1"/>
             </label>
         </form>
+        <div ng-show="recent_cities">
+          <i class=buttonlabel>Recent:</i>
+            <button class="clearbutton mwhite" ng-repeat="city in recent_cities" ng-click="selectRecentCity(city)" style="margin: 0px 5px 0px 0px;">{{city.name}}</button>
+          </p>
+        </div>
       </div>
-      <div class="col col-30"></div>
+      <div class="col col-20"></div>
     </div>
     <br>
 
@@ -49,8 +55,6 @@
       <button class="clearbutton mwhite mediumfont" ng-click="signup()">Sign up</button>
       <br><br>
       <!--<button class="clearbutton mwhite mediumfont" ng-click="go('ftue')">Tutorial</button>-->
-
-
 
 
     </div>
