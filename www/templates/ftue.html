@@ -6,57 +6,189 @@
   {{ftueTitle}}
   </ion-nav-title>
 
-  <ion-content scroll="false">
+  <ion-content scroll="true">
     <ion-slides options="options" slider="data.slider">
 
 
+      <!-- Download Extension -->
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+      <ion-slide-page>
+        <div>
+          <!--
+          <div class="row">
+            
+            <div class ="col">
+              <h4>itlyst works on your iPhone or in Chrome</h4>
+            </div>
+          </div>
+          -->
+
+          
+
+          <div class="row">
+            <div class ="col">
+              The chrome extension allows you to save tips and pics from your favorite review sites easily. First, you need to use Chrome. Next, install the extension and login: 
+              <br><br>
+
+              <a href="https://chrome.google.com/webstore/detail/itlyst/ecfgefcjfjkbmmcaegehencgpjokoagp" target="_">
+                <button class="button button-stable button-calm">Get <img src="img/itlyst-fork-logo.png" style="width:20px"> itlyst for <img src="img/chrome-icon.png" style="width:20px" ng-click="sect1b=true"> Chrome</button>
+              </a>
+            </div>
+          </div>
+
+          <button class="clearbutton morebutton" ng-hide="sect1b" ng-click="sect1b=true"><i class="ion-chevron-down fa-1_5x" aria-hidden="true"></i></button>
+
+          <!--
+          <button class="clearbutton morebutton" ng-hide="sect1a" ng-click="sect1a=true"><i class="ion-chevron-down fa-1_5x" aria-hidden="true"></i></button>
+
+          
+          <div class="row" ng-show="sect1a">
+            <h4>Three Parts to Itlyst</h4>
+          </div>
+          <div class="row" ng-show="sect1a">  
+            <div class ="col" style="text-align: center" >
+              <img src="img/itlyst-iphone-icon-app.png" class="ftueicon"><br>
+              <small>itlyst on iPhone</small>
+            </div>
+            <div class="col" style="text-align: center" >
+              <img src="img/itlyst-chrome-extension-logo.png" class="ftueicon"><br>
+              <small>Save on Desktop using Chrome Extension</small>  
+            </div>
+            <div class="col" style="text-align: center" >
+              <img src="img/chrome-icon.png" class="ftueicon"><br>
+              <small>Access itlyst on any browser</small>
+            </div>
+          </div>
+          
+
+          <button class="clearbutton morebutton" ng-hide="!sect1a || sect1b" ng-click="sect1b=true"><i class="ion-chevron-down fa-1_5x" aria-hidden="true"></i></button>
+          -->
+
+          
+
+
+
+          <div class="row" ng-show="sect1b">
+            <div class ="col">
+              <h4>All Set?</h4>
+              If you're on your phone, don't sweat. We've emailed you a link to download the chrome extension on your computer later 
+              <br><br>
+              <div style="float:right">
+                <button class="button button-stable button-positive" ng-click="nextSlide()">Next: Using the Extension <i class="ion-chevron-right fa-1_2x" aria-hidden="true"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ion-slide-page>
+
+      <!-- Extension -->
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
       <ion-slide-page>
         <div>
           <div class="row">
             <div class ="col">
-              <span class=number>1</span> Copy tips from Email, Facebook or any site:<br>
+              <!--<h4></h4>-->
+              Let's add your first note using the extension. Click any icon to see reviews for Pizzeria Mozza in LA:<br>
+              <span>
+                <a href="https://www.yelp.com/biz/pizzeria-mozza-los-angeles" target="_"><button class="hrefbutton clearbutton"><img src=img/yelp-app-icon.jpeg class="appicon"></button></a>
+                <a href="https://foursquare.com/v/pizzeria-mozza/4724d2d5f964a520d74b1fe3" target="_"><button class="hrefbutton clearbutton"><img src=img/foursquare-app-icon.jpg class="appicon"></button></a>
+                <a href="https://www.tripadvisor.com/Restaurant_Review-g32655-d782715-Reviews-Pizzeria_Mozza-Los_Angeles_California.html" target="_"><button class="hrefbutton clearbutton"><img src=img/tripadvisor-app-icon.jpeg class="appicon"></button></a>
+              </span>
             </div>
           </div>
-          <div class="row">
+
+          <button class="clearbutton morebutton" ng-hide="sect2a" ng-click="sect2a=true"><i class="ion-chevron-down fa-1_5x" aria-hidden="true"></i></button>
+
+          <div class="row" ng-show="sect2a">
             <div class ="col">
-              <div class="ftueimagecontainer">
-                <img src="img/detected-venues-gmail.jpg" class="ftueimage">&nbsp;&nbsp;
-              </div>
-            </div>
-            <div class="col">
-              <br><br>
-              <div class="ftueimagecontainer">
-                <img src="img/detected-venues-facebook.jpg" class="ftueimage">
-              </div>
+              <h4>Highlight Text > Right Click > Save to Itlyst</h4>
+              itlyst will save the text<br>
+              <img src="img/ftue-savetext.png" style="width:250px">
+              <br>
             </div>
           </div>
-          <hr>
-          <div class="row">
+
+          <button class="clearbutton morebutton" ng-hide="!sect2a || sect2b" ng-click="sect2b=true"><i class="ion-chevron-down fa-1_5x" aria-hidden="true"></i></button>
+
+          <div class="row" ng-show="sect2b">
             <div class = "col">
-              <span class=number>3</span> Go to <div class=clipboardimagecontainer><img src="img/clipboard-screen.png" class="clipboardimage"></div>, itlyst detects the locations:<br>
-              <div class="ftueimagecontainer">
-                <img src="img/detected-venues.png" class="ftueimage">
-              </div>
-            </div>
-            <div class="col">
-              <span class=number>4</span> And saves them for you:<br><br>
-              <div class="ftueimagecontainer">
-               <img src="img/detected-venues-list.png" class="ftueimage">
-              </div>
-              
+              <h4>Find an Image > Right Click > Save to Itlyst</h4>
+              itlyst will save the image<br>
+              <img src="img/ftue-saveimg.png" style="width:250px"> 
             </div>
           </div>
-          
-          
+
+          <div style="float:right; margin-right: 20px; " ng-show="sect2b">
+            <button class="button button-stable button-positive" ng-click="nextSlide()">Next: Saving Notes <i class="ion-edit fa-1_2x" aria-hidden="true"></i> On Your iPhone <i class="ion-chevron-right fa-1_2x" aria-hidden="true"></i></button>
+          </div>
         </div>
+
       </ion-slide-page>
 
-      <!--Remember places from review apps -->
+
+      <!-- iPhone -->
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+      <ion-slide-page>
+        <div>
+          <div class="row">
+            <div class ="col">
+              <p>Open one of these review apps on your iPhone:<br>
+               <span>
+                <button class="hrefbutton clearbutton" ng-click="open_app('yelp')"><img src=img/yelp-app-icon.jpeg width=50 class="appicon"></button>
+                <button class="hrefbutton clearbutton" ng-click="open_app('foursquare')"><img src=img/foursquare-app-icon.jpg class="appicon"></button>
+                <button class="hrefbutton clearbutton" ng-click="open_app('tripadvisor')"><img src=img/tripadvisor-app-icon.jpeg class="appicon"></button>
+              </span>
+            </div>
+          </div>
+
+          <div class="row" >
+            <div class="col" >
+              <span class="number">1</span> Find venue, tap Share<br>
+              <div class="centertextindiv">
+                <img src="img/1a-yelp-venue.png" style="max-width: 220px;">&nbsp;&nbsp;
+              </div>
+            </div>
+            <div class="col" class="centertextindiv">
+              <span class=number>2</span> Tap Copy to Copy the url<br>
+              <div class="centertextindiv">
+                <img src="img/2a-yelp-venue-copy.png"  style="max-width: 220px;">
+              </div>
+            </div>
+          </div>
+
+          <button class="clearbutton morebutton" ng-hide="sect3a" ng-click="sect3a=true"><i class="ion-chevron-down fa-1_5x" aria-hidden="true"></i></button>
+
+          <div class="row" ng-show="sect3a">
+            <div class="col">
+              <span class=number>3</span> Tap the clipboard below <div class=clipboardimagecontainer><img src="img/clipboard-screen.png" class="clipboardimage"></div>, itlyst detects the venue. Feel free to type up any additional notes<br>
+              <div class="centertextindiv">
+                <img src="img/3a-yelp-venue-itlyst-add.jpg" class="ftueimage" style="max-width: 220px;">
+              </div>
+            </div>
+            <div class="col">
+              <span class=number>4</span> itlyst saves the venue, your notes, the location, and review/rating information<br>
+              <div class="centertextindiv"> <!--class="ftueimagecontainer highlightcontainer">-->
+                <img src="img/4a-yelp-venue-itlyst.jpg" class="ftueimage" style="max-width: 220px;">
+              </div>
+              <div class="centertextindiv"> <!--class="ftueimagecontainer highlightcontainer">-->
+                <img src="img/5-yelp-venue-details.png" class="ftueimage" style="max-width: 220px;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="float:right; margin-right: 10px; " ng-show="sect3a">
+            <button class="button button-stable button-positive" ng-click="nextSlide()">Next: Saving Images <i class="ion-image fa-1_2x" aria-hidden="true"></i> On Your iPhone <i class="ion-chevron-right fa-1_2x" aria-hidden="true"></i></button>
+        </div>
+
+      </ion-slide-page>
+
+      <!--
       <ion-slide-page>
         <div>
 
           <p>Copy a url from 
-            <button class="hrefbutton clearbutton" ng-click="open_app('yelp')">yelp <i class="fa-yelp"></i></button>, 
+            <button class="hrefbutton clearbutton" >yelp <i class="fa-yelp"></i></button>, 
             <button class="hrefbutton clearbutton" ng-click="open_app('foursquare')">foursquare <i class="fa-foursquare"></i></button>, or the 
             <button class="hrefbutton clearbutton" ng-click="open_app('tripadvisor')">tripadvisor <i class="fa-tripadvisor"></i></button>, 
           then navigate to the itlyst clipboard
@@ -86,45 +218,69 @@
               </div>
             </div>
           </div>
-          
 
         </div>
       </ion-slide-page>
+      -->
 
 
 
 
-      <!-- Save pictures from review apps -->
+      <!-- Save pictures from review apps 1/2 -->
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
       <ion-slide-page>
         <div>
 
           <div class="row">
             <div class = "col">
               <span class=number>1</span> Find a Picture<br>
-              <img src="img/yelp-image.jpg" class="ftueimage">&nbsp;&nbsp;
+              <img src="img/yelp-image.jpg" class="ftueimage" style="max-height:70vh;">&nbsp;&nbsp;
             </div>
             <div class="col">
-              <span class=number>2</span> Copy the url<br>
-              <img src="img/yelp-image-copy.jpg" class="ftueimage">
+              <span class=number>2</span> Tap Copy to Copy the url<br>
+              <img src="img/yelp-image-copy.jpg" class="ftueimage" style="max-height:70vh;">
             </div>
           </div>
-          <div class="row">
-            <div class="col">
-              <span class=number>3</span> Go to the itlyst clipboard: <br>
-               <img src="img/yelp-image-itlyst-add.jpg" class="ftueimage">
-            </div>
-              <div class="col">
-              <span class=number>4</span> itlyst saves the img w/ notes: <br>
-               <img src="img/yelp-image-itlyst.jpg" class="ftueimage">
-            </div>
+
+          <div style="float:right; margin-right: 10px;">
+            <button class="button button-stable button-positive" ng-click="nextSlide()">Next: Navigate to itlyst <i class="ion-chevron-right fa-1_2x" aria-hidden="true"></i></button>
           </div>
-          
 
         </div>
       </ion-slide-page>
     
+      <!-- Save pictures from review apps 2/2 -->
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+      <ion-slide-page>
+        <div>
+
+          <div class="row">
+            <div class="col" >
+              <span class=number>3</span> Go to the itlyst clipboard: <br>
+               <img src="img/yelp-image-itlyst-add.jpg" class="ftueimage" style="max-height:70vh;">
+            </div>
+              <div class="col">
+              <span class=number>4</span> itlyst saves the img w/ notes: <br>
+               <img src="img/yelp-image-itlyst.jpg" class="ftueimage" style="max-height:70vh;">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p>Note at the moment this functionality only works with yelp.</p>
+            </div>
+          </div>
+
+
+          <div style="float:right; margin-right: 10px;">
+            <button class="button button-stable button-positive" ng-click="go_and_complete_ftue('app/venues')">Yippee! Go to the App <i class="ion-chevron-right fa-1_2x" aria-hidden="true"></i></button>
+          </div>
+
+        </div>
+      </ion-slide-page>
+
 
      <!--Start Lysting -->
+     <!--
       <ion-slide-page>
         <div>
 
@@ -140,7 +296,7 @@
 
           <br><br>
           <span class=number>2</span> Then click here to go to the clipboard:<br>
-          <button class="button button-icon icon" ng-click="go_and_complete_ftue('app/venues')"> 
+          <button class="button button-icon icon" ng-click="go_and_complete_ftue('app/blank')"> 
             <img src="img/clipboard-screen.png" class="clipboardimage">
           </button>
 
@@ -150,6 +306,7 @@
 
         </div>
       </ion-slide-page>
+      -->
 
 
 

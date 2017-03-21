@@ -1,0 +1,200 @@
+<ion-view >
+  <ion-nav-bar class="bar-positive">
+  </ion-nav-bar>
+
+  <ion-nav-title>
+  Frequently Asked Questions
+  </ion-nav-title>
+
+  <ion-content scroll="true" id='top'>
+
+  <ul class="list">
+
+      <li class="item allow_wrap">
+        <button class="button button-clear listbutton" ng-click="toggleFAQEntry($event)">
+          How do I add use the Chrome Extension?
+        </button>
+        <div class="faq_detail  hide_element ">
+          <div class="row">
+            <div class ="col">
+              The chrome extension allows you to save tips and pics from your favorite review sites easily. First, you need to use Chrome. Next, install the extension and login: 
+              <br><br>
+
+              <a href="https://chrome.google.com/webstore/detail/itlyst/ecfgefcjfjkbmmcaegehencgpjokoagp" target="_">
+                <button class="button button-stable button-calm">Get <img src="img/itlyst-fork-logo.png" style="width:20px"> itlyst for <img src="img/chrome-icon.png" style="width:20px" ng-click="sect1b=true"> Chrome</button>
+              </a>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class ="col">
+              <!--<h4></h4>-->
+              Let's add your first note using the extension. Click any icon to see reviews for Pizzeria Mozza in LA:<br>
+              <span>
+                <a href="https://www.yelp.com/biz/pizzeria-mozza-los-angeles" target="_"><button class="hrefbutton clearbutton"><img src=img/yelp-app-icon.jpeg class="appicon"></button></a>
+                <a href="https://foursquare.com/v/pizzeria-mozza/4724d2d5f964a520d74b1fe3" target="_"><button class="hrefbutton clearbutton"><img src=img/foursquare-app-icon.jpg class="appicon"></button></a>
+                <a href="https://www.tripadvisor.com/Restaurant_Review-g32655-d782715-Reviews-Pizzeria_Mozza-Los_Angeles_California.html" target="_"><button class="hrefbutton clearbutton"><img src=img/tripadvisor-app-icon.jpeg class="appicon"></button></a>
+              </span>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class ="col">
+              <h4>Highlight Text > Right Click > Save to Itlyst</h4>
+              itlyst will save the text<br>
+              <img src="img/ftue-savetext.png" style="width:250px">
+              <br>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class = "col">
+              <h4>Find an Image > Right Click > Save to Itlyst</h4>
+              itlyst will save the image<br>
+              <img src="img/ftue-saveimg.png" style="width:250px"> 
+            </div>
+          </div>
+        </div>
+        <button class="button button-clear hide_element" ng-click="toggleFAQEntry($event)" style="float:right;">
+          <i class="ion-chevron-up fa-1_3x mgray" aria-hidden="true"></i>
+        </button>
+      </li>
+
+      <li class="item allow_wrap" >
+        <button class="button button-clear listbutton" ng-click="toggleFAQEntry($event)">
+          How do I save notes on my iPhone?
+        </button>
+        <div class="faq_detail hide_element ">
+          <div class="row">
+            <div class ="col">
+              <p>Open one of these review apps on your iPhone:<br>
+               <span>
+                <button class="hrefbutton clearbutton" ng-click="open_app('yelp')"><img src=img/yelp-app-icon.jpeg width=50 class="appicon"></button>
+                <button class="hrefbutton clearbutton" ng-click="open_app('foursquare')"><img src=img/foursquare-app-icon.jpg class="appicon"></button>
+                <button class="hrefbutton clearbutton" ng-click="open_app('tripadvisor')"><img src=img/tripadvisor-app-icon.jpeg class="appicon"></button>
+              </span>
+            </div>
+          </div>
+
+          <div class="row responsive-sm" >
+            <div class="col">
+              <span class="number">1</span> Find venue, tap Share<br>
+              <div class="centertextindiv">
+                <img src="img/1a-yelp-venue.png" style="max-width: 220px;">&nbsp;&nbsp;
+              </div>
+            </div>
+            <div class="col" class="centertextindiv">
+              <span class=number>2</span> Tap Copy to Copy the url<br>
+              <div class="centertextindiv">
+                <img src="img/2a-yelp-venue-copy.png"  style="max-width: 220px;">
+              </div>
+            </div>
+          </div>
+
+          <div class="row responsive-sm">
+            <div class="col">
+              <span class=number>3</span> Tap the clipboard below <div class=clipboardimagecontainer><img src="img/clipboard-screen.png" class="clipboardimage"></div>, itlyst detects the venue. Feel free to type up any additional notes<br>
+              <div class="centertextindiv">
+                <img src="img/3a-yelp-venue-itlyst-add.jpg" class="ftueimage" style="max-width: 220px;">
+              </div>
+            </div>
+            <div class="col">
+              <span class=number>4</span> itlyst saves the venue, your notes, the location, and review/rating information<br>
+              <div class="centertextindiv"> <!--class="ftueimagecontainer highlightcontainer">-->
+                <img src="img/4a-yelp-venue-itlyst.jpg" class="ftueimage" style="max-width: 220px;">
+              </div>
+              <div class="centertextindiv"> <!--class="ftueimagecontainer highlightcontainer">-->
+                <img src="img/5-yelp-venue-details.png" class="ftueimage" style="max-width: 220px;">
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="button button-clear hide_element" ng-click="toggleFAQEntry($event)" style="float:right;">
+          <i class="ion-chevron-up fa-1_3x mgray" aria-hidden="true"></i>
+        </button>
+      </li>
+
+      <li class="item allow_wrap" >
+        <button class="button button-clear listbutton" ng-click="toggleFAQEntry($event)">
+          How do I save pictures on my iPhone?
+        </button>
+        <div class="faq_detail hide_element ">
+          <div class="row responsive-sm">
+            <div class = "col">
+              <span class=number>1</span> Find a Picture<br>
+              <img src="img/yelp-image.jpg" class="ftueimage" style="max-height:70vh;">&nbsp;&nbsp;
+            </div>
+            <div class="col">
+              <span class=number>2</span> Tap Copy to Copy the url<br>
+              <img src="img/yelp-image-copy.jpg" class="ftueimage" style="max-height:70vh;">
+            </div>
+          </div>
+
+          <div class="row responsive-sm">
+            <div class="col" >
+              <span class=number>3</span> Go to the itlyst clipboard: <br>
+               <img src="img/yelp-image-itlyst-add.jpg" class="ftueimage" style="max-height:70vh;">
+            </div>
+              <div class="col">
+              <span class=number>4</span> itlyst saves the img w/ notes: <br>
+               <img src="img/yelp-image-itlyst.jpg" class="ftueimage" style="max-height:70vh;">
+            </div>
+          </div>
+          <div class="row responsive-sm">
+            <div class="col">
+              <p>Note functionality only works with yelp.</p>
+            </div>
+          </div>
+        </div>
+        <button class="button button-clear hide_element" ng-click="toggleFAQEntry($event)" style="float:right;">
+          <i class="ion-chevron-up fa-1_3x mgray" aria-hidden="true"></i>
+        </button>
+      </li>
+
+      <li class="item allow_wrap" >
+        <button class="button button-clear listbutton" ng-click="toggleFAQEntry($event)">
+          When will you support sites besides tripadvisor, yelp, and foursquare?
+        </button>
+        <div class="faq_detail hide_element ">
+          At the moment, itlyst only supports tripadvisor, yelp, and foursquare. However, we have plans to integrate
+          instagram, facebook, and google maps in further iterations
+        </div>
+        <button class="button button-clear hide_element" ng-click="toggleFAQEntry($event)" style="float:right;">
+          <i class="ion-chevron-up fa-1_3x mgray" aria-hidden="true"></i>
+        </button>
+      </li>
+
+      <li class="item allow_wrap" >
+        <button class="button button-clear listbutton" ng-click="toggleFAQEntry($event)">
+          Do you have an Android App?
+        </button>
+        <div class="faq_detail  hide_element ">
+          Not at the moment. However, our framework supports Android. Once we've fully tested the app on iOS
+          our next priority is to release it to the Android store
+        </div>
+        <button class="button button-clear hide_element" ng-click="toggleFAQEntry($event)" style="float:right;">
+          <i class="ion-chevron-up fa-1_3x mgray" aria-hidden="true"></i>
+        </button>
+      </li>
+
+      <li class="item allow_wrap" >
+        <button class="button button-clear listbutton" ng-click="toggleFAQEntry($event)">
+          I have a question / feature request / something is broken!
+        </button>
+        <div class="faq_detail  hide_element ">
+          Fire away an email to support@itlyst.com
+        </div>
+        <button class="button button-clear hide_element" ng-click="toggleFAQEntry($event)" style="float:right;">
+          <i class="ion-chevron-up fa-1_3x mgray" aria-hidden="true"></i>
+        </button>
+      </li>
+
+
+  </ul>
+
+
+  </ion-content>
+</ion-view>
+
+
+

@@ -46,14 +46,19 @@ angular
   };
 
 
-
   $scope.options = {
     loop: false,
     //effect: 'fade',
     //speed: 500,
   }
 
-  $scope.ftueTitles = ["Save travel locations from anywhere", "Save places from review apps", "Save pictures from review apps", "Start Lysting!"]
+  //$scope.ftueTitles = ["Save travel locations from anywhere", "Save places from review apps", "Save pictures from review apps", "Start Lysting!"]
+  $scope.ftueTitles = 
+    ["Saving notes from Chrome Desktop Extension", 
+     "Using Chrome Extension on Computer", 
+     "Saving Venue Notes On Your iPhone", 
+     "Saving Venue Pictures On Your iPhone 1/2",
+     "Saving Venue Pictures On Your iPhone 2/2"];
   $scope.ftueTitle = $scope.ftueTitles[0];
 
   $scope.$on("$ionicSlides.sliderInitialized", function(event, data){
@@ -69,6 +74,22 @@ angular
     $scope.$apply();
   });
 
+
+  $scope.nextSlide = function() {
+    console.log("Next slide...");
+    console.log($scope.slider);
+    $scope.slider._slideTo($scope.slider.activeIndex+1);
+    $scope.$apply();
+    /*
+    $scope.slider.sliderDelegate.activeIndex = $scope.slider.sliderDelegate.activeIndex + 1;
+    $scope.slider.currentPage = $scope.slider.sliderDelegate.activeIndex;
+    //use $scope.$apply() to refresh any content external to the slider
+    */
+  }
+
+
+  
+
   $scope.$on("$ionicSlides.slideChangeEnd", function(event, data){
     // note: the indexes are 0-based
     console.log('slideChangeEnd');
@@ -80,10 +101,121 @@ angular
 
 })
 
-.controller('StartCtrl', function($scope, $ionicModal, $ionicPlatform, config, VenueService, UserCityService, ApiService, LoginService, $ionicHistory, $location, $q, $http, $base64, $timeout) {
+.controller('SettingsCtrl', function($scope, $ionicModal, $ionicPlatform, config, VenueService, ApiService, LoginService, $ionicHistory, $location, $q, $http, $base64, $timeout, $ionicScrollDelegate) {
+  console.log("loading SettingsCtrl...");
+
+  var totalFAQEntries = 3; 
+
+  $scope.toggleFAQEntry = function (event) {
 
 
+    //Toggle Visibility of Clicked Element
+    var faqEntryDetailElement = angular.element(event.target.parentElement.childNodes[3]);    
+    if(faqEntryDetailElement[0].className.indexOf("hide_element") >= 0) {
+      faqEntryDetailElement.removeClass('hide_element');
+    } else {
+      faqEntryDetailElement.addClass('hide_element');
+    }
 
+    //Toggle Visibility of Close FAQ Detail Entry Element
+    var faqEntryDetailElement = angular.element(event.target.parentElement.childNodes[5]);    
+    if(faqEntryDetailElement[0].className.indexOf("hide_element") >= 0) {
+      faqEntryDetailElement.removeClass('hide_element');
+    } else {
+      faqEntryDetailElement.addClass('hide_element');
+    }
+
+    //Scroll to top of FAQ
+    $timeout(function() {
+      $ionicScrollDelegate.scrollTop();
+    }, 250);
+
+    
+
+  }
+
+  $scope.go_and_complete_ftue = function ( path ) {
+    console.log("Going to " + path);
+    LoginService.completeMobileFtue(ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId());
+    $ionicHistory.nextViewOptions({
+      disableBack: false
+    });
+    $location.path( path );
+  };
+
+  $scope.open_app = function (app) {
+    if (app =='yelp') {
+      window.location.href = "yelp:///";
+    } else if (app == 'foursquare') {
+      window.location.href = "foursquare://";
+    } else if (app == 'tripadvisor') {
+      window.location.href = "tripadvisor://";
+    } else if (app == 'gmaps') {
+      window.location.href = "comgooglemaps://";
+    }
+  };
+
+
+  $scope.options = {
+    loop: false,
+    //effect: 'fade',
+    //speed: 500,
+  }
+
+  //$scope.ftueTitles = ["Save travel locations from anywhere", "Save places from review apps", "Save pictures from review apps", "Start Lysting!"]
+  $scope.ftueTitles = 
+    ["Saving notes from Chrome Desktop Extension", 
+     "Using Chrome Extension on Computer", 
+     "Saving Venue Notes On Your iPhone", 
+     "Saving Venue Pictures On Your iPhone 1/2",
+     "Saving Venue Pictures On Your iPhone 2/2"];
+  $scope.ftueTitle = $scope.ftueTitles[0];
+
+  $scope.$on("$ionicSlides.sliderInitialized", function(event, data){
+    // data.slider is the instance of Swiper
+    $scope.slider = data.slider;
+  });
+
+  $scope.$on("$ionicSlides.slideChangeStart", function(event, data){
+    console.log('Slide change is beginning');
+    console.log("data.slider.activeIndex: " + data.slider.activeIndex);
+    $scope.ftueTitle = $scope.ftueTitles[data.slider.activeIndex];
+    console.log("$scope.ftueTitle: " + $scope.ftueTitle);
+    $scope.$apply();
+  });
+
+
+  $scope.nextSlide = function() {
+    console.log("Next slide...");
+    console.log($scope.slider);
+    $scope.slider._slideTo($scope.slider.activeIndex+1);
+    $scope.$apply();
+    /*
+    $scope.slider.sliderDelegate.activeIndex = $scope.slider.sliderDelegate.activeIndex + 1;
+    $scope.slider.currentPage = $scope.slider.sliderDelegate.activeIndex;
+    //use $scope.$apply() to refresh any content external to the slider
+    */
+  }
+
+
+  
+
+  $scope.$on("$ionicSlides.slideChangeEnd", function(event, data){
+    // note: the indexes are 0-based
+    console.log('slideChangeEnd');
+
+    $scope.activeIndex = data.slider.activeIndex;
+    $scope.previousIndex = data.slider.previousIndex;
+    
+  });
+
+})
+
+.controller('StartCtrl', function($scope, $ionicModal, $ionicPlatform, config, VenueService, UserCityService, ApiService, LoginService, $ionicHistory, $location, $q, $http, $base64, $timeout, $stateParams) {
+
+
+  // ------------------------------------------------------------------------------------------------------
+  // Change server url depending on whether itlyst is on dev or production
   $scope.getSignupUrl = function () {
     return ApiService.server.url + "/user/register";
   };
@@ -97,6 +229,8 @@ angular
   // Login Modal
 
   $scope.$on('$ionicView.enter', function(e) {
+    console.log("Entered StartCtrl...");
+
     $scope.loginData = {'email': LoginService.getEmail(), 'password': LoginService.getPassword()};
     $scope.login_button_message = "Log in";
     $scope.login_error_message = "";
@@ -105,16 +239,34 @@ angular
       $scope.isLoggedIn = LoginService.status.isLoggedIn;
     }, 2000);
 
-    var loginPromise = LoginService.login(ApiService.server.url);
-    loginPromise.then(function(response) {
-    //console.log("Logged in!:");
-    if (response.data.login_status) {
-      //console.log("User logged in");
+    //Read url parameters. If login or signup action is present, trigger popup module
+    if ($stateParams.action) {
+      if ($stateParams.action == 'signup') {
+        console.log("Triggering signup module");
+        $scope.modal.hide();
+        $scope.modalSignup.show();
+      } else if ($stateParams.action == 'signin') {
+        console.log("Triggering signin module");
+        $scope.modal.show();
+      } 
+    } else {
 
-      triggerSuccessfulLoginMethods();
+      /*
+      var loginPromise = LoginService.login(ApiService.server.url);
+      loginPromise.then(function(response) {
+      //console.log("Logged in!:");
+        if (response.data.login_status) {
+          //console.log("User logged in");
+          triggerSuccessfulLoginMethods();
+        }
+      });
+      */
     }
-  });
 
+    console.log("Login status: " + $scope.isLoggedIn);
+   
+
+    
   });  
 
 
@@ -141,8 +293,6 @@ angular
     $timeout(function() {
       $scope.isLoggedIn = false;
     }, 300);
-
-
   };
 
   $scope.login = function() {
@@ -153,7 +303,6 @@ angular
     //Now show the login modal
     $scope.modal.show();
   };
-
 
   // Perform the login action when the user submits the login form
   $scope.doLogin = function() {
@@ -187,7 +336,6 @@ angular
         $scope.login_error_message = "Ruh roh. Something went wrong. Try again?";
       }
     });
-    
   };
 
   function triggerSuccessfulLoginMethods () {
@@ -227,32 +375,15 @@ angular
   $scope.forgotPass = function() {
     $scope.modal.hide();
     $scope.modalForgetPass.show();
-  };$timeout(function() {
+  };
+
+  /*
+  $timeout(function() {
       $scope.closeForgetPass();
   }, 1000);
+  */
 
-  // Perform the signup action when the user submits the signup form
-  $scope.doSignup = function() {
-    console.log('Doing signup', $scope.signupData);
 
-    /*
-    $ionicAuth.signup($scope.signupData).then(function() {
-      console.log("User is signed up: " + $scope.signupData.email);
-    }, function(err) {
-      for (var e of err.details) {
-        if (e === 'conflict_email') {
-          alert('Email already exists.');
-        } else {
-          // handle other errors
-        }
-      }
-    });
-    */
-
-    $timeout(function() {
-      $scope.closeForgetPass();
-    }, 500);
-  };
 
 
   // ------------------------------------------------------------------------------------------------------
@@ -277,9 +408,38 @@ angular
   $scope.signup = function() {
     $scope.modal.hide();
     $scope.modalSignup.show();
-  };$timeout(function() {
+  };
+
+  /*
+  $timeout(function() {
       $scope.closeSignup();
   }, 1000);
+  */
+
+  // Perform the signup action when the user submits the signup form
+  /*
+  $scope.doSignup = function() {
+    console.log('Doing signup', $scope.signupData);
+
+    
+    $ionicAuth.signup($scope.signupData).then(function() {
+      console.log("User is signed up: " + $scope.signupData.email);
+    }, function(err) {
+      for (var e of err.details) {
+        if (e === 'conflict_email') {
+          alert('Email already exists.');
+        } else {
+          // handle other errors
+        }
+      }
+    });
+    
+
+    $timeout(function() {
+      $scope.closeForgetPass();
+    }, 500); 
+  };
+  */
 
   // Perform the signup action when the user submits the signup form
   $scope.doSignup = function() {
@@ -429,6 +589,7 @@ angular
   $scope.$on('$ionicView.enter', function(e) {
     console.log("Entered map view...");
 
+    
     if (VenueService.data.venues.length > 0) {
       console.log("Extracting venues without refreshing from venue service");
       $scope.venues = VenueService.data.venues;
@@ -444,27 +605,6 @@ angular
 
       
   });
-
-
-  //Find Lat Long based on IP Address. Hack until I can get the server on SSL and use GPS
-
-
-  /*
-  var defer = $q.defer();
-  var latlongcoords = {};
-  console.log("Fetching estimated lat/long via ip service");
-  $http.get("http://freegeoip.net/json/").success(function(response){
-      //console.log("-------");
-      //console.log("User IP Lat: "+ response.latitude);
-      //console.log("User IP Long: "+ response.longitude);
-      latlongcoords = {lat: response.latitude, lng: response.longitude};
-
-      //console.log(response);
-      defer.resolve(response);
-      return defer.promise;
-  });
-  */
-
 
 
   
@@ -485,14 +625,15 @@ angular
     // Set CSS for the control interior.
     var controlText = document.createElement('div');
     controlText.style.backgroundColor = '#fff';
-    controlText.style.color = 'rgb(25,25,25)';
+    controlText.style.color = '#387ef5';
     controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
     controlText.style.fontSize = '16px';
     controlText.style.lineHeight = '30px';
     controlText.style.paddingLeft = '5px';
     controlText.style.paddingRight = '5px';
     controlText.style.cssFloat = "left";
-    controlText.innerHTML = '<i class="icon ion-ios-navigate-outline"></i>';
+    controlText.style.color = "#fff";
+    controlText.innerHTML = '<i class="icon ion-ios-navigate-outline" style="color:#387ef5"></i>';
     controlUI.appendChild(controlText);
 
     var gapDiv = document.createElement('div');
@@ -505,7 +646,7 @@ angular
 
     var filterVisibile = document.createElement('div');
     filterVisibile.style.backgroundColor = '#fff';
-    filterVisibile.style.color = 'rgb(25,25,25)';
+    filterVisibile.style.color = '#387ef5';
     filterVisibile.style.fontFamily = 'Roboto,Arial,sans-serif';
     filterVisibile.style.fontSize = '16px';
     filterVisibile.style.lineHeight = '30px';
@@ -516,18 +657,47 @@ angular
     controlUI.appendChild(filterVisibile);
 
     var latlongcoords = {};
-    var LatLongPromise = LocationService.getLatLongFromIPAddress();
+    var LatLongPromiseIP  = LocationService.getLatLongFromIPAddress();
+    var LatLongPromiseGPS  = LocationService.getLatLongFromGPS();
+
+    function center_and_zoom(coords, zoom) {
+      map.setCenter(coords);
+      map.setZoom(zoom); 
+    }
 
     // Setup the click event listeners: simply set the map to Chicago.
     controlText.addEventListener('click', function() {
+      //Attempt to get Lat Long via GPS Coords. If that isn't possible, get them via IP
+      console.log("Attempting to get lat / lng from GPS...");
+      LatLongPromiseGPS.then(function(response) {
+        if (response.lat && response.lng) {
+          console.log("--- Success");
+          var latlongcoords = response;
+          center_and_zoom(latlongcoords, 14);
 
-      LatLongPromise.then(function(response) {
-        console.log(response);
-        latlongcoords = response;
-        map.setCenter(response);
-        map.setZoom(14); 
+          //This is the blue dot. Only works in the phone/gps enabled
+          var GeoMarker = new GeolocationMarker(map);
+        } else {
+          console.log("--- GPS Attempt Failed. Err:");
+          console.log(response);
+          console.log("Now Attempting to get lat / lng from IP...");
+          LatLongPromiseIP.then(function(latlongcoords) {
+            console.log(latlongcoords);
+            center_and_zoom(latlongcoords, 14);
+
+            //The default blue dot to show when the gps one fails
+            var bounds = new google.maps.LatLngBounds();
+            var latlng = new google.maps.LatLng(latlongcoords.lat, latlongcoords.lng);
+            var marker = new google.maps.Marker({
+                position: latlng,
+                map: map,
+                venue_id: -1,
+                icon: 'img/location-blue-circle.png'
+            });
+            bounds.extend(marker.position);
+          });
+        }
       });
-
 
     });
 
@@ -614,9 +784,6 @@ angular
               popUpData += "<img src=" + $scope.venues[i].images[j].image_thumb + " width=75>";
               console.log("got here...");
             }
-
-
-
 
 
             infowindow.setContent(popUpData);
@@ -1813,9 +1980,10 @@ angular
               if (detected_venues.length > 0) {
                 //console.log("Found real foursquare venues: " );
                 //console.log(detected_venues);
-                max_venues_to_return=1;
-                for (var i=0, len=detected_venues.length; i<Math.min(len,max_venues_to_return); i++) {
-                  if (detected_venues[i].foursquare_reviews >= 1 && i <= 8) {
+                max_venues_to_return_per_token = 1;
+                max_venues_to_return_overall = 6;
+                for (var i=0, len=detected_venues.length; i<Math.min(len,max_venues_to_return_per_token); i++) {
+                  if (detected_venues[i].foursquare_reviews >= 1 && i <= max_venues_to_return_overall) {
                     $scope.analyzedVenues.push(detected_venues[i]);
                   }
                 }
@@ -1837,7 +2005,7 @@ angular
           $timeout(function() {
             console.log("About to trigger popup potentialVenuePopupButton");
             //console.log(document.getElementById('potentialVenuePopupButton'));
-            console.log("scope id: " + $scope.$id);
+            //console.log("scope id: " + $scope.$id);
             angular.element(document.getElementById('potentialVenuePopupButton')).triggerHandler('click');
             document.getElementById("detectedVenueNotes").value = $scope.copiedText;
           }, 0);
@@ -2153,7 +2321,6 @@ angular
       iconElem.removeClass('selected');
       divElem.removeClass('selected');
       VenueService.removeUserRatingFilter(user_rating_value);
-      
     } else {
       iconElem.addClass('rating-icon selected');
       divElem.addClass('user-rating selected');

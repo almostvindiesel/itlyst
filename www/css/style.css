@@ -56,7 +56,27 @@ textarea {
 }
 
 
+
+
+
 /* ----- */
+
+.faq_detail {
+  padding: 0px 10px 0px 10px !important;
+}
+
+.allow_wrap {
+  white-space: normal;
+}
+
+.hide_element {
+  display: none
+}
+
+.ftueicon {
+  width: 75px !important;
+  text-align: center !important;
+}
 
 .user-rating.selected {
   background-color: #387ef5;
@@ -70,10 +90,16 @@ textarea {
   background-color: #387ef5;
 }
 
+.listbutton {
+  width:100%;
+  text-align: left;
+  max-height: 100px;
+  line-height: 20px;
 
+}
 
 .appicon {
-  width: 80px !important;
+  width: 60px !important;
 }
 
 .ftueimagecontainer {
@@ -85,17 +111,17 @@ textarea {
 }
 
 .ftueimage {
-  width: 175px;
   border-radius: 12px; 
   padding: 10px 5px 3px 10px !important;
 }
 
 .clipboardimagecontainer {
-   width: 30px;
+   width: 30px !important;
    display: inline-block;
 }
 .clipboardimage {
    border-radius: 5px; 
+   width: 30px !important;
 }
 
 .buttonlabel {
@@ -210,7 +236,6 @@ textarea {
 .alerttext {
   color:red;
   text-align: center;
-
 }
 
 textarea {
@@ -269,6 +294,9 @@ Screen: 568;
     height: 100%;
 }
 
+.centertextindiv {
+  text-align: center;
+}
 
 
 
@@ -514,10 +542,23 @@ h1.title {
   color:white !important;
 }
 
+.mgray {
+  color:gray !important;
+}
+
+.mblack {
+  color:black !important;
+}
 
 
 .item-content.disable-pointer-events {
    padding: 5px 10px 5px 10px !important;
+
+}
+
+.morebutton {
+  width: 50px;
+  margin-left: 5px; 
 
 }
 

@@ -8,14 +8,21 @@
   </ion-nav-bar>
   <ion-nav-title>
 
+  <!--
     <button class="button button-icon icon headermapbutton" ng-click="go('app/venue_search')" style="float:left; min-height: 40px; padding: 0px 0px 0px 4px !important;"><i style="vertical-align: middle;" class="fa fa-plus-square-o fa-1_3x mwhite" aria-hidden="true"></i></button>
-  
-     <img src="img/itlyst-fork-logo.png" style="width: 20px;">
-      {{active_city}}
-
-    <button class="button button-icon icon venuebutton" ng-click="go('app/venue_search')">
+    -->
+    <button class="button button-icon icon venuebutton" ng-click="go('app/venue_search')" style="float:left">
       <i class="ion-search mwhite"></i>
     </button>
+  
+    <button class="button-clear mwhite" ng-click="go('app/filters')">
+      <div class="title title-center header-item">
+        <img src="img/itlyst-fork-logo.png" style="width: 20px;"> {{active_city}}
+      </div>
+    </button>
+
+    
+    
     <button class="button button-icon icon venuebutton" ng-click="sendEmail()">
       <i class="ion-ios-upload-outline mwhite"></i>
     </button>
@@ -36,29 +43,54 @@
 
     <!-- Venue Content --> 
     <div ng-show="venues.length == 0 && isDoneLoading">
-      <span class=number>1</span> You have no venues saved. Open a review app and copy a venue or pic url:<br>
-      <span>&nbsp; &nbsp; &nbsp; &nbsp;
-        <button class="hrefbutton clearbutton" ng-click="open_app('yelp')"><img src=img/yelp-app-icon.jpeg class="appicon"></button>
-        <button class="hrefbutton clearbutton" ng-click="open_app('foursquare')"><img src=img/foursquare-app-icon.jpg class="appicon"></button>
-        <button class="hrefbutton clearbutton" ng-click="open_app('tripadvisor')"><img src=img/tripadvisor-app-icon.jpeg class="appicon"></button>
-      </span>
 
-      <div class="row">
-        <div class = "col">
-          <span class=number>2</span> Find venue, tap Share<br>
-          <img src="img/1-yelp-venue.jpg" class="ftueimage">&nbsp;&nbsp;
-        </div>
-        <div class="col">
-          <span class=number>3</span> Copy the url<br>
-          <img src="img/2-yelp-venue-copy.jpg" class="ftueimage">
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-        <span class=number>4</span> Navigate back to itlyst, click the clipboard: <img src="img/clipboard-screen.png" class="clipboardimage" style="width:50px">
-        </div>
-      </div>
 
+        <div>
+          <div class="row">
+            <div class ="col">
+              <p>You have no venues saved with this filter.</p>
+              <p>Open one of these review apps on your iPhone:<br>
+               <span>
+                <button class="hrefbutton clearbutton" ng-click="open_app('yelp')"><img src=img/yelp-app-icon.jpeg width=50 class="appicon"></button>
+                <button class="hrefbutton clearbutton" ng-click="open_app('foursquare')"><img src=img/foursquare-app-icon.jpg class="appicon"></button>
+                <button class="hrefbutton clearbutton" ng-click="open_app('tripadvisor')"><img src=img/tripadvisor-app-icon.jpeg class="appicon"></button>
+              </span>
+            </div>
+          </div>
+
+          <div class="row" >
+            <div class="col" >
+              <span class="number">1</span> Find venue, tap Share<br>
+              <div class="centertextindiv">
+                <img src="img/1a-yelp-venue.png" style="max-width: 220px;">&nbsp;&nbsp;
+              </div>
+            </div>
+            <div class="col" class="centertextindiv">
+              <span class=number>2</span> Tap Copy to Copy the url<br>
+              <div class="centertextindiv">
+                <img src="img/2a-yelp-venue-copy.png"  style="max-width: 220px;">
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <span class=number>3</span> Tap the clipboard below, and itlyst will detect the venue. Feel free to type up any additional notes<br>
+              <div class="centertextindiv">
+                <img src="img/3a-yelp-venue-itlyst-add.jpg" class="ftueimage" style="max-width: 220px;">
+              </div>
+            </div>
+            <div class="col">
+              <span class=number>4</span> itlyst saves the venue, your notes, the location, and review/rating information<br>
+              <div class="centertextindiv"> <!--class="ftueimagecontainer highlightcontainer">-->
+                <img src="img/4a-yelp-venue-itlyst.jpg" class="ftueimage" style="max-width: 220px;">
+              </div>
+              <div class="centertextindiv"> <!--class="ftueimagecontainer highlightcontainer">-->
+                <img src="img/5-yelp-venue-details.png" class="ftueimage" style="max-width: 220px;">
+              </div>
+            </div>
+          </div>
+        </div>
 
 
     </div>
