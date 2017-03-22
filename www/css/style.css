@@ -31,6 +31,22 @@ textarea {
 
 */
 
+/*Enables selectable text in webapp*/
+.scroll {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/*Enables selectable text in webapp*/
+*[selectable-text] input {
+  cursor:text !important;
+  background:inherit !important;
+  font-size:inherit;
+  width:100%;
+  /* etc. You should style it as you want so that it looks natural, not like an input field. */
+}
+
+
 #ur4,#ur3,#ur2,#ur1,#ur0 {
   float:left;
   width: 40px;
@@ -551,6 +567,17 @@ h1.title {
 
 .mblack {
   color:black !important;
+}
+
+.upvotes {
+  color:white;
+  font-size: 0.8em;
+  display: inline-block;
+}
+
+.upvotestoggler {
+  color:#1a203b;
+  display: inline-block;
 }
 
 

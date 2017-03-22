@@ -22,6 +22,15 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 //.value('api_url', 'http://mars.local:5000')
 
 
+//Allows text to be selectable in ionic
+.directive("selectableText", function() {
+  return {
+    restrict: "A",
+    template: function(element) {
+      return '<input type="text" readonly value="'+element[0].textContent+'">';
+    }
+  }
+})
 
 /*
 .directive('capture', function(){
@@ -46,14 +55,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     }
   };
 })
-
-
-
-
-
-
-
-
 
 
 .run(function($ionicPlatform) {
@@ -515,10 +516,10 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
   function LocationService($http, $cordovaGeolocation, config) {
 
-    //Default lat/long arbritrary set to San Francisco
+    //Default lat/long arbritrary set to Los Angeles
     var data = {
-      latitude: 37.773972,
-      longitude: -122.431297
+      latitude: 34.015059,
+      longitude: -118.4667002
     };
 
     //Attempt to get Lat Long via GPS Coords. If that isn't possible, get them via IP
@@ -620,8 +621,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       venues: {},
       zoom_options: zoom_options,
       zoom: 50,
-      latitude: 0,
-      longitude: 0,
+      latitude: 34.015059,
+      longitude: -118.4667002,
       user_ratings_filter: Array("0","1","4"),
       venue_type_options: venue_type_options,
       venue_type: 'all',
@@ -868,7 +869,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
     }
 
-    function edit(user_rating, venue_id, api_url, loginHeader, user_id) {
+    function editUserRating(user_rating, venue_id, api_url, loginHeader, user_id) {
       console.log("About to put edited note to server. user_rating: " + user_rating + ", venue_id: " + venue_id, " user_id: " + user_id);
       var headers = loginHeader;
       headers['Content-type'] = 'application/json;charset=utf-8';
@@ -879,6 +880,27 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
           headers: headers,
           data: {
             user_rating: user_rating,
+            user_id: user_id
+          }
+      })
+      .then(function(response) {
+          console.log(response.data);
+      }, function(rejection) {
+          console.log(rejection.data);
+      });
+    }
+
+    function changeUpVotes(up_vote_indicator, venue_id, api_url, loginHeader, user_id) {
+      console.log("About to put edited note to server. upvotes: " + up_vote_indicator + ", venue_id: " + venue_id, " user_id: " + user_id);
+      var headers = loginHeader;
+      headers['Content-type'] = 'application/json;charset=utf-8';
+
+      $http({
+          method: 'PUT',
+          url: api_url + '/api/v1/venue/' + venue_id,
+          headers: headers,
+          data: {
+            up_vote_change: up_vote_indicator,
             user_id: user_id
           }
       })
@@ -915,7 +937,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
     return {
       remove: remove,
-      edit: edit,
+      editUserRating: editUserRating,
+      changeUpVotes: changeUpVotes,
       search: search
     };
   }

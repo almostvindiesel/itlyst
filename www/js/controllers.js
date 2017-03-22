@@ -347,12 +347,15 @@ angular
     }
 
     $scope.recent_cities = Array();
+    $scope.max_recent_cities = 2;
 
     //Show the last cities added for easily navigation
     UserCityService.getRecentlyAddedCities(2, ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId()).async().then(function(response) { 
       for (var i=0, len=response.data.cities.length; i<len; i++) {
         //console.log("adding..." + response.data.cities[i]);
-        $scope.recent_cities.push(response.data.cities[i]);
+        if ($scope.recent_cities.length <= $scope.max_recent_cities) {
+          $scope.recent_cities.push(response.data.cities[i]);
+        }
       }
       console.log($scope.recent_cities);
     });
@@ -361,7 +364,7 @@ angular
     
     var LatLongPromise = LocationService.getLatLong();
     LatLongPromise.then(function(response) {
-      if (response.lat && response.lng) {
+      if (response.lat && response.lng && $scope.recent_cities.length <= $scope.max_recent_cities) {
         var current_location = {latitude: response.lat, longitude:response.lng, name: 'Current Location'};
         $scope.recent_cities.push(current_location);
       }
@@ -535,7 +538,11 @@ angular
     VenueService.setCity(city.name);
     VenueService.setLatitude(city.latitude);
     VenueService.setLongitude(city.longitude);
-
+    
+    //If user opts to search by current location, then sort by distance rather than recently added
+    if(city.name == 'Current Location') {
+      VenueService.setSortBy('distance');
+    }
     VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId()).async().then(function(d) { //2. so you can use .then()
       VenueService.setVenues(d.data.venues);
     });
@@ -1053,9 +1060,12 @@ angular
        isHtml: true
     };
 
-   $cordovaEmailComposer.open(email).then(null, function () {
-     // user cancelled email
-   });
+    try {
+      $cordovaEmailComposer.open(email).then(null, function () {});
+    } catch(err) {
+      alert("Sharing lists via email is only available on mobile devices at the moment");
+    }
+
 
   }
   
@@ -1313,6 +1323,39 @@ angular
 
   }
 
+  $scope.changeUpVotes = function (venue_id, up_vote_indicator) {
+
+    //Find the venue_id in scope
+    for (i = 0; i < $scope.venues.length; i++) {
+      if($scope.venues[i].id == venue_id) {
+          break;
+      }
+    }
+    if (up_vote_indicator == 'increase') {
+      $scope.venues[i].up_votes = $scope.venues[i].up_votes + 1;
+      VenueApi.changeUpVotes(up_vote_indicator, $scope.venues[i].id, ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId());
+    } else if (up_vote_indicator == 'decrease') {
+      $scope.venues[i].up_votes = $scope.venues[i].up_votes - 1;
+      VenueApi.changeUpVotes(up_vote_indicator, $scope.venues[i].id, ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId());
+    }
+
+    function keysrt(key,desc) {
+      return function(a,b){
+       return desc ? ~~( a[key]+a.user_rating > b[key]+b.user_rating) : ~~(a[key]+a.user_rating < b[key]+b.user_rating);
+      }
+    }
+
+    //If sort by rating selected, sort by it!
+    if(VenueService.data.sort_by=='rating') {
+      $timeout(function() {
+        $scope.venues = $scope.venues.sort(keysrt('up_votes'));
+      }, 100);  
+    }
+
+  }
+
+
+
   $scope.changeUserRating = function (venue_id, new_user_rating) {
     console.log("Selected rating is " + new_user_rating );
     //$scope.venueToRate.user_rating = new_user_rating;
@@ -1328,7 +1371,7 @@ angular
     }
 
     //Make update on server
-    VenueApi.edit(new_user_rating, venue_id, ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId());
+    VenueApi.editUserRating(new_user_rating, venue_id, ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId());
 
     /*
     $timeout(function() {
@@ -2279,6 +2322,7 @@ angular
 
       $scope.city_selected = 'Current Location'; 
       VenueService.setCity("Current Location");
+      VenueService.setSortBy('distance');
       VenueService.setLatitude(LocationService.data.latitude);
       VenueService.setLongitude(LocationService.data.longitude);
       $scope.sort_by_selected = 'distance';

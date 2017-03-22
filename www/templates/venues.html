@@ -116,7 +116,11 @@
               <!--<a class="button icon icon-right ion-chevron-right" href="#/app/venue/{{item.id}}/detail">Scientific Facts</a>-->
             </div>
             <div style = "float: right">
+              <button class="clearbutton" ng-click="changeUpVotes(item.id,'increase')"><i class="ion-ios-plus-outline"></i>
+                <div class="upvotes">+{{ item.up_votes}}</div>
+              </button>
               <button class="clearbutton headerbutton" ng-click="toggleUserRatingPrompt($event, item)">
+                
                 <i ng-show="item.user_rating == 4" class="fa-smile-o fa-1_3x mwhite"></i>
                 <i ng-show="item.user_rating == 3" class="fa-meh-o fa-1_3x mwhite"></i>
                 <i ng-show="item.user_rating == 2" class="fa-frown-o fa-1_3x mwhite"></i>
@@ -126,14 +130,18 @@
             </div>
             <div class=venuetitlediv>
              <h4 class=venuetitle>
-              {{ item.name | limitTo: 20 }}{{item.name.length > 20 ? '...' : ''}} 
-              <i ng-if= 'item.distance'><font style="font-size: .7em">{{ item.distance}}mi</i></font>
+              {{ item.name | limitTo: 18 }}{{item.name.length > 18 ? '...' : ''}} 
+              <i ng-if= 'item.distance >=0'><font style="font-size: .7em">{{ item.distance}}mi</i></font>
             </h4>
             </div>
           </div>
         </div>
         <div class="headerbarclear" ng-show="item.user_rating_display"}>
           <div class="venuetitlecontainer" style="text-align: right;">
+          <div class="upvotestoggler fa-3x">
+            <button class="clearbutton" ng-click="changeUpVotes(item.id,'increase')"><i class="ion-ios-plus-outline fa-2x"></i></button>
+            {{item.up_votes}}
+            <button class="clearbutton" ng-click="changeUpVotes(item.id, 'decrease')"><i class="ion-ios-minus-outline fa-2x"></i></button>&nbsp;&nbsp;</div>
           <button class="clearbutton"
                   ng-click="changeUserRating(item.id, 4 )"> <i class="fa-smile-o fa-3x" ></i></button> 
           <button class="clearbutton"
@@ -161,11 +169,11 @@
 
               <!-- 1 image, 1 note --> 
               <div class="imageblock1" ng-repeat="image in item.images" ng-if="(item.images.length == 1 && item.notes.length == 1)">
-                <ion-item ng-repeat="note in item.notes" class="item-text-wrap" item="item" style="min-height:175px !important;">
+                <ion-item ng-repeat="note in item.notes" class="item-text-wrap" item="item" style="min-height:175px !important;" >
                   <button class="image-button" ng-click="go('app/image/{{image.id}}')">
                     <img src="{{image.image_thumb}}" class="venueimage animated bounceInRight" >
                   </button>
-                  {{note.note}} 
+                  <div selectable-text>{{note.note}}</div>
                   <div class="notesource">
                     <i class="fa-foursquare"   ng-if="(note.source == 'foursquare')"></i>
                     <i class="fa-yelp"         ng-if="(note.source == 'yelp')"></i>
@@ -182,7 +190,7 @@
 
               <ion-item ng-repeat="note in item.notes" class="item-text-wrap" item="item" 
                         ng-if="(item.images.length >= 1 || item.notes.length >= 1) && !(item.images.length == 1 && item.notes.length == 1)">
-                {{note.note}} 
+                <div selectable-text>{{note.note}}</div>
                 <div class="notesource">
                   <i class="fa-foursquare"   ng-if="(note.source == 'foursquare')"></i>
                   <i class="fa-yelp"         ng-if="(note.source == 'yelp')"></i>
