@@ -38,8 +38,18 @@
             </label>
         </form>
         <div ng-show="recent_cities.length > 0">
-          <i class=buttonlabel>Recent:</i>
-            <button class="clearbutton mwhite" ng-repeat="city in recent_cities" ng-click="selectRecentCity(city)" style="margin: 0px 5px 0px 0px;">{{city.name}}</button>
+          <!--<i class=buttonlabel>Recent:</i>-->
+            <button class="clearbutton mwhite" ng-repeat="city in recent_cities" ng-click="selectRecentCity(city)" style="margin: 0px 5px 0px 0px;">
+              <span ng-if="city.name=='Current Location'">
+                <i class="icon ion-ios-navigate-outline" style="color:white"></i> {{city.name}}
+              </span>
+              <span ng-if="city.name!='Current Location'">
+                {{city.name}}
+              </span>
+            </button>
+            <button class="clearbutton mwhite" ng-click="go('app/blank')" >
+              <i class="fa-1_5x ion-ios-compose-outline" style="color:white"></i> 
+            </button>
           </p>
         </div>
       </div>

@@ -13,13 +13,15 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
 .constant("config", {
   "api_servers": [
-    {"name": "local", "url": "https://mars.local:5000"},
+    {"name": "local", "url": "http://mars.local:5000"},
     {"name": "prod", "url": "https://api.itlyst.com"}
   ]
 })
 
 .value('api_url', 'https://api.itlyst.com')
-//.value('api_url', 'https://mars.local:5000')
+//.value('api_url', 'http://mars.local:5000')
+
+
 
 /*
 .directive('capture', function(){
@@ -519,6 +521,27 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       longitude: -122.431297
     };
 
+    //Attempt to get Lat Long via GPS Coords. If that isn't possible, get them via IP
+    function getLatLong() {
+
+      var LatLongPromiseGPS = getLatLongFromGPS();
+      return LatLongPromiseGPS.then(function(response) {
+        if (response.lat && response.lng) {
+          console.log("--- Success");
+          var latlongcoords = response;
+          return latlongcoords;
+        } else {
+          console.log("--- GPS Attempt Failed. Err:");
+          console.log(response);
+          console.log("Now Attempting to get lat / lng from IP...");
+          var LatLongPromiseIP = getLatLongFromIPAddress();
+          return LatLongPromiseIP.then(function(latlongcoords) {
+            return latlongcoords;
+          });
+        }
+      });
+    }
+
     function getLatLongFromIPAddress() {
       return $http({
             method: 'GET',
@@ -529,7 +552,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
             data.longitude = response.data.longitude;
             //console.log("User IP Lat: "+ data.latitude);
             //console.log("User IP Long: "+ data.longitude);
-            return {lat: data.latitude, lng: data.longitude}
+            return {lat: data.latitude, lng: data.longitude, source: 'ip'}
         }, function(rejection) {
             return rejection;
         });
@@ -547,7 +570,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
             data.longitude = position.coords.longitude;
             console.log("lat: " + data.latitude);
             console.log("long: " + data.longitude);
-            return {lat: data.latitude, lng: data.longitude};
+            return {lat: data.latitude, lng: data.longitude, source: 'gps'};
       }, function(rejection) {
             return rejection;
       });
@@ -555,6 +578,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     }
 
     return {
+      getLatLong: getLatLong,
       getLatLongFromIPAddress: getLatLongFromIPAddress,
       getLatLongFromGPS: getLatLongFromGPS,
       data: data

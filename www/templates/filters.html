@@ -21,8 +21,8 @@
       <div class="row">
         <div class="col col-20 input-label">
           City
-          <button class="clearbutton location-icon" ng-click="setCurrentLocation()">
-            &nbsp;<i class='fa fa-location-arrow'></i>&nbsp;
+          &nbsp;&nbsp;&nbsp;&nbsp;<button class="clearbutton location-icon" ng-click="setCurrentLocation()">
+            <i class='fa fa-location-arrow'></i>
           </button>
         </div> 
         <div class="col col-80">
@@ -135,7 +135,7 @@
                 <i style="font-size: 75%;">
                   <i ng-if="item == 'recent'" class='fa fa-clock-o'></i>
                   <i ng-if="item == 'rating'" class='fa fa-smile-o'></i> 
-                  <i ng-if="item == 'distance'" class='fa fa-location-arrow'></i> 
+                  <i ng-if="item == 'distance'" class='fa fa-location-arrow' id=distance></i> 
                   {{item}}
                 </i>
               </ion-radio>

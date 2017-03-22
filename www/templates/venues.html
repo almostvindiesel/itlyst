@@ -126,7 +126,8 @@
             </div>
             <div class=venuetitlediv>
              <h4 class=venuetitle>
-              {{ item.name | limitTo: 23 }}{{item.name.length > 23 ? '...' : ''}} 
+              {{ item.name | limitTo: 20 }}{{item.name.length > 20 ? '...' : ''}} 
+              <i ng-if= 'item.distance'><font style="font-size: .7em">{{ item.distance}}mi</i></font>
             </h4>
             </div>
           </div>
@@ -215,7 +216,7 @@
   <ion-popover-view class='dialogpopover'>
     <ion-content>
       <label class="item item-input">
-        <textarea  #input id="editVenueNote" autofocus focus-me placeholder="Additional Notes">{{noteToEdit}}</textarea>
+        <textarea #input id="editVenueNote" autofocus focus-me placeholder="Additional Notes">{{noteToEdit}}</textarea>
       </label>
       <span>
       <button class="button button-positive round"  ng-click="saveEditedNote()">

@@ -211,7 +211,7 @@ angular
 
 })
 
-.controller('StartCtrl', function($scope, $ionicModal, $ionicPlatform, config, VenueService, UserCityService, ApiService, LoginService, $ionicHistory, $location, $q, $http, $base64, $timeout, $stateParams) {
+.controller('StartCtrl', function($scope, $ionicModal, $ionicPlatform, config, VenueService, UserCityService, LocationService, ApiService, LoginService, $ionicHistory, $location, $q, $http, $base64, $timeout, $stateParams) {
 
 
   // ------------------------------------------------------------------------------------------------------
@@ -251,7 +251,7 @@ angular
       } 
     } else {
 
-      /*
+      
       var loginPromise = LoginService.login(ApiService.server.url);
       loginPromise.then(function(response) {
       //console.log("Logged in!:");
@@ -260,7 +260,7 @@ angular
           triggerSuccessfulLoginMethods();
         }
       });
-      */
+      
     }
 
     console.log("Login status: " + $scope.isLoggedIn);
@@ -346,11 +346,27 @@ angular
       }, 1500);
     }
 
-    //Show the last cities selected for easy navigation
+    $scope.recent_cities = Array();
+
+    //Show the last cities added for easily navigation
     UserCityService.getRecentlyAddedCities(2, ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId()).async().then(function(response) { 
-      $scope.recent_cities = response.data.cities;
-      //console.log(response.data.cities);
+      for (var i=0, len=response.data.cities.length; i<len; i++) {
+        //console.log("adding..." + response.data.cities[i]);
+        $scope.recent_cities.push(response.data.cities[i]);
+      }
+      console.log($scope.recent_cities);
     });
+
+    //Also show the current location's city
+    
+    var LatLongPromise = LocationService.getLatLong();
+    LatLongPromise.then(function(response) {
+      if (response.lat && response.lng) {
+        var current_location = {latitude: response.lat, longitude:response.lng, name: 'Current Location'};
+        $scope.recent_cities.push(current_location);
+      }
+    }); 
+    
   }
 
  // ------------------------------------------------------------------------------------------------------
@@ -656,38 +672,28 @@ angular
     filterVisibile.innerHTML = '<i class="icon ion-ios-settings"> Filter Visible</i>';
     controlUI.appendChild(filterVisibile);
 
-    var latlongcoords = {};
-    var LatLongPromiseIP  = LocationService.getLatLongFromIPAddress();
-    var LatLongPromiseGPS  = LocationService.getLatLongFromGPS();
+    //var latlongcoords = {};
 
-    function center_and_zoom(coords, zoom) {
-      map.setCenter(coords);
-      map.setZoom(zoom); 
-    }
-
-    // Setup the click event listeners: simply set the map to Chicago.
+    // Click Event on Location
     controlText.addEventListener('click', function() {
-      //Attempt to get Lat Long via GPS Coords. If that isn't possible, get them via IP
-      console.log("Attempting to get lat / lng from GPS...");
-      LatLongPromiseGPS.then(function(response) {
+      var LatLongPromise = LocationService.getLatLong();
+      LatLongPromise.then(function(response) {
         if (response.lat && response.lng) {
-          console.log("--- Success");
-          var latlongcoords = response;
-          center_and_zoom(latlongcoords, 14);
 
-          //This is the blue dot. Only works in the phone/gps enabled
-          var GeoMarker = new GeolocationMarker(map);
-        } else {
-          console.log("--- GPS Attempt Failed. Err:");
-          console.log(response);
-          console.log("Now Attempting to get lat / lng from IP...");
-          LatLongPromiseIP.then(function(latlongcoords) {
-            console.log(latlongcoords);
-            center_and_zoom(latlongcoords, 14);
+          //Center Map on Location
+          var coords = response;
+          map.setCenter(coords);
+          map.setZoom(14); 
 
+          //Show Blue Dot depending on source of location
+          //iPhone/GPS is compatible with GeoMarker library. Otherwise I'll default to
+          //just showing a generic blue dot
+          if (response.source == 'gps') {
+            var GeoMarker = new GeolocationMarker(map);
+          } else if (response.source == 'ip') {
             //The default blue dot to show when the gps one fails
             var bounds = new google.maps.LatLngBounds();
-            var latlng = new google.maps.LatLng(latlongcoords.lat, latlongcoords.lng);
+            var latlng = new google.maps.LatLng(coords.lat, coords.lng);
             var marker = new google.maps.Marker({
                 position: latlng,
                 map: map,
@@ -695,11 +701,11 @@ angular
                 icon: 'img/location-blue-circle.png'
             });
             bounds.extend(marker.position);
-          });
+          }
         }
-      });
-
+      }); 
     });
+
 
     filterVisibile.addEventListener('click', function() {
 
@@ -2268,16 +2274,23 @@ angular
    //End User Selects Find Current Location from the search panel instead of selecting a city
   $scope.setCurrentLocation = function() {
 
-    var LatLongPromise = LocationService.getLatLongFromIPAddress();
+    var LatLongPromise = LocationService.getLatLong();
     LatLongPromise.then(function(response) {
+
       $scope.city_selected = 'Current Location'; 
       VenueService.setCity("Current Location");
       VenueService.setLatitude(LocationService.data.latitude);
       VenueService.setLongitude(LocationService.data.longitude);
+      $scope.sort_by_selected = 'distance';
+      $scope.changeSort('distance');
+      
 
+
+      /*
       VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId()).async().then(function(d) { //2. so you can use .then()
         VenueService.setVenues(d.data.venues);
       });
+      */
     });
   }
 
