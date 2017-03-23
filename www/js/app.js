@@ -23,6 +23,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
 
 //Allows text to be selectable in ionic
+/*
 .directive("selectableText", function() {
   return {
     restrict: "A",
@@ -31,6 +32,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     }
   }
 })
+*/
 
 /*
 .directive('capture', function(){

@@ -32,19 +32,22 @@ textarea {
 */
 
 /*Enables selectable text in webapp*/
+/*
 .scroll {
   -webkit-user-select: text;
   user-select: text;
 }
+*/
 
 /*Enables selectable text in webapp*/
+/*
 *[selectable-text] input {
   cursor:text !important;
   background:inherit !important;
   font-size:inherit;
   width:100%;
-  /* etc. You should style it as you want so that it looks natural, not like an input field. */
 }
+*/
 
 
 #ur4,#ur3,#ur2,#ur1,#ur0 {
@@ -201,11 +204,11 @@ textarea {
 
 .clearbutton {
   background-color: Transparent;
-  background-repeat:no-repeat;
+  background-repeat: no-repeat;
   border: none;
-  cursor:pointer;
+  cursor: pointer;
   overflow: hidden;
-  outline:none;
+  outline: none;
   margin: 0px 0px 0px 0px;
   padding: 0px 0px 0px 0px;
 }
@@ -673,6 +676,10 @@ span.number {
 
 }
 
+.iblock {
+  display: inline-block;
+}
+
 
 
 /*
@@ -765,6 +772,7 @@ img.venueimage, img.pageimage {
   float: top;
   border: none;
   background: none;
+
 }
 
 

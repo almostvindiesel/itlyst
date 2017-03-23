@@ -366,7 +366,7 @@ angular
     LatLongPromise.then(function(response) {
       if (response.lat && response.lng && $scope.recent_cities.length <= $scope.max_recent_cities) {
         var current_location = {latitude: response.lat, longitude:response.lng, name: 'Current Location'};
-        $scope.recent_cities.push(current_location);
+        $scope.recent_cities.unshift(current_location);
       }
     }); 
     
@@ -1339,16 +1339,14 @@ angular
       VenueApi.changeUpVotes(up_vote_indicator, $scope.venues[i].id, ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId());
     }
 
-    function keysrt(key,desc) {
-      return function(a,b){
-       return desc ? ~~( a[key]+a.user_rating > b[key]+b.user_rating) : ~~(a[key]+a.user_rating < b[key]+b.user_rating);
-      }
-    }
-
     //If sort by rating selected, sort by it!
-    if(VenueService.data.sort_by=='rating') {
+    if(VenueService.data.sort_by == 'rating') {
       $timeout(function() {
-        $scope.venues = $scope.venues.sort(keysrt('up_votes'));
+        //console.log($scope.venues);
+        $scope.venues = $scope.venues.sort(function(a, b){
+            return (b.user_rating+b.up_votes)-(a.user_rating+ a.up_votes);
+        })
+        //$scope.venues = $scope.venues.sort(keysrt('up_votes'));
       }, 100);  
     }
 

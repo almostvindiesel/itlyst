@@ -31,7 +31,7 @@
 
   <ion-content>
    <ion-refresher
-    pulling-text="Pull to refresh..."
+    pulling-text="Pull to refresh…"
     on-refresh="refreshVenues()">
     </ion-refresher>
 
@@ -58,7 +58,7 @@
             </div>
           </div>
 
-          <div class="row" >
+          <div class="row responsive-sm"" >
             <div class="col" >
               <span class="number">1</span> Find venue, tap Share<br>
               <div class="centertextindiv">
@@ -72,8 +72,8 @@
               </div>
             </div>
           </div>
-
-          <div class="row">
+ 
+          <div class="row responsive-sm"">
             <div class="col">
               <span class=number>3</span> Tap the clipboard below, and itlyst will detect the venue. Feel free to type up any additional notes<br>
               <div class="centertextindiv">
@@ -116,7 +116,7 @@
               <!--<a class="button icon icon-right ion-chevron-right" href="#/app/venue/{{item.id}}/detail">Scientific Facts</a>-->
             </div>
             <div style = "float: right">
-              <button class="clearbutton" ng-click="changeUpVotes(item.id,'increase')"><i class="ion-ios-plus-outline"></i>
+              <button class="clearbutton" ng-click="changeUpVotes(item.id,'increase')">&nbsp;
                 <div class="upvotes">+{{ item.up_votes}}</div>
               </button>
               <button class="clearbutton headerbutton" ng-click="toggleUserRatingPrompt($event, item)">
@@ -130,7 +130,7 @@
             </div>
             <div class=venuetitlediv>
              <h4 class=venuetitle>
-              {{ item.name | limitTo: 18 }}{{item.name.length > 18 ? '...' : ''}} 
+              {{ item.name | limitTo: 16 }}{{item.name.length > 16 ? '…' : ''}} 
               <i ng-if= 'item.distance >=0'><font style="font-size: .7em">{{ item.distance}}mi</i></font>
             </h4>
             </div>

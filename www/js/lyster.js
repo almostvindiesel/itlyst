@@ -267,9 +267,16 @@ function TripadvisorVenue(page){
 
 		try {
 			this.name = $(this.jqdoc).find("div.warLocName").first().text();
-			var s = this.jqdoc.indexOf("<body");
-			var e = this.jqdoc.indexOf("FOOT_CONTAINER");
-			var len = this.jqdoc.length;
+
+			//Setting JDBC Doc.!!! Not sure why it's positioned here...
+			try {
+				var s = this.jqdoc.indexOf("<body");
+				var e = this.jqdoc.indexOf("FOOT_CONTAINER");
+				var len = this.jqdoc.length;
+			} catch(err) {
+				console.log("EXCEPTION: " + err.message);
+			}
+
 
 			if (this.name.length < 1) {
 				throw "Could not find name in first attempt. Retrying";
@@ -355,15 +362,16 @@ function TripadvisorVenue(page){
 	//<span class="geoName" data-title="Florence">Florence</span>
 	this.setCity = function () {
 		
-		/* !!! I think this works on desktop.... re-enable?
+		//<span class="geoName" data-title="Mont-Saint-Michel">
+		//Works on desktop
 		try {
 			this.location.city = $(this.jqdoc).find("span.geoName").text(); 		
 			console.log("--- city: " + this.location.city);
 		} catch(err) {
-			console.log("Could not get city. EXCEPTION: " + err.message);
+			console.log("EXCEPTION. Could not get city. Err:" + err.message);
 		}
-		*/
-		
+
+
 		if ( this.location.city.length < 1) {
 			console.log("Could not get city. Retrying with different method by parsing json");
 
