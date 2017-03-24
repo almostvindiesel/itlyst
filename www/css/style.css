@@ -282,6 +282,7 @@ textarea {
 .dialogpopover {
   height: 300px;
   width: 95%;
+  max-width: 750px;
   text-align: center;
   top: 5% !important;
   margin-left: 3px !important;
