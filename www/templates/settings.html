@@ -20,8 +20,7 @@
               The chrome extension allows you to save tips and pics from your favorite review sites easily. First, you need to use Chrome. Next, install the extension and login: 
               <br><br>
 
-              <a href="https://chrome.google.com/webstore/detail/itlyst/ecfgefcjfjkbmmcaegehencgpjokoagp" target="_">
-                <button class="button button-stable button-calm">Get <img src="img/itlyst-fork-logo.png" style="width:20px"> itlyst for <img src="img/chrome-icon.png" style="width:20px" ng-click="sect1b=true"> Chrome</button>
+              <button class="button button-stable button-calm" ng-click="openChrome()">Get <img src="img/itlyst-fork-logo.png" style="width:20px"> itlyst for <img src="img/chrome-icon.png" style="width:20px" > Chrome</button>
               </a>
             </div>
           </div>
@@ -65,13 +64,13 @@
           How do I save notes on my iPhone?
         </button>
         <div class="faq_detail hide_element ">
-          <div class="row">
+          <div class="row responsive-sm">
             <div class ="col">
               <p>Open one of these review apps on your iPhone:<br>
-               <span>
-                <button class="hrefbutton clearbutton" ng-click="open_app('yelp')"><img src=img/yelp-app-icon.jpeg width=50 class="appicon"></button>
-                <button class="hrefbutton clearbutton" ng-click="open_app('foursquare')"><img src=img/foursquare-app-icon.jpg class="appicon"></button>
-                <button class="hrefbutton clearbutton" ng-click="open_app('tripadvisor')"><img src=img/tripadvisor-app-icon.jpeg class="appicon"></button>
+              <span>
+                <a href="https://www.yelp.com/" target="_"><img src=img/yelp-app-icon.jpeg class="appicon"></a>
+                <a href="https://foursquare.com/" target="_"><img src=img/foursquare-app-icon.jpg class="appicon"></a>
+                <a href="https://www.tripadvisor.com/" target="_"><img src=img/tripadvisor-app-icon.jpeg class="appicon"></a>
               </span>
             </div>
           </div>
@@ -189,6 +188,18 @@
         </button>
       </li>
 
+      <li class="item allow_wrap" >
+        <button class="button button-clear listbutton" ng-click="toggleFAQEntry($event)">
+          Is there a tutorial?
+        </button>
+        <div class="faq_detail  hide_element ">
+          Yup! See it <button class="button button-positive buttoninlinetext" ng-click="go('app.ftue')"> &nbsp;here&nbsp; </button>
+        </button>
+        </div>
+        <button class="button button-clear hide_element" ng-click="toggleFAQEntry($event)" style="float:right;">
+          <i class="ion-chevron-up fa-1_3x mgray" aria-hidden="true"></i>
+        </button>
+      </li>
 
   </ul>
 

@@ -323,6 +323,7 @@ function TripadvisorVenue(page){
 		console.log("--- source_id: " + this.source_id);
 	}
 
+	//<div class="mapContainer" data-lat="44.701134" data-lng="8.034557" data-name="Focacceria Il Budego" data-locid="2726110" data-pinimg="https://static.tacdn.com/img2/maps/icons/pin_centroid_addressblock.png">
 	//<div class="mapContainer" data-lat="37.798454" data-lng="-122.40787" data-name="Molinari Delicatessen"...>
 	this.setLatitude = function () {
 		try {
@@ -386,21 +387,34 @@ function TripadvisorVenue(page){
 		}
 	}
 
+
 	//property="ratingValue" content="4.0"
 	this.setRating = function () {
+
 		try {
-			this.rating = $(this.jqdoc).find("[property='ratingValue']").first().attr('alt').substring(0, 3);
-			if (!(isNumeric(this.rating)))  {
-				throw "Rating parsed is not a number. Retrying";
-			}
+			this.rating = $(this.jqdoc).find("[property='ratingValue']").attr('content');
 		} catch(err) {
-			console.log("EXCEPTION. Could not get rating. Err: " + err.message);
+			console.log("EXCEPTION. Could not get rating. Retrying. Err: " + err.message);
+		}
+
+		if (!(isNumeric(this.rating)))  {
+			this.rating = null;
+			try {
+				this.rating = $(this.jqdoc).find("[property='ratingValue']").first().attr('alt').substring(0, 3);
+			} catch(err) {
+				console.log("EXCEPTION. Could not get rating. Err: " + err.message);
+			}
+		}
+
+		if (!(isNumeric(this.rating)))  {
+			this.rating = null;
 			try {
 				this.rating = this.pageJson.aggregateRating.ratingValue;
 			} catch(err) {
 				console.log("EXCEPTION. Could not get rating on second attempt. Giving up. Err: " + err.message);
 			}
 		}
+
 	} 
 
 	//<div class="numRatings" itemprop="ratingCount">314</div>

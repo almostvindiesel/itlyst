@@ -44,7 +44,7 @@
                 <div class="iblock"><i ng-if="city.name == 'Current Location'" class="icon ion-ios-navigate-outline" style="color:white"> {{ city.name }}</i></div>
                 <div class="iblock"><i ng-if="city.name != 'Current Location'">{{ city.name | limitTo: 15 }}{{city.name.length > 15 ? '…' : ''}}</i></div>
             </button>
-            <button class="clearbutton mwhite" ng-click="go('app.blank')" >
+            <button class="clearbutton mwhite" ng-click="go('app/blank')" >
               <i class="fa-1_8x ion-ios-compose-outline" style="color:white"></i> 
             </button>
           </p>

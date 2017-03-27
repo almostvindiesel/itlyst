@@ -18,12 +18,14 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
   ]
 })
 
+
+
 .value('api_url', 'https://api.itlyst.com')
 //.value('api_url', 'http://mars.local:5000')
 
 
 //Allows text to be selectable in ionic
-/*
+
 .directive("selectableText", function() {
   return {
     restrict: "A",
@@ -32,7 +34,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     }
   }
 })
-*/
 
 /*
 .directive('capture', function(){
@@ -87,6 +88,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     templateUrl: 'templates/tabs.html'
   })
 */
+
+  
 
 .config(function($stateProvider, $urlRouterProvider, $sceDelegateProvider) {
 
@@ -147,29 +150,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     }
   })
 
-/*
-  .state('app.account', {
-    url: '/account',
-    views: {
-      'account-tab': {
-        templateUrl: 'templates/account.html',
-        controller: 'AccountCtrl'
-      }
-    }
-  })
-*/
-  /*
-  .state('app.profile', {
-    url: '/profile',
-    views: {
-      'profile-tab': {
-        templateUrl: 'templates/profile.html',
-        controller: 'UserProfileCtrl'
-      }
-    }
-  })
-  */
-
   .state('app.venue_search', {
     cache: false, 
     url: '/venue_search',
@@ -213,6 +193,20 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     }
   })
 
+/*
+  .state('app.user', {
+    //cache: false,
+    url: '/u/:con',
+    views: {
+      'venues-tab': {
+        templateUrl: 'templates/images.html',
+        abstract: true,
+        controller: 'ImageCtrl'
+      }
+    }
+  })
+*/
+
   .state('app.image', {
     //cache: false,
     url: '/image/:imageId',
@@ -240,7 +234,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     }
   })
 
-
   .state('app.redirector', {
     url: '/redirector',
     views: {
@@ -250,7 +243,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       }
     }
   })
-
 
   .state('start', {
     url: '/start/:action',
@@ -267,18 +259,29 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     }
   })
 
-  .state('ftue', {
+  .state('app.ftue', {
     url: '/ftue',
     views: {
-      '': {
+      'settings-tab': {
         templateUrl: 'templates/ftue.html',
-        abstract: true,
+        /*abstract: true,*/
         controller: 'FtueCtrl'
       }
     }
   })
 
 
+
+  .state('username', {
+    url: '/u/:username/:city/:latitude/:longitude/:zoom/:sort_by',
+    views: {
+      '': {
+        templateUrl: 'templates/loading.html',
+        abstract: true,
+        controller: 'UsernameCtrl'
+      }
+    }
+  })
 
   .state('app.admin', {
     url: '/admin',
@@ -303,10 +306,42 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       }
     }
   })
+  .state('app.account', {
+    url: '/account',
+    views: {
+      'account-tab': {
+        templateUrl: 'templates/account.html',
+        controller: 'AccountCtrl'
+      }
+    }
+  })
+  .state('app.profile', {
+    url: '/profile',
+    views: {
+      'profile-tab': {
+        templateUrl: 'templates/profile.html',
+        controller: 'UserProfileCtrl'
+      }
+    }
+  })
   */
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/start/');
+
+  /*
+  $urlRouterProvider.when('/u/:username', ['$state','$match', function ($scope, $http, $location, $match, $stateParams, $state, $routeParams) {
+    console.log("got here...");
+    console.log($stateParams);
+    console.log($routeParams);
+    console.log($scope);
+    console.log($state);
+    console.log($urlRouterProvider);
+    console.log($stateParams.username);
+    $state.go('site.link1');
+  }]);
+  */
+
 });
 
 // --------------------------------------------------------------------
@@ -392,20 +427,54 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       hasCompletedFtue: 0
     };
 
+  var getUserIdFromUsername = function (api_url, username) {
+    return $http({
+          method: 'GET',
+          url: api_url + '/api/v1/user?username=' + username 
+      })
+      .then(function(response) {
+        //console.log(response);
+          user_id = response.data.user_id;
+          return {status: "success", user_id: response.data.user_id};
+
+      }, function(rejection) {
+          return rejection;
+    });
+  }
+
 
   var extractVenueFromUrl = function (venue_url) {
-      console.log("Querying: " + venue_url);
-      return $http({
-              method: 'GET',
-              url: venue_url
-          })
-          .then(function(response) {
-              //console.log(response.data);
-              return response.data;
-          }, function(rejection) {
-              return response;
-      });
-    }
+    console.log("Querying: " + venue_url);
+    return $http({
+            method: 'GET',
+            url: venue_url
+        })
+        .then(function(response) {
+          //console.log(response.data);
+          return response.data;
+        }, function(rejection) {
+          return response;
+    });
+  }
+
+/*
+  var extractVenueFromUrl = function (venue_url) {
+    console.log("Querying: " + venue_url);
+    return $http({
+            method: 'GET',
+            url: venue_url
+        })
+        .then(function(response) {
+          //console.log(response.data);
+          return response.data;
+        }, function(rejection) {
+          return response;
+    });
+  }
+*/
+
+
+
 
   var login = function (api_url) {
       //Note that the username is the email address in this case
@@ -427,6 +496,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
 
           //Set the user id
           setUserId(response.user_id);
+          setUsername(response.username);
           //console.log("User Id: ", getUserId());
           return response;
         })
@@ -440,8 +510,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
         
           return rejection;
         });
-      
-
     }
 
     function getLoginHeader() {
@@ -456,13 +524,22 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       return window.localStorage.getItem("email");
     }
 
+    function getUsername() {
+      return window.localStorage.getItem("username");
+    }
+
     function getPassword() {
       return window.localStorage.getItem("password");
     }
 
     function setUserId(user_id) {
-      window.localStorage.setItem ("userId",user_id);
+      window.localStorage.setItem ("userId", user_id);
     }
+
+    function setUsername(username) {
+      window.localStorage.setItem ("username", username);
+    }
+
 
     function setEmail(email) {
       window.localStorage.setItem ("email",email);
@@ -505,10 +582,13 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       getEmail: getEmail,
       getPassword: getPassword,
       getUserId: getUserId,
+      getUsername: getUsername,
       setEmail: setEmail,
       setPassword: setPassword,
+      setUsername: setUsername,
       setUserId: setUserId,
       getLoginHeader: getLoginHeader,
+      getUserIdFromUsername: getUserIdFromUsername,
       completeMobileFtue: completeMobileFtue,
       status: status
     };
@@ -525,43 +605,40 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     };
 
     //Attempt to get Lat Long via GPS Coords. If that isn't possible, get them via IP
-    function getLatLong() {
 
-      var LatLongPromiseGPS = getLatLongFromGPS();
-      return LatLongPromiseGPS.then(function(response) {
-        if (response.lat && response.lng) {
-          console.log("--- Success");
-          var latlongcoords = response;
-          return latlongcoords;
-        } else {
-          console.log("--- GPS Attempt Failed. Err:");
-          console.log(response);
-          console.log("Now Attempting to get lat / lng from IP...");
-          var LatLongPromiseIP = getLatLongFromIPAddress();
-          return LatLongPromiseIP.then(function(latlongcoords) {
-            return latlongcoords;
-          });
-        }
-      });
-    }
-
-    function getLatLongFromIPAddress() {
+    var getCityFromLatLng = function (latitude, longitude, api_url) {
+      var url = api_url + '/api/v1/city?latitude=' + latitude + '&longitude=' + longitude;
+      console.log(url);
       return $http({
             method: 'GET',
-            url: 'http://freegeoip.net/json/'
+            url: url
         })
         .then(function(response) {
-            data.latitude = response.data.latitude;
-            data.longitude = response.data.longitude;
-            //console.log("User IP Lat: "+ data.latitude);
-            //console.log("User IP Long: "+ data.longitude);
-            return {lat: data.latitude, lng: data.longitude, source: 'ip'}
+            //console.log("getCityFromLatLng response: ");
+            //console.log(response);
+            return response;
         }, function(rejection) {
             return rejection;
         });
     }
 
-    function getLatLongFromGPS() {
+    var getLatLongFromIPAddress= function() {
+      return $http({
+            method: 'GET',
+            url: 'http://freegeoip.net/json/'
+        })
+        .then(function(response) {
+            console.log(response);
+            console.log("User IP Lat: "+ response.data.latitude);
+            console.log("User IP Long: "+ response.data.longitude);
+            console.log("User IP City: "+ response.data.city);
+            return {lat: response.data.latitude, lng: response.data.longitude, city: response.data.city, source: 'ip'}
+        }, function(rejection) {
+            return rejection;
+        });
+    }
+
+    var getLatLongFromGPS = function(api_url) {
       var posOptions = {
         enableHighAccuracy: true,
         timeout: 20000,
@@ -573,17 +650,47 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
             data.longitude = position.coords.longitude;
             console.log("lat: " + data.latitude);
             console.log("long: " + data.longitude);
-            return {lat: data.latitude, lng: data.longitude, source: 'gps'};
-      }, function(rejection) {
-            return rejection;
-      });
 
+            //Now call an endpoint to get the city based on the lat long
+            //console.log("got just before getCityFromLatLngPromise");
+            var getCityFromLatLngPromise = getCityFromLatLng(data.latitude, data.longitude, api_url);
+            return getCityFromLatLngPromise.then(function(response) {
+              //console.log("city from gps ip resolution call: ");
+              //console.log(response);
+              //city = response.data.city;
+              return {lat: response.data.latitude, lng: response.data.longitude, city: response.data.city, source: 'gps'};
+            });
+
+      }, function(rejection) {
+          return rejection;
+      });
+    }
+
+    function getLatLong(api_url) {
+
+      var LatLongPromiseGPS = getLatLongFromGPS(api_url);
+      return LatLongPromiseGPS.then(function(response) {
+        if (response.lat && response.lng) {
+          console.log("--- GPS Attempt Success:");
+          var latlongcoords = response;
+          return latlongcoords;
+        } else {
+          console.log("--- GPS Attempt Failed. Response:");
+          console.log(response);
+          console.log("Now Attempting to get lat / lng from IP...");
+          var LatLongPromiseIP = getLatLongFromIPAddress();
+          return LatLongPromiseIP.then(function(latlongcoords) {
+            return latlongcoords;
+          });
+        }
+      });
     }
 
     return {
       getLatLong: getLatLong,
       getLatLongFromIPAddress: getLatLongFromIPAddress,
       getLatLongFromGPS: getLatLongFromGPS,
+      getCityFromLatLng: getCityFromLatLng,
       data: data
     };
 
@@ -736,7 +843,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
               url: venue_url
           })
           .then(function(response) {
-              //console.log(response.data);
+              console.log(response.data);
               return response.data;
           }, function(rejection) {
               return response;

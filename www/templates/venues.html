@@ -23,7 +23,7 @@
 
     
     
-    <button class="button button-icon icon venuebutton" ng-click="sendEmail()">
+    <button class="button button-icon icon venuebutton" ng-click="sendEmail($event)">
       <i class="ion-ios-upload-outline mwhite"></i>
     </button>
 
@@ -50,15 +50,15 @@
             <div class ="col">
               <p>You have no venues saved with this filter.</p>
               <p>Open one of these review apps on your iPhone:<br>
-               <span>
-                <button class="hrefbutton clearbutton" ng-click="open_app('yelp')"><img src=img/yelp-app-icon.jpeg width=50 class="appicon"></button>
-                <button class="hrefbutton clearbutton" ng-click="open_app('foursquare')"><img src=img/foursquare-app-icon.jpg class="appicon"></button>
-                <button class="hrefbutton clearbutton" ng-click="open_app('tripadvisor')"><img src=img/tripadvisor-app-icon.jpeg class="appicon"></button>
+              <span>
+                <a href="https://www.yelp.com/" target="_"><img src=img/yelp-app-icon.jpeg class="appicon"></a>
+                <a href="https://foursquare.com/" target="_"><img src=img/foursquare-app-icon.jpg class="appicon"></a>
+                <a href="https://www.tripadvisor.com/" target="_"><img src=img/tripadvisor-app-icon.jpeg class="appicon"></a>
               </span>
             </div>
           </div>
 
-          <div class="row responsive-sm"" >
+          <div class="row responsive-sm" >
             <div class="col" >
               <span class="number">1</span> Find venue, tap Share<br>
               <div class="centertextindiv">
@@ -73,7 +73,7 @@
             </div>
           </div>
  
-          <div class="row responsive-sm"">
+          <div class="row responsive-sm">
             <div class="col">
               <span class=number>3</span> Tap the clipboard below, and itlyst will detect the venue. Feel free to type up any additional notes<br>
               <div class="centertextindiv">
@@ -246,19 +246,28 @@
         <textarea #input id="newVenueNote" autofocus focus-me placeholder="Additional notes"></textarea>
       </label>
       <span>
-      <!--<button class="button button-calm round" ng-click="selectNoteImages()">
-        Upload Images
-      </button>-->
-      <button class="button button-positive round"  ng-click="saveNewNote()">
-        Save
-      </button>
-      <button class="button button-stable round" ng-click="cancelNewNote()"> 
-        <i class="icon ion-close"></i> Cancel
-      </button><br>
-    </span>
+        <!--<button class="button button-calm round" ng-click="selectNoteImages()">
+          Upload Images
+        </button>-->
+        <button class="button button-positive round"  ng-click="saveNewNote()">
+          Save
+        </button>
+        <button class="button button-stable round" ng-click="cancelNewNote()"> 
+          <i class="icon ion-close"></i> Cancel
+        </button><br>
+      </span>
     </ion-content>
   </ion-popover-view>
 </script>
+
+<script id="pageNotesPopover" type="text/ng-template">
+  <ion-popover-view class='dialogpopover'>
+    <ion-content overflow-scroll="true">
+      <div selectableText ng-bind-html="html_body"></div>
+    </ion-content>
+  </ion-popover-view>
+</script>
+
 
 <!--
 <script id="rateVenuePopup" type="text/ng-template">

@@ -21,16 +21,20 @@ angular
 })
 
 
-.controller('FtueCtrl', function($scope, $ionicModal, $ionicPlatform, config, VenueService, ApiService, LoginService, $ionicHistory, $location, $q, $http, $base64, $timeout) {
+.controller('FtueCtrl', function($scope, $ionicModal, $ionicPlatform, config, VenueService, ApiService, LoginService, $ionicHistory, $location, $q, $http, $base64, $timeout, $state) {
   console.log("loading FtueCtrl...");
 
+  // ---------------------------------------- Slide Navigation
   $scope.go_and_complete_ftue = function ( path ) {
     console.log("Going to " + path);
+    VenueService.setForceRefreshVenues(true);
+    VenueService.setCity("Los Angeles");
     LoginService.completeMobileFtue(ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId());
     $ionicHistory.nextViewOptions({
       disableBack: false
     });
-    $location.path( path );
+    //$location.path( path );
+    $state.go(path, {}, {});
   };
 
   $scope.open_app = function (app) {
@@ -45,6 +49,49 @@ angular
     }
   };
 
+  $scope.nextSlide = function() {
+    $scope.slider._slideTo($scope.slider.activeIndex+1);
+  }
+
+  $scope.goToSlide = function(slideNum) {
+    $scope.slider._slideTo(slideNum);
+  }
+
+  $scope.openChromeAndNextSlide = function () {
+
+    //alert(ionic.Platform.platform());
+    //mac: macintel
+    //.com: ios
+    //iphone: ios
+    //alert(ionic.Platform.isWebView());
+    //mac: false
+    //.com: false
+    //iphone: true
+
+    //If in the app then open the link to the extension. Otherwise, prompt an alert
+    if (!(ionic.Platform.isWebView())) {
+      var chrome_url = 'https://chrome.google.com/webstore/detail/itlyst/ecfgefcjfjkbmmcaegehencgpjokoagp';
+      window.open(chrome_url,'_system');
+    } else {
+      alert("You're in the itlyst app. We've sent an email with a link to download the extension later");
+    }
+    $scope.slider._slideTo($scope.slider.activeIndex+1);
+  }
+
+
+  // ---------------------------------------- FTUE Slider Preferences
+
+  //Changes Title on update
+  $scope.ftueTitles = 
+    ["Getting Started",
+     "Saving from itlyst", 
+     "Saving notes from Chrome Desktop Extension", 
+     "Using Chrome Extension on Computer", 
+     "Saving a Venue on your iPhone with Notes 1/1", 
+     "Saving a Venue on your iPhone with Notes 1/2", 
+     "Saving a Venue on your iPhone with a Picture 1/2",
+     "Saving a Venue on your iPhone with a Picture 2/2"];
+  $scope.ftueTitle = $scope.ftueTitles[0];
 
   $scope.options = {
     loop: false,
@@ -52,17 +99,7 @@ angular
     //speed: 500,
   }
 
-  //$scope.ftueTitles = ["Save travel locations from anywhere", "Save places from review apps", "Save pictures from review apps", "Start Lysting!"]
-  $scope.ftueTitles = 
-    ["Saving notes from Chrome Desktop Extension", 
-     "Using Chrome Extension on Computer", 
-     "Saving Venue Notes On Your iPhone", 
-     "Saving Venue Pictures On Your iPhone 1/2",
-     "Saving Venue Pictures On Your iPhone 2/2"];
-  $scope.ftueTitle = $scope.ftueTitles[0];
-
   $scope.$on("$ionicSlides.sliderInitialized", function(event, data){
-    // data.slider is the instance of Swiper
     $scope.slider = data.slider;
   });
 
@@ -71,40 +108,27 @@ angular
     console.log("data.slider.activeIndex: " + data.slider.activeIndex);
     $scope.ftueTitle = $scope.ftueTitles[data.slider.activeIndex];
     console.log("$scope.ftueTitle: " + $scope.ftueTitle);
-    $scope.$apply();
+    //$scope.$apply();
   });
-
-
-  $scope.nextSlide = function() {
-    console.log("Next slide...");
-    console.log($scope.slider);
-    $scope.slider._slideTo($scope.slider.activeIndex+1);
-    $scope.$apply();
-    /*
-    $scope.slider.sliderDelegate.activeIndex = $scope.slider.sliderDelegate.activeIndex + 1;
-    $scope.slider.currentPage = $scope.slider.sliderDelegate.activeIndex;
-    //use $scope.$apply() to refresh any content external to the slider
-    */
-  }
-
-
-  
 
   $scope.$on("$ionicSlides.slideChangeEnd", function(event, data){
     // note: the indexes are 0-based
     console.log('slideChangeEnd');
-
     $scope.activeIndex = data.slider.activeIndex;
     $scope.previousIndex = data.slider.previousIndex;
-    
   });
 
 })
 
-.controller('SettingsCtrl', function($scope, $ionicModal, $ionicPlatform, config, VenueService, ApiService, LoginService, $ionicHistory, $location, $q, $http, $base64, $timeout, $ionicScrollDelegate) {
+
+.controller('SettingsCtrl', function($scope, $ionicModal, $ionicPlatform, config, VenueService, ApiService, LoginService, $ionicHistory, $location, $q, $http, $base64, $timeout, $ionicScrollDelegate, $state) {
   console.log("loading SettingsCtrl...");
 
   var totalFAQEntries = 3; 
+
+  $scope.go =function(path) {
+    $state.go(path, {}, {});
+  }
 
   $scope.toggleFAQEntry = function (event) {
 
@@ -130,18 +154,38 @@ angular
       $ionicScrollDelegate.scrollTop();
     }, 250);
 
-    
-
   }
 
   $scope.go_and_complete_ftue = function ( path ) {
     console.log("Going to " + path);
+    VenueService.setCity("Los Angeles");
+    VenueService.setForceRefreshVenues(true);
     LoginService.completeMobileFtue(ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId());
     $ionicHistory.nextViewOptions({
       disableBack: false
     });
     $location.path( path );
   };
+
+  $scope.openChrome = function () {
+
+    //alert(ionic.Platform.platform());
+    //mac: macintel
+    //.com: ios
+    //iphone: ios
+    //alert(ionic.Platform.isWebView());
+    //mac: false
+    //.com: false
+    //iphone: true
+
+    //If in the app then open the link to the extension. Otherwise, prompt an alert
+    if (!(ionic.Platform.isWebView())) {
+      var chrome_url = 'https://chrome.google.com/webstore/detail/itlyst/ecfgefcjfjkbmmcaegehencgpjokoagp';
+      window.open(chrome_url,'_system');
+    } else {
+      alert("You're in the itlyst app. We've sent an email with a link to download the extension later");
+    }
+  }
 
   $scope.open_app = function (app) {
     if (app =='yelp') {
@@ -197,9 +241,6 @@ angular
     */
   }
 
-
-  
-
   $scope.$on("$ionicSlides.slideChangeEnd", function(event, data){
     // note: the indexes are 0-based
     console.log('slideChangeEnd');
@@ -211,7 +252,7 @@ angular
 
 })
 
-.controller('StartCtrl', function($scope, $ionicModal, $ionicPlatform, config, VenueService, UserCityService, LocationService, ApiService, LoginService, $ionicHistory, $location, $q, $http, $base64, $timeout, $stateParams) {
+.controller('StartCtrl', function($scope, $ionicModal, $ionicPlatform, config, VenueService, UserCityService, LocationService, ApiService, LoginService, $ionicHistory, $location, $q, $http, $base64, $timeout, $stateParams, $state) {
 
 
   // ------------------------------------------------------------------------------------------------------
@@ -264,8 +305,7 @@ angular
     }
 
     console.log("Login status: " + $scope.isLoggedIn);
-   
-
+  
     
   });  
 
@@ -342,7 +382,7 @@ angular
     //Trigger the FTUE, if needed
     if(LoginService.status.hasCompletedFtue == 0) {
        $timeout(function() {
-        $scope.go('ftue')
+        $state.go('app.ftue')
       }, 1500);
     }
 
@@ -362,7 +402,9 @@ angular
 
     //Also show the current location's city
     
-    var LatLongPromise = LocationService.getLatLong();
+  
+
+    var LatLongPromise = LocationService.getLatLong(ApiService.server.url);
     LatLongPromise.then(function(response) {
       if (response.lat && response.lng && $scope.recent_cities.length <= $scope.max_recent_cities) {
         var current_location = {latitude: response.lat, longitude:response.lng, name: 'Current Location'};
@@ -542,6 +584,12 @@ angular
     //If user opts to search by current location, then sort by distance rather than recently added
     if(city.name == 'Current Location') {
       VenueService.setSortBy('distance');
+      LocationService.getCityFromLatLng(VenueService.data.latitude, VenueService.data.longitude, ApiService.server.url).then(function(response) { //2. so you can use .then()
+        console.log("location service result:");
+        console.log(response);
+        VenueService.setCity(response.data.city.city);
+      });
+
     }
     VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId()).async().then(function(d) { //2. so you can use .then()
       VenueService.setVenues(d.data.venues);
@@ -683,7 +731,7 @@ angular
 
     // Click Event on Location
     controlText.addEventListener('click', function() {
-      var LatLongPromise = LocationService.getLatLong();
+      var LatLongPromise = LocationService.getLatLong(ApiService.server.url);
       LatLongPromise.then(function(response) {
         if (response.lat && response.lng) {
 
@@ -951,7 +999,7 @@ angular
         mimeType: "image/png"
     };
 
-    var imageURI = 'http://almostvindiesel.pythonanywhere.com/static/img/insta/526.jpg';
+    var imageURI = 'http://almostvindiesel.pythonanywhere.com/img/insta/526.jpg';
     $scope.upload = function($cordovaFileTransfer) {
       $cordovaFileTransfer.upload(s3URI, imageURI, options)
           .then(function(result) {
@@ -1006,67 +1054,86 @@ angular
   }
 
 
-  var body = "<b>Urth Caffe</b><br> \
-              Yelp: 4/5 Stars, Foursquare: 8.9/10. <a href='#'>Map</a><br>\
-              * Amazing coffee. Would go back again in a heartbeat<br> \
-              * Love the Spanish Lattes. My absolute fav<br> \
-              <img width=150 src=http://www.itlyst.com/static/img/coffee.jpg> \
-              <br><br> \
-              \
-              <p>Sent via <a href=itlyst.com>itlyst:</a>. Remember the places you want to visit</p>"
 
-
-  $scope.sendEmail = function(){
+  $scope.sendEmail = function($event) {
 
     var email_subject = $scope.active_city + ' Recs (via itlyst)';
-    var yelp_icon = "<img src=http://www.itlyst.com/static/img/yelp-app-icon.jpeg width=15> ";
-    var tripadvisor_icon = "<img src=http://www.itlyst.com/static/img/tripadvisor-app-icon.jpeg width=15> ";
-    var foursquare_icon = "<img src=http://www.itlyst.com/static/img/foursquare-app-icon.jpg width=15> ";
-    var email_body = '';
+    var yelp_icon = "<img src=http://www.itlyst.com/img/yelp-app-icon.jpeg width=15> ";
+    var tripadvisor_icon = "<img src=http://www.itlyst.com/img/tripadvisor-app-icon.jpeg width=15> ";
+    var foursquare_icon = "<img src=http://www.itlyst.com/img/foursquare-app-icon.jpg width=15> ";
+    var html_body = '';
+
+    var username = LoginService.getUsername();
+    var city = VenueService.data.city;
+    var latitude = VenueService.data.latitude.toString()
+    var longitude = VenueService.data.longitude.toString()
+    var zoom = VenueService.data.zoom;
+    var sort_by = VenueService.data.sort_by;
+
+    //!!! should get dynamically...
+    if (location.port) {
+      var hostname = 'http://' + location.hostname + ":" + location.port;
+    } else {
+      var hostname = 'http://' + location.hostname;
+    }
+    var url = hostname + "/#/u/" + username + "/" + city.replace(' ','%20') + "/" + latitude + "/" + longitude + "/" + zoom + "/" + sort_by;
+
+
 
     for (var i=0, len=$scope.venues.length; i<len; i++) {
 
       var map_url ="http://www.google.com/maps/search/"+$scope.venues[i].name+"/@"+$scope.venues[i].latitude+","+$scope.venues[i].longitude+"/14z";
 
-      email_body += "<b>" + $scope.venues[i].name + "</b> - <a href=" + map_url + ">Map</a><br>";
+      html_body = "<div selectable-text>";
+      html_body += "<p>Visit on itlyst: <a href='" + url + "'>" + url + '</a></p>';
+
+      html_body += "<b>" + $scope.venues[i].name + "</b> - <a href=" + map_url + ">Map</a><br>";
       if ($scope.venues[i].yelp_id != null) {
         var yelp_url = $scope.venues[i].yelp_url;
-        email_body += "<a href=" + yelp_url + ">" + yelp_icon + $scope.venues[i].yelp_rating + "/5 " + $scope.venues[i].yelp_reviews + " tips</a> ";
+        html_body += "<a href=" + yelp_url + ">" + yelp_icon + $scope.venues[i].yelp_rating + "/5 " + $scope.venues[i].yelp_reviews + " tips</a> ";
       }
       if ($scope.venues[i].foursquare_id != null) {
         var foursquare_url = $scope.venues[i].foursquare_url;
-        email_body += "<a href=" + foursquare_url + ">" + foursquare_icon + $scope.venues[i].foursquare_rating + "/10</a> " /*+ $scope.venues[i].foursquare_reviews + " tips "</a> "*/;
+        html_body += "<a href=" + foursquare_url + ">" + foursquare_icon + $scope.venues[i].foursquare_rating + "/10</a> " /*+ $scope.venues[i].foursquare_reviews + " tips "</a> "*/;
       }
       if ($scope.venues[i].tripadvisor_id != null) {
         var tripadvisor_url = $scope.venues[i].tripadvisor_url;
-        email_body += "<a href=" + tripadvisor_url + ">" + tripadvisor_icon + $scope.venues[i].tripadvisor_rating + "/5 " + $scope.venues[i].tripadvisor_reviews + " tips</a> ";
+        html_body += "<a href=" + tripadvisor_url + ">" + tripadvisor_icon + $scope.venues[i].tripadvisor_rating + "/5 " + $scope.venues[i].tripadvisor_reviews + " tips</a> ";
       }
-      email_body += "<br>";
+      html_body += "<br>";
 
       for (var n=0, nlen=$scope.venues[i].notes.length; n<nlen; n++) {
-        email_body += "• " + $scope.venues[i].notes[n].note + "<br>";
+        html_body += "• " + $scope.venues[i].notes[n].note + "<br>";
       }
       for (var j=0, ilen=$scope.venues[i].images.length; j<ilen; j++) {
-        email_body += "<img width=150 src=" + $scope.venues[i].images[j].image_thumb + "> &nbsp;";
+        html_body += "<img width=150 src=" + $scope.venues[i].images[j].image_thumb + "> &nbsp;";
       }
-      email_body += "<br><br>";
+      html_body += "<br><br>";
     }
-    email_body += "Remember places you want to visit with <a href=www.itlyt.com>itlyst</a>."
+    html_body += "Remember places you want to visit with <a href=www.itlyt.com>itlyst</a>.";
+    html_body +="</div>";
     
     var email = {
 //       to: 'jmarsland@gmail.com',
        subject: email_subject,
-       body: email_body,
+       body: html_body,
        isHtml: true
     };
 
     try {
       $cordovaEmailComposer.open(email).then(null, function () {});
     } catch(err) {
-      alert("Sharing lists via email is only available on mobile devices at the moment");
+      //alert("Share this view with this link:\r\n\r\n" + html_body);
+      $scope.html_body = "<p>Share this link: " + url +'</p>';
+      //Create Popup
+      console.log("ionicPopover: pageNotesPopover");
+      $ionicPopover.fromTemplateUrl('pageNotesPopover', {
+        scope: $scope
+      }).then(function(popover) {
+        $scope.popover = popover;
+        $scope.popover.show($event);
+      });
     }
-
-
   }
   
 
@@ -1080,7 +1147,6 @@ angular
     });
   };
 
-
   $scope.open_app = function (app) {
     if (app =='yelp') {
       window.location.href = "yelp:///";
@@ -1092,7 +1158,6 @@ angular
       window.location.href = "comgooglemaps://";
     }
   };
-
 
   $scope.go_image_detail = function ($event, path, venueId ) {
     $event.preventDefault();
@@ -1386,6 +1451,53 @@ angular
 
 
 
+.controller('UsernameCtrl', function($scope, $http, VenueService, ApiService, LoginService, $stateParams, ImageApi, $state, $ionicHistory, $location, $timeout) {
+  console.log("loading UsernameCtrl... ");
+
+  //Resolve user_id from username
+  console.log("username: " + $stateParams.username);
+
+
+  LoginServicePromise = LoginService.getUserIdFromUsername(ApiService.server.url, $stateParams.username);
+
+  /*
+  /u/:username/:city/:latitude/:longitude/:zoom/:sort_by/
+  */
+
+  console.log("Resolving username...");
+  LoginServicePromise.then(function(response) {
+    console.log("----");
+    if (response.status == 'success') {
+
+      LoginService.setUsername($stateParams.username);
+      LoginService.setUserId(response.user_id);
+
+      VenueService.setCity($stateParams.city);
+      VenueService.setLatitude($stateParams.latitude);
+      VenueService.setLongitude($stateParams.longitude);
+      VenueService.setZoom($stateParams.zoom);
+      VenueService.setSortBy($stateParams.sort_by);
+
+      VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId()).async().then(function(d) { //2. so you can use .then()
+        VenueService.setVenues(d.data.venues);
+        VenueService.setForceRefreshVenues(false);
+        $ionicHistory.nextViewOptions({
+          disableBack: true
+        });
+        $location.path( 'app/venues' );
+      });
+    } else {
+       $location.path( 'app/start' );
+    }
+
+
+  });
+
+
+
+
+  
+})
 
 
 
@@ -2194,6 +2306,7 @@ angular
       var extractVenueFromUrlPromise = VenueService.extractVenueFromUrl($scope.venueClickedUrl);
 
       extractVenueFromUrlPromise.then(function(response) {
+        console.log("extractVenueFromUrlPromise....");
         //console.log("Extracted venue data. Now adding to server...");
         //console.log(">>>>>>>>>>>>>>>>>>>>>>>>")
         //console.log(response);
@@ -2240,6 +2353,7 @@ angular
       var defer = $q.defer();
       var city_query_url = ApiService.server.url + '/api/v1/cities?q=' + query;
       $http.get(city_query_url).success(function(response){
+        //console.log(response);
         cities = { items: response.cities };
         defer.resolve(cities);
       });
@@ -2315,19 +2429,20 @@ angular
    //End User Selects Find Current Location from the search panel instead of selecting a city
   $scope.setCurrentLocation = function() {
 
-    var LatLongPromise = LocationService.getLatLong();
+    var LatLongPromise = LocationService.getLatLong(ApiService.server.url);
     LatLongPromise.then(function(response) {
+      console.log("Lat long promise log: ");
+      console.log(response);
 
-      $scope.city_selected = 'Current Location'; 
-      VenueService.setCity("Current Location");
+      VenueService.setCity(response.city);
+      $scope.city_selected = response.city; 
+
       VenueService.setSortBy('distance');
       VenueService.setLatitude(LocationService.data.latitude);
       VenueService.setLongitude(LocationService.data.longitude);
       $scope.sort_by_selected = 'distance';
       $scope.changeSort('distance');
       
-
-
       /*
       VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId()).async().then(function(d) { //2. so you can use .then()
         VenueService.setVenues(d.data.venues);
