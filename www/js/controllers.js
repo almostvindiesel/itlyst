@@ -1074,18 +1074,16 @@ angular
     if (location.port) {
       var hostname = 'http://' + location.hostname + ":" + location.port;
     } else {
-      var hostname = 'http://' + location.hostname;
+      var hostname = 'http://www.itlyst.com';
     }
     var url = hostname + "/#/u/" + username + "/" + city.replace(' ','%20') + "/" + latitude + "/" + longitude + "/" + zoom + "/" + sort_by;
 
 
+    html_body += "<p>Visit on itlyst: <a href='" + url + "'>" + url + '</a></p>';
 
     for (var i=0, len=$scope.venues.length; i<len; i++) {
 
-      var map_url ="http://www.google.com/maps/search/"+$scope.venues[i].name+"/@"+$scope.venues[i].latitude+","+$scope.venues[i].longitude+"/14z";
-
-      html_body = "<div selectable-text>";
-      html_body += "<p>Visit on itlyst: <a href='" + url + "'>" + url + '</a></p>';
+      var map_url ="http://www.google.com/maps/search/"+$scope.venues[i].name+"/@"+$scope.venues[i].latitude+","+$scope.venues[i].longitude+"/14z";      
 
       html_body += "<b>" + $scope.venues[i].name + "</b> - <a href=" + map_url + ">Map</a><br>";
       if ($scope.venues[i].yelp_id != null) {

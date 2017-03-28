@@ -30,29 +30,34 @@
                     ng-click="changeUserRating(venue.id, 0 )"><i class="fa-circle-thin"></i></button> 
         </a>
         -->
-        <a class="item item-icon-left" ng-if="venue.foursquare_rating" target="_blank" ng-click="go_uri('foursquare',venue.foursquare_id)">
+
+
+        <a class="item item-icon-left" ng-if="venue.foursquare_rating" target="_blank" href='https://www.foursquare.com/v/{{venue.foursquare_id}}'>
           <div class="row">
             <div class="col col-10"><i class="fa-foursquare"></i></div>
             <div class="col col-50">{{venue.foursquare_rating}} out of 10</div>
             <div class="col col-20">{{venue.foursquare_reviews}} tips </div>
           </div>
         </a>
-        <a class="item item-icon-left" ng-if="venue.tripadvisor_rating" target="_blank" ng-click="go_uri('tripadvisor',venue.tripadvisor_id)">
+        <!-- 
+        https://www.tripadvisor.com/g32817-d10792229
+        -->
+        <a class="item item-icon-left" ng-if="venue.tripadvisor_rating" target="_blank" href='http://tripadvisor.com/{{venue.tripadvisor_id}}'>
           <div class="row">
             <div class="col col-10"><i class="fa-tripadvisor"></i></div>
             <div class="col col-50">{{venue.tripadvisor_rating}} out of 5 stars</div>
             <div class="col col-20">{{venue.tripadvisor_reviews}} reviews </div>
           </div>
         </a>
-        <a class="item item-icon-left" ng-if="venue.yelp_rating" target="_blank" ng-click="go_uri('yelp',venue.yelp_id)">
+        <a class="item item-icon-left" ng-if="venue.yelp_rating" target="_blank" href='https://www.yelp.com/biz/{{venue.yelp_id}}'>
           <div class="row">
             <div class="col col-10"><i class="fa-yelp"></i></div>
             <div class="col col-50">{{venue.yelp_rating}} out of 5 stars</div>
             <div class="col col-20">{{venue.yelp_reviews}} reviews </div>
           </div>
         </a>
-        <!--<a class="item item-icon-left venuedetailsitem"  target="_blank" href='http://www.google.com/maps/search/{{ venue.name }}/@{{ venue.latitude }},{{ item.longitude }}/14z'> -->
-        <a class="item item-icon-left venuedetailsitem" target="_blank" ng-click="go_uri('gmaps','q=' + venue.name + '&center=' + venue.latitude + ',' + venue.latitude)"> 
+        <a class="item item-icon-left venuedetailsitem"  target="_blank" href='http://www.google.com/maps/search/{{ venue.name }}/@{{ venue.latitude }},{{ venue.longitude }}/14z'>
+        <!--<a class="item item-icon-left venuedetailsitem" target="_blank" ng-click="go_uri('gmaps','q=' + venue.name + '&center=' + venue.latitude + ',' + venue.latitude)"> -->
         <!-- q=Pizza&center=37.759748,-122.427135-->
           <div class="row">
             <div class="col col-10"><i class="ion-map icon-lg" ></i></div>

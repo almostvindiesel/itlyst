@@ -173,7 +173,7 @@
                   <button class="image-button" ng-click="go('app/image/{{image.id}}')">
                     <img src="{{image.image_thumb}}" class="venueimage animated bounceInRight" >
                   </button>
-                  <div selectable-text>{{note.note}}</div>
+                  <div >{{note.note}}</div>
                   <div class="notesource">
                     <i class="fa-foursquare"   ng-if="(note.source == 'foursquare')"></i>
                     <i class="fa-yelp"         ng-if="(note.source == 'yelp')"></i>
@@ -190,7 +190,7 @@
 
               <ion-item ng-repeat="note in item.notes" class="item-text-wrap" item="item" 
                         ng-if="(item.images.length >= 1 || item.notes.length >= 1) && !(item.images.length == 1 && item.notes.length == 1)">
-                <div selectable-text>{{note.note}}</div>
+                <div >{{note.note}}</div>
                 <div class="notesource">
                   <i class="fa-foursquare"   ng-if="(note.source == 'foursquare')"></i>
                   <i class="fa-yelp"         ng-if="(note.source == 'yelp')"></i>

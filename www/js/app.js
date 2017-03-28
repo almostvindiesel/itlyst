@@ -646,19 +646,20 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       };
 
       return $cordovaGeolocation.getCurrentPosition(posOptions).then(function (position) {
+            console.log("Found GPS coords...");
             data.latitude  = position.coords.latitude;
             data.longitude = position.coords.longitude;
-            console.log("lat: " + data.latitude);
-            console.log("long: " + data.longitude);
+            console.log("--- gps lat: " + data.latitude);
+            console.log("--- long: " + data.longitude);
 
             //Now call an endpoint to get the city based on the lat long
             //console.log("got just before getCityFromLatLngPromise");
             var getCityFromLatLngPromise = getCityFromLatLng(data.latitude, data.longitude, api_url);
             return getCityFromLatLngPromise.then(function(response) {
-              //console.log("city from gps ip resolution call: ");
-              //console.log(response);
+              console.log("city from gps ip resolution call: ");
+              console.log(response);
               //city = response.data.city;
-              return {lat: response.data.latitude, lng: response.data.longitude, city: response.data.city, source: 'gps'};
+              return {lat: data.latitude, lng: data.longitude, city: response.data.city, source: 'gps'};
             });
 
       }, function(rejection) {
@@ -729,7 +730,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     var data = {
       venues: {},
       zoom_options: zoom_options,
-      zoom: 50,
+      zoom: 25,
       latitude: 34.015059,
       longitude: -118.4667002,
       user_ratings_filter: Array("0","1","4"),
