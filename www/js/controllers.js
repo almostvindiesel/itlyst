@@ -254,7 +254,6 @@ angular
 
 .controller('StartCtrl', function($scope, $ionicModal, $ionicPlatform, config, VenueService, UserCityService, LocationService, ApiService, LoginService, $ionicHistory, $location, $q, $http, $base64, $timeout, $stateParams, $state) {
 
-
   // ------------------------------------------------------------------------------------------------------
   // Change server url depending on whether itlyst is on dev or production
   $scope.getSignupUrl = function () {
@@ -268,7 +267,6 @@ angular
 
   // ------------------------------------------------------------------------------------------------------
   // Login Modal
-
   $scope.$on('$ionicView.enter', function(e) {
     console.log("Entered StartCtrl...");
 
@@ -291,8 +289,6 @@ angular
         $scope.modal.show();
       } 
     } else {
-
-      
       var loginPromise = LoginService.login(ApiService.server.url);
       loginPromise.then(function(response) {
       //console.log("Logged in!:");
@@ -303,9 +299,7 @@ angular
       });
       
     }
-
     console.log("Login status: " + $scope.isLoggedIn);
-  
     
   });  
 
@@ -351,8 +345,6 @@ angular
     $scope.login_button_message = "Logging in...";
     $scope.login_error_message = "";
 
-    //LoginService.login(ApiService.server.url);
-
     var loginPromise = LoginService.login(ApiService.server.url);
     
     loginPromise.then(function(response) {
@@ -368,7 +360,6 @@ angular
         }, 1000);
 
         triggerSuccessfulLoginMethods();
-
         
       } else {
         console.log("User NOT logged in");
@@ -402,16 +393,24 @@ angular
 
     //Also show the current location's city
     
-  
 
     var LatLongPromise = LocationService.getLatLong(ApiService.server.url);
     LatLongPromise.then(function(response) {
-      if (response.lat && response.lng && $scope.recent_cities.length <= $scope.max_recent_cities) {
-        var current_location = {latitude: response.lat, longitude:response.lng, name: 'Current Location'};
+      if (response.latitude && response.longitude && $scope.recent_cities.length <= $scope.max_recent_cities) {
+        var current_location = {latitude: response.latitude, longitude:response.longitude, name: 'Current Location'};
         $scope.recent_cities.unshift(current_location);
+
+        //Save The city from current city into scope
+        LocationService.getCityFromLatLng(response.latitude, response.longitude, ApiService.server.url).then(function(response) { //2. so you can use .then()
+          //console.log("about to set city based on response:");
+          //console.log(response);
+          //VenueService.setCity(response.city);
+          $scope.current_location_city = response.city;
+        });
       }
+
     }); 
-    
+
   }
 
  // ------------------------------------------------------------------------------------------------------
@@ -577,28 +576,26 @@ angular
   $scope.selectRecentCity = function(city) {
 
     console.log("City Selected: " + city.name);
-    VenueService.setCity(city.name);
     VenueService.setLatitude(city.latitude);
     VenueService.setLongitude(city.longitude);
     
     //If user opts to search by current location, then sort by distance rather than recently added
+    //!!! Move this to the venuesctrl
     if(city.name == 'Current Location') {
+      VenueService.setCity($scope.current_location_city);
       VenueService.setSortBy('distance');
-      LocationService.getCityFromLatLng(VenueService.data.latitude, VenueService.data.longitude, ApiService.server.url).then(function(response) { //2. so you can use .then()
-        console.log("location service result:");
-        console.log(response);
-        VenueService.setCity(response.data.city.city);
-      });
-
+    } else {
+      VenueService.setCity(city.name);
     }
+
     VenueService.extractVenues(ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId()).async().then(function(d) { //2. so you can use .then()
       VenueService.setVenues(d.data.venues);
-    });
 
-    $ionicHistory.nextViewOptions({
-      disableBack: true
+      $ionicHistory.nextViewOptions({
+        disableBack: true
+      });
+      $state.go('app.venues', {}, {});
     });
-    $location.path( 'app/venues' );
 
   }
 
@@ -733,10 +730,10 @@ angular
     controlText.addEventListener('click', function() {
       var LatLongPromise = LocationService.getLatLong(ApiService.server.url);
       LatLongPromise.then(function(response) {
-        if (response.lat && response.lng) {
+        if (response.latitude && response.longitude) {
 
           //Center Map on Location
-          var coords = response;
+          var coords = {lat: response.latitude, lng: response.longitude};
           map.setCenter(coords);
           map.setZoom(14); 
 
@@ -2318,9 +2315,11 @@ angular
         //Set current city to the last city added 
         /*
         if (venue.city != undefined && venue.city.length > 0) {
+          console.log()
           VenueService.setCity(venue.city);
         }
         */
+
 
         //doSetTimeout(secs);
         console.log(">>>>> About to save note to server...");
@@ -2329,6 +2328,7 @@ angular
         VenueService.sendToServer(venue.post_params, ApiService.server.url, LoginService.getLoginHeader(), LoginService.getUserId());
 
         $timeout(function() {
+          VenueService.setUserRatings(Array("0","1","4"));
           VenueService.setForceRefreshVenues(true);
           $state.go('app.redirector', {}, {});
         }, 2000);
@@ -2429,15 +2429,18 @@ angular
 
     var LatLongPromise = LocationService.getLatLong(ApiService.server.url);
     LatLongPromise.then(function(response) {
-      console.log("Lat long promise log: ");
+      console.log("LatLongPromise result in FiltersCtrl:")
       console.log(response);
 
-      VenueService.setCity(response.city);
-      $scope.city_selected = response.city; 
+      VenueService.setLatitude(response.latitude);
+      VenueService.setLongitude(response.longitude);
 
+      VenueService.setCity(response.city);
+      var inputElement = angular.element(document.getElementById("cityinput"));
+      inputElement[0].value = response.city;
+      $scope.city_selected = response.city; 
+      
       VenueService.setSortBy('distance');
-      VenueService.setLatitude(LocationService.data.latitude);
-      VenueService.setLongitude(LocationService.data.longitude);
       $scope.sort_by_selected = 'distance';
       $scope.changeSort('distance');
       

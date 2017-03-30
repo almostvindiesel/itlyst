@@ -9,7 +9,7 @@
       <button class="button button-positive round" style="min-width: 70%" ng-click="addClipboardData()">
         Add: 
           <ion-spinner class="extractvenue" icon="spiral" ng-hide=venueFromReviewSourceName></ion-spinner>
-          <b>{{ venueFromReviewSourceName | limitTo: 20 }}{{venueFromReviewSourceName.length > 20 ? '...' : ''}}</b>
+          <b>{{ venueFromReviewSourceName | limitTo: 19 }}{{venueFromReviewSourceName.length > 19 ? '...' : ''}}</b>
       </button>
       <button class="button button-stable round" ng-click="closePopover()"> 
         <i class="icon ion-close"></i> Cancel

@@ -614,10 +614,11 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
             url: url
         })
         .then(function(response) {
-            //console.log("getCityFromLatLng response: ");
-            //console.log(response);
-            return response;
+            console.log("getCityFromLatLng response: ");
+            console.log(response);
+            return {city: response.data.city.city};
         }, function(rejection) {
+            rejection.city = null;
             return rejection;
         });
     }
@@ -632,7 +633,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
             console.log("User IP Lat: "+ response.data.latitude);
             console.log("User IP Long: "+ response.data.longitude);
             console.log("User IP City: "+ response.data.city);
-            return {lat: response.data.latitude, lng: response.data.longitude, city: response.data.city, source: 'ip'}
+            return {latitude: response.data.latitude, longitude: response.data.longitude, city: response.data.city, source: 'ip'}
         }, function(rejection) {
             return rejection;
         });
@@ -659,7 +660,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
               console.log("city from gps ip resolution call: ");
               console.log(response);
               //city = response.data.city;
-              return {lat: data.latitude, lng: data.longitude, city: response.data.city, source: 'gps'};
+              return {latitude: data.latitude, longitude: data.longitude, city: response.city, source: 'gps'};
             });
 
       }, function(rejection) {
@@ -670,17 +671,17 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     function getLatLong(api_url) {
 
       var LatLongPromiseGPS = getLatLongFromGPS(api_url);
-      return LatLongPromiseGPS.then(function(response) {
-        if (response.lat && response.lng) {
-          console.log("--- GPS Attempt Success:");
-          var latlongcoords = response;
+      return LatLongPromiseGPS.then(function(latlongcoords) {
+        if (latlongcoords.latitude && latlongcoords.longitude) {
+          console.log("--- GPS Lat Long Response: ");
           return latlongcoords;
         } else {
-          console.log("--- GPS Attempt Failed. Response:");
-          console.log(response);
+          console.log("--- GPS Lat Long Attempt Failed. Response:");
           console.log("Now Attempting to get lat / lng from IP...");
           var LatLongPromiseIP = getLatLongFromIPAddress();
           return LatLongPromiseIP.then(function(latlongcoords) {
+            console.log("--- IP Lat Long Response: ");
+            console.log(latlongcoords);
             return latlongcoords;
           });
         }
@@ -803,6 +804,11 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
     function setSortBy(val){
       console.log("Setting sort_by: " + val);
       data['sort_by'] = val;
+    }
+
+    function setUserRatings(val){
+      console.log("Setting user_ratings_filter: " + val);
+      data['user_ratings_filter'] = val;
     }
 
     function setZoom(val){
@@ -949,6 +955,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'ngCordova'])
       setLongitude: setLongitude,
       setSortBy: setSortBy,
       setCity: setCity,
+      setUserRatings: setUserRatings,
       data: data
     };
   } 

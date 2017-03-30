@@ -12,8 +12,10 @@
       <br><br><br><br><br><br>
       <span>
         <img class="animated" src="img/itlyst-fork-logo.png" style="width: 60px;">
-        <i class="introtext large">itlyst</h3>
-        <h4 class="introtext"> Remember places you want to visit</h3>
+        <i class="introtext large">itlyst
+        <h4 class="introtext">       <button class="clearbutton mwhite" ng-click="go('app/blank')" >
+        <i class="fa-1_8x ion-ios-compose-outline" style="color:white"></i> 
+      </button> Remember places you want to visit</h4>
       </span>
 
     <br>
@@ -40,12 +42,9 @@
 
         <div ng-show="recent_cities.length > 0">
           <!--<i class=buttonlabel>Recent:</i>-->
-            <button class="clearbutton mwhite" ng-repeat="city in recent_cities" ng-click="selectRecentCity(city)" style="margin: 5px 3px 5px 3px;">
+            <button class="clearbutton mwhite" ng-repeat="city in recent_cities" ng-click="selectRecentCity(city)" style="margin: 5px 3px 5px 3px; line-height: 2.5">
                 <div class="iblock"><i ng-if="city.name == 'Current Location'" class="icon ion-ios-navigate-outline" style="color:white"> {{ city.name }}</i></div>
                 <div class="iblock"><i ng-if="city.name != 'Current Location'">{{ city.name | limitTo: 15 }}{{city.name.length > 15 ? '…' : ''}}</i></div>
-            </button>
-            <button class="clearbutton mwhite" ng-click="go('app/blank')" >
-              <i class="fa-1_8x ion-ios-compose-outline" style="color:white"></i> 
             </button>
           </p>
         </div>
