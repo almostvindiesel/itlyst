@@ -11,8 +11,8 @@
   <!--
     <button class="button button-icon icon headermapbutton" ng-click="go('app/venue_search')" style="float:left; min-height: 40px; padding: 0px 0px 0px 4px !important;"><i style="vertical-align: middle;" class="fa fa-plus-square-o fa-1_3x mwhite" aria-hidden="true"></i></button>
     -->
-    <button class="button button-icon icon venuebutton" ng-click="go('app/venue_search')" style="float:left">
-      <i class="ion-search mwhite"></i>
+    <button class="button button-icon icon venuebutton" ng-click="go('app/venue_search')" style="float:left" ng-show="isIosApp">
+      <i class="ion-search mwhite" ng-show="isIosApp"></i>
     </button>
   
     <button class="button-clear mwhite" ng-click="go('app/filters')">
@@ -21,7 +21,6 @@
       </div>
     </button>
 
-    
     
     <button class="button button-icon icon venuebutton" ng-click="sendEmail($event)">
       <i class="ion-ios-upload-outline mwhite"></i>

@@ -949,6 +949,16 @@ angular
 
   */
 
+
+
+  $scope.isIosApp = false;
+  if (ionic.Platform.isWebView()) {
+    $scope.isIosApp = true;
+  } else {
+    $scope.isIosApp = false;
+  }
+
+
   $scope.selectNoteImages = function() {
 
     var options = {
